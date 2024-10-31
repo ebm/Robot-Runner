@@ -1,0 +1,42 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "tilemap.tmx",
+    "automapping.whileDrawing": false,
+    "expandedProjectPaths": [
+        "."
+    ],
+    "fileStates": {
+        ":/automap-tiles.tsx": {
+            "scaleInDock": 1
+        },
+        "tilemap.tmx": {
+            "scale": 1.5,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 632,
+                "y": 1081.6666666666665
+            }
+        },
+        "tiles.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 2
+        }
+    },
+    "last.imagePath": "C:/Users/ethan/Desktop/TBD/assets/map",
+    "map.height": 50,
+    "map.lastUsedFormat": "tmx",
+    "map.width": 50,
+    "openFiles": [
+        "tilemap.tmx",
+        "tiles.tsx"
+    ],
+    "project": "mapfile.tiled-project",
+    "recentFiles": [
+        "tiles.tsx",
+        "tilemap.tmx"
+    ],
+    "tileset.lastUsedFormat": "tsx"
+}
