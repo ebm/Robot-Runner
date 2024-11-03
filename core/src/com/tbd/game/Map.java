@@ -62,7 +62,7 @@ public class Map {
         this.myGame = myGame;
         tileMap = new TmxMapLoader().load("map2/tilemap.tmx");
         orthogonalTiledMapRenderer = new OrthogonalTiledMapRenderer(tileMap, UNIT_SCALE);
-        orthogonalTiledMapRenderer.setView(myGame.camera);
+        orthogonalTiledMapRenderer.setView(myGame.gsm.camera);
 
         setupMap(tileMap.getLayers().get("objects").getObjects());
         setupSpawns(tileMap.getLayers().get("points").getObjects());
@@ -128,7 +128,7 @@ public class Map {
         edgeList.add(edge);
     }
     public void render() {
-        orthogonalTiledMapRenderer.setView(myGame.camera);
+        orthogonalTiledMapRenderer.setView(myGame.gsm.camera);
         orthogonalTiledMapRenderer.render();
     }
     public void dispose() {

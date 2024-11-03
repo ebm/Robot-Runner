@@ -12,6 +12,6 @@ public class DesktopLauncher {
 		config.setWindowedMode(800, 500);
 		config.setTitle("TBD");
 		//config.setFullscreenMode(Lwjgl3ApplicationConfiguration.getDisplayMode());
-		new Lwjgl3Application(new MyGame(), config);
+		new Lwjgl3Application(new GameStateManager(), config);
 	}
 }
