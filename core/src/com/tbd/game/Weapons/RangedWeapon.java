@@ -59,7 +59,7 @@ public class RangedWeapon extends Weapon {
     }
     @Override
     public void attack(Vector2 target) {
-        if (attacksPerSecond == 0 || (System.nanoTime() - lastFired) / 1000000000 > 1 / attacksPerSecond) {
+        if (attacksPerSecond == 0 || (myGame.timePassed - lastFired) > 1 / attacksPerSecond) {
             BulletClass newBullet = new BulletClass(myGame, this);
 
             float diffX = target.x - newBullet.body.getPosition().x;
@@ -68,7 +68,7 @@ public class RangedWeapon extends Weapon {
 
             newBullet.body.setLinearVelocity(bulletSpeed / hypotenuse * diffX,bulletSpeed / hypotenuse * diffY);
             totalBullets.add(newBullet);
-            lastFired = System.nanoTime();
+            lastFired = myGame.timePassed;
         }
     }
     /*public Vector2 calculatePrediction(Entity e) {
@@ -94,7 +94,7 @@ public class RangedWeapon extends Weapon {
         return new Vector2(intersectX2, intersectY2);
     }*/
     public void attackWithAimbot(Entity e) {
-        if (attacksPerSecond == 0 || (System.nanoTime() - lastFired) / 1000000000 > 1 / attacksPerSecond) {
+        if (attacksPerSecond == 0 || (myGame.timePassed - lastFired) > 1 / attacksPerSecond) {
             BulletClass newBullet = new BulletClass(myGame, this);
 
             float time = (float) (Math.sqrt((e.getBodyCenter().x * e.getBodyCenter().x - 2 * newBullet.body.getPosition().x
@@ -120,7 +120,7 @@ public class RangedWeapon extends Weapon {
 
             newBullet.body.setLinearVelocity(horizontalBulletVelocity, verticalBulletVelocity);
             totalBullets.add(newBullet);
-            lastFired = System.nanoTime();
+            lastFired = myGame.timePassed;
         }
         //attack(new Vector2(e.getBodyCenter().x, e.getBodyCenter().y + 0.2f));
     }
@@ -135,7 +135,7 @@ public class RangedWeapon extends Weapon {
         for (BulletClass bc : totalBullets) {
             bc.render();
         }
-        if (!totalBullets.isEmpty() && (System.nanoTime() - totalBullets.get(0).timeOfCreation) / 1000000000 > BULLET_EXPIRY_SECONDS) {
+        if (!totalBullets.isEmpty() && (myGame.timePassed - totalBullets.get(0).timeOfCreation) > BULLET_EXPIRY_SECONDS) {
             totalBullets.get(0).destroy();
         }
     }

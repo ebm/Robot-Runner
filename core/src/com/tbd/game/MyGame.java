@@ -30,6 +30,7 @@ public class MyGame extends State {
 	public World world; // 1 block = 2 meters = 64 pixels
 	Box2DDebugRenderer debugRenderer;
 	double accumulator;
+	public double timePassed;
 	public Player player;
 	public TextureAtlas atlas;
 	Map map;
@@ -134,6 +135,7 @@ public class MyGame extends State {
 		double delta = Gdx.graphics.getDeltaTime();
 
 		accumulator += delta;
+		timePassed += delta;
 
 		while (accumulator >= TIME_STEP) {
 			world.step(TIME_STEP, 6, 2);

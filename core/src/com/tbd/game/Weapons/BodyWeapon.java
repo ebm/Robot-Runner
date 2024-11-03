@@ -13,11 +13,9 @@ import static com.tbd.game.Constants.BAT_INITIAL_Y_POSITION;
 public class BodyWeapon extends Weapon {
     public Body body;
     Entity contactEntity;
-    double timeOfContact;
     public BodyWeapon(MyGame myGame, Entity user, float attackDamage, Shape shape) {
         super(myGame, user);
         this.attackDamage = attackDamage;
-        timeOfContact = 0;
         contactEntity = null;
 
         createBody(shape);
@@ -40,7 +38,6 @@ public class BodyWeapon extends Weapon {
         body.setFixedRotation(true);
     }
     public void contactStarted(Entity e) {
-        timeOfContact = System.nanoTime();
         contactEntity = e;
     }
     public void contactEnded() {
@@ -55,13 +52,12 @@ public class BodyWeapon extends Weapon {
     @Override
     public void render() {
         if (contactEntity != null) {
-            float damage = (float) ((System.nanoTime() - timeOfContact) / 1000000000) * attackDamage;
+            float damage = Gdx.graphics.getDeltaTime() * attackDamage;
             if (contactEntity.death) {
                 contactEntity = null;
                 return;
             }
             contactEntity.takeDamage(damage);
-            timeOfContact = System.nanoTime();
         }
     }
     public static void handleContact(Fixture fixtureA, Fixture fixtureB, boolean beginContact, MyGame myGame) {

@@ -239,8 +239,8 @@ public class Player extends Entity {
             // Ensure player is walking into wall
             if ((currentState == PlayerState.WalkingLeft && touchingLeftWall || currentState == PlayerState.WalkingRight && touchingRightWall) &&
                     // Ensure player has not exceeded climbing wall time
-                    (wallClimbTime == 0 || (System.nanoTime() - wallClimbTime) / 1000000000 < PLAYER_WALLCLIMB_LENGTH_SECONDS)) {
-                if (wallClimbTime == 0) wallClimbTime = System.nanoTime();
+                    (wallClimbTime == 0 || (myGame.timePassed - wallClimbTime) < PLAYER_WALLCLIMB_LENGTH_SECONDS)) {
+                if (wallClimbTime == 0) wallClimbTime = myGame.timePassed;
 
                 body.setLinearVelocity(body.getLinearVelocity().x, PLAYER_WALLCLIMB_VELOCITY);
             } else {
@@ -250,7 +250,7 @@ public class Player extends Entity {
             if (wallClimbTime != 0) wallClimbFinished = true;
         }
         // Dash
-        if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) && (System.nanoTime() - dashTime) / 1000000000 > 3) {
+        if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) && (myGame.timePassed - dashTime) > 3) {
             float dashXVelocity = body.getLinearVelocity().x;
             float dashYVelocity = PLAYER_DASH_VERTICAL_VELOCITY;
             if (currentState == PlayerState.WalkingLeft) {
@@ -260,50 +260,19 @@ public class Player extends Entity {
             }
             body.setTransform(body.getPosition().x, body.getPosition().y + UNIT_SCALE, 0);
             body.setLinearVelocity(dashXVelocity, dashYVelocity);
-            dashTime = System.nanoTime();
+            dashTime = myGame.timePassed;
         }
-        /*if ((Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) || dashTime != 0) && !dashFinished && (System.nanoTime() - lastDash) / 1000000000 > 3) {
-            if (dashTime == 0 || (System.nanoTime() - dashTime) / 1000000000 < DASH_LENGTH_SECONDS) {
-                if (dashTime == 0) {
-                    if (currentState == PlayerState.WalkingLeft && Gdx.input.isKeyPressed(Input.Keys.W)) {
-                        dashXVelocity = (float) -(DASH_SPEED / Math.sqrt(2));
-                        dashYVelocity = (float) (DASH_SPEED / Math.sqrt(2));
-                    } else if (currentState == PlayerState.WalkingRight && Gdx.input.isKeyPressed(Input.Keys.W)) {
-                        dashXVelocity = (float) (DASH_SPEED / Math.sqrt(2));
-                        dashYVelocity = (float) (DASH_SPEED / Math.sqrt(2));
-                    } else if (currentState == PlayerState.WalkingLeft && !Gdx.input.isKeyPressed(Input.Keys.W)) {
-                        dashXVelocity = -DASH_SPEED;
-                        dashYVelocity = 0;
-                    } else if (currentState == PlayerState.WalkingRight && !Gdx.input.isKeyPressed(Input.Keys.W)) {
-                        dashXVelocity = DASH_SPEED;
-                        dashYVelocity = 0;
-                    } else {
-                        dashXVelocity = 0;
-                        dashYVelocity = DASH_SPEED;
-                    }
-                    body.setTransform(body.getPosition().x, body.getPosition().y + 3 * UNIT_SCALE, 0);
-                    body.setLinearVelocity(dashXVelocity, dashYVelocity);
-                    dashTime = System.nanoTime();
-                } else {
-                    body.setLinearVelocity(dashXVelocity, dashYVelocity);
-                }
-            } else if (dashTime != 0) {
-                dashFinished = true;
-                dashTime = 0;
-                lastDash = System.nanoTime();
-            }
-        }*/
 
         // Fire
         if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
             weapon.attack(new Vector2(myGame.getMousePosition().x, myGame.getMousePosition().y));
-            combatTimer = System.nanoTime();
+            combatTimer = myGame.timePassed;
         }
     }
     @Override
     public void render() {
         weapon.render();
-        if (health < PLAYER_HEALTH && (System.nanoTime() - combatTimer) / 1000000000 > PLAYER_SECONDS_TILL_REGEN) {
+        if (health < PLAYER_HEALTH && (myGame.timePassed - combatTimer) > PLAYER_SECONDS_TILL_REGEN) {
             health += Gdx.graphics.getDeltaTime() * PLAYER_HEALTH_REGEN_PER_SEC;
             if (health >= 100) health = 100;
         }
@@ -323,7 +292,7 @@ public class Player extends Entity {
     @Override
     public void takeDamage(float damage) {
         super.takeDamage(damage);
-        combatTimer = System.nanoTime();
+        combatTimer = myGame.timePassed;
     }
     @Override
     public void death() {

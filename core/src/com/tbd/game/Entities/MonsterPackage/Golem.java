@@ -92,14 +92,14 @@ public class Golem extends Monster{
     }
     public void update() {
         if (getDistance(body.getPosition(), myGame.player.body.getPosition()) < GOLEM_ACTIVATION_RANGE) {
-            double timeFromLastJump = (System.nanoTime() - lastJump) / 1000000000;
+            double timeFromLastJump = (myGame.timePassed - lastJump);
             if (timeFromLastJump > 1) {
                 ((RangedWeapon) weapon).attackWithAimbot(myGame.player);
                 //weapon.attack(myGame.player.getBodyCenter());
                 if (getBodyCenter().x < myGame.player.getBodyCenter().x && body.getLinearVelocity().x <= 0 || getBodyCenter().x > myGame.player.getBodyCenter().x && body.getLinearVelocity().x >= 0) {
-                    if (directionTime == 0) directionTime = System.nanoTime();
+                    if (directionTime == 0) directionTime = myGame.timePassed;
                 }
-                if ((System.nanoTime() - directionTime) / 1000000000 > GOLEM_DIRECTION_DELAY) {
+                if ((myGame.timePassed - directionTime) > GOLEM_DIRECTION_DELAY) {
                     directionTime = 0;
                     if (getBodyCenter().x < myGame.player.getBodyCenter().x) {
                         if (getBodyCenter().x < range.xMax) body.setLinearVelocity(GOLEM_HORIZONTAL_VELOCITY, body.getLinearVelocity().y);
@@ -114,7 +114,7 @@ public class Golem extends Monster{
                     Vector2 playerPos = new Vector2(myGame.player.getBodyCenter());
                     Vector2 monsterPos = new Vector2(body.getPosition().x + GOLEM_HITBOX_WIDTH / 2, body.getPosition().y);
                     body.setLinearVelocity(calculateTrajectory(GOLEM_JUMP_VELOCITY, monsterPos, playerPos), GOLEM_JUMP_VELOCITY);
-                    lastJump = System.nanoTime();
+                    lastJump = myGame.timePassed;
                 }
             }
             //weapon.attack(myGame.player.getBodyCenter());

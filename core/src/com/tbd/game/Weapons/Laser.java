@@ -35,7 +35,7 @@ public class Laser {
         createTestProjectile(initialX, initialY);
         //createBody(initialX, initialY);
         laserDistance = LASER_MAXIMUM_DISTANCE;
-        timeOfCreation = System.nanoTime();
+        timeOfCreation = myGame.timePassed;
         lastSwitch = 0;
     }
     public Laser(MyGame myGame, Direction direction, float initialX, float initialY, float laserDistance) {
@@ -46,7 +46,7 @@ public class Laser {
         createTestProjectile(initialX, initialY);
         //createBody(initialX, initialY);
         this.laserDistance = laserDistance;
-        timeOfCreation = System.nanoTime();
+        timeOfCreation = myGame.timePassed;
         lastSwitch = 0;
     }
     public void createTestProjectile(float initialX, float initialY) {
@@ -184,18 +184,18 @@ public class Laser {
         }
         weapon.render();
         if (active) {
-            if ((System.nanoTime() - lastSwitch) / 1000000000 > LASER_THREAT_SECONDS) {
+            if (myGame.timePassed - lastSwitch > LASER_THREAT_SECONDS) {
                 active = false;
-                lastSwitch = System.nanoTime();
+                lastSwitch = myGame.timePassed;
                 body.setActive(false);
                 body.setAwake(true);
             }
             sprite.setPosition(body.getPosition().x, body.getPosition().y);
             sprite.draw(myGame.batch);
         } else {
-            if ((System.nanoTime() - lastSwitch) / 1000000000 > LASER_SAFE_SECONDS) {
+            if (myGame.timePassed - lastSwitch > LASER_SAFE_SECONDS) {
                 active = true;
-                lastSwitch = System.nanoTime();
+                lastSwitch = myGame.timePassed;
                 body.setActive(true);
                 body.setAwake(true);
             }

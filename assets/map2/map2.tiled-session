@@ -67,11 +67,11 @@
                 5,
                 19
             ],
-            "scale": 1,
-            "selectedLayer": 5,
+            "scale": 0.5,
+            "selectedLayer": 0,
             "viewCenter": {
-                "x": 4818,
-                "y": 8215
+                "x": 4420,
+                "y": 8648
             }
         },
         "tiles.tsx": {

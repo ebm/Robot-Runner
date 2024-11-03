@@ -33,7 +33,7 @@ public class Bat extends Monster {
         weapon = new BodyWeapon(myGame, this, BAT_ATTACK_DAMAGE, shape);
         weapon.attack(body.getPosition());
         currentVerticalVelocityAdder = BAT_VERTICAL_VELOCITY;
-        lastVerticalChange = System.nanoTime();
+        lastVerticalChange = myGame.timePassed;
         asleep = false;
         createAnimations();
     }
@@ -48,7 +48,7 @@ public class Bat extends Monster {
         weapon = new BodyWeapon(myGame, this, BAT_ATTACK_DAMAGE, shape);
         weapon.attack(body.getPosition());
         currentVerticalVelocityAdder = BAT_VERTICAL_VELOCITY;
-        lastVerticalChange = System.nanoTime();
+        lastVerticalChange = myGame.timePassed;
         asleep = false;
         createAnimations();
     }
@@ -92,9 +92,9 @@ public class Bat extends Monster {
             asleep = true;
             return;
         }
-        if ((System.nanoTime() - lastVerticalChange) / 1000000000 >= BAT_VERTICAL_DELAY) {
+        if ((myGame.timePassed - lastVerticalChange) >= BAT_VERTICAL_DELAY) {
             currentVerticalVelocityAdder *= -1;
-            lastVerticalChange = System.nanoTime();
+            lastVerticalChange = myGame.timePassed;
         }
         Vector2 target = myGame.player.getBodyCenter();
         float diffX = target.x - body.getPosition().x;

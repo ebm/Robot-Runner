@@ -1,5 +1,6 @@
 package com.tbd.game.Weapons;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.tbd.game.Listener;
@@ -44,7 +45,7 @@ public class BulletClass extends Weapon{
 
         shape.dispose();
 
-        timeOfCreation = System.nanoTime();
+        timeOfCreation = myGame.timePassed;
     }
     private void createDespawnBody() {
         CircleShape shape = new CircleShape();
