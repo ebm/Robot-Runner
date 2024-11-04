@@ -50,6 +50,7 @@ public class MyGame implements Screen {
 	public Texture bat2;
 	public Texture bat3;
 	public TextureAtlas healthbarAtlas;
+	boolean canEscape;
 	public MyGame(GameStateManager gsm) {
 		this.gsm = gsm;
 		batch = gsm.batch;
@@ -85,10 +86,11 @@ public class MyGame implements Screen {
 		map = new Map(this);
 
 		if (player == null) player = new Player(this);
+		canEscape = false;
 	}
 	@Override
 	public void show() {
-
+		canEscape = false;
 	}
 	public Vector3 getMousePosition() {
 		return gsm.camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
@@ -132,7 +134,10 @@ public class MyGame implements Screen {
 		gsm.batch.end();
 
 		step(delta);
-		if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
+		if (!Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
+			canEscape = true;
+		}
+		if (canEscape && Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
 			gsm.setScreen(gsm.pause);
 		}
 	}

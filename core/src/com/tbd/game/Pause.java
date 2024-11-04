@@ -3,27 +3,67 @@ package com.tbd.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 public class Pause implements Screen {
     GameStateManager gsm;
+    Stage stage;
+    Table table;
+    boolean canEscape;
     public Pause(GameStateManager gsm) {
         this.gsm = gsm;
+
+        stage = new Stage();
+        table = new Table();
+        table.setFillParent(true);
+        table.setDebug(true);
+
+        stage.addActor(table);
+        TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
+        TextureRegion buttonUp = new TextureRegion(new Texture(Gdx.files.internal("buttonUp.png")));
+        TextureRegion buttonDown = new TextureRegion(new Texture(Gdx.files.internal("buttonDown.png")));
+        textButtonStyle.up = new TextureRegionDrawable(buttonUp);
+        textButtonStyle.down = new TextureRegionDrawable(buttonDown);
+        textButtonStyle.pressedOffsetX = -1;
+        textButtonStyle.pressedOffsetY = -1;
+        textButtonStyle.font = gsm.font;
+        TextButton textButton = new TextButton("Resume", textButtonStyle);
+        textButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent changeEvent, Actor actor) {
+                gsm.setScreen(gsm.myGame);
+            }
+        });
+        table.add(textButton);
+        canEscape = false;
     }
 
     @Override
     public void show() {
-
+        Gdx.input.setInputProcessor(stage);
+        canEscape = false;
     }
 
     @Override
-    public void render(float v) {
+    public void render(float delta) {
         ScreenUtils.clear(0, 0, 0, 1);
         gsm.batch.setProjectionMatrix(gsm.camera.combined);
         gsm.batch.begin();
-
+        stage.act();
+        stage.draw();
         gsm.batch.end();
-        if (Gdx.input.isKeyPressed(Input.Keys.ENTER)) {
+        if (!Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
+            canEscape = true;
+        }
+        if (canEscape && Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
             gsm.setScreen(gsm.myGame);
         }
     }
@@ -32,6 +72,7 @@ public class Pause implements Screen {
     public void resize(int width, int height) {
         //gsm.vp.update(width, height, true);
         gsm.vp.update(width, height);
+        stage.getViewport().update(width, height);
     }
 
     @Override
