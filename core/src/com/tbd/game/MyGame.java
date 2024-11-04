@@ -4,6 +4,7 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -23,7 +24,8 @@ import static com.tbd.game.Constants.*;
 
 import java.util.ArrayList;
 
-public class MyGame extends State {
+public class MyGame implements Screen {
+	GameStateManager gsm;
 	public SpriteBatch batch;
 	//OrthographicCamera camera;
 	//Viewport vp;
@@ -49,7 +51,7 @@ public class MyGame extends State {
 	public Texture bat3;
 	public TextureAtlas healthbarAtlas;
 	public MyGame(GameStateManager gsm) {
-		super(gsm);
+		this.gsm = gsm;
 		batch = gsm.batch;
 
 		Box2D.init();
@@ -84,56 +86,15 @@ public class MyGame extends State {
 
 		if (player == null) player = new Player(this);
 	}
-	/*public void create () {
-		Box2D.init();
-		atlas = new TextureAtlas("game_atlas.atlas");
-		healthbarAtlas = new TextureAtlas("healthbar/healthbar.atlas");
+	@Override
+	public void show() {
 
-		batch = new SpriteBatch();
-
-		camera = new OrthographicCamera();
-		camera.setToOrtho(false);
-		vp = new ExtendViewport(VISIBLE_HORIZONTAL_TILES, VISIBLE_VERTICAL_TILES, camera);
-
-		world = new World(new Vector2(0, GRAVITY), true);
-
-		debugRenderer = new Box2DDebugRenderer();
-
-		shadow = new Texture("player/shadow.png");
-		golem = new Texture("golem.png");
-		laserVertical = new Texture("laserVertical.png");
-		laserHorizontal = new Texture("laserHorizontal.png");
-		bullet = new Texture("bullet.png");
-		bat = new Texture("bat.png");
-		bat1 = new Texture("bat1.png");
-		bat2 = new Texture("bat2.png");
-		bat3 = new Texture("bat3.png");
-		mapEntity = new MapEntity();
-
-		activeMonsters = new ArrayList<>();
-		activeLasers = new ArrayList<>();
-		//activeMonsters.add(new Golem(this));
-		//activeMonsters.add(new Bat(this));
-		//activeMonsters.add(new Bat(this, BAT_INITIAL_X_POSITION + 1, BAT_INITIAL_Y_POSITION + 1));
-		//activeMonsters.add(new Bat(this, BAT_INITIAL_X_POSITION + 2, BAT_INITIAL_Y_POSITION + 2));
-
-		listener = new Listener(this);
-		world.setContactListener(listener);
-		map = new Map(this);
-
-		if (player == null) player = new Player(this);
-
-		camera.position.x = player.body.getPosition().x + PLAYER_SPRITE_WIDTH / 2;
-		camera.position.y = player.body.getPosition().y + PLAYER_SPRITE_HEIGHT / 2;
-		camera.update();
-	}*/
+	}
 	public Vector3 getMousePosition() {
 		return gsm.camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
 	}
 
-	private void step() {
-		double delta = Gdx.graphics.getDeltaTime();
-
+	private void step(float delta) {
 		accumulator += delta;
 		timePassed += delta;
 
@@ -147,11 +108,12 @@ public class MyGame extends State {
 			m.update();
 		}
 	}
-	public void render () {
-		if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
-			gsm.switchState(GameState.Pause);
-		}
-
+	@Override
+	public void render(float delta) {
+		ScreenUtils.clear(0, 0, 0, 1);
+		gsm.vp.apply();
+		gsm.batch.setProjectionMatrix(gsm.camera.combined);
+		gsm.batch.begin();
 		gsm.camera.position.x = player.getBodyCenter().x;
 		gsm.camera.position.y = player.getBodyCenter().y + CAMERA_Y_OFFSET;
 		gsm.camera.update();
@@ -167,14 +129,33 @@ public class MyGame extends State {
 		}
 
 		//debugRenderer.render(world, camera.combined);
+		gsm.batch.end();
 
-		step();
+		step(delta);
+		if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
+			gsm.setScreen(gsm.pause);
+		}
 	}
-
+	@Override
 	public void resize(int width, int height) {
-		//vp.update(width, height);
+		gsm.vp.update(width, height);
 	}
-	
+
+	@Override
+	public void pause() {
+
+	}
+
+	@Override
+	public void resume() {
+
+	}
+
+	@Override
+	public void hide() {
+
+	}
+
 	public void dispose () {
 		atlas.dispose();
 		map.dispose();

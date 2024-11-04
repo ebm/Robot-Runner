@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "tilemap.tmx",
+    "activeFile": "C:/Users/user0/Desktop/TBD/assets/map/tilemap.tmx",
     "automapping.whileDrawing": false,
     "expandedProjectPaths": [
         "."
@@ -19,6 +19,14 @@
         },
         "C:/Users/user0/Desktop/TBD/assets/map/ruleTileset.tsx": {
             "scaleInDock": 1
+        },
+        "C:/Users/user0/Desktop/TBD/assets/map/tilemap.tmx": {
+            "scale": 0.26718749999999997,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 1598.1286549707606,
+                "y": 2586.198830409357
+            }
         },
         "C:/Users/user0/Desktop/TBD/assets/map/tiles.tsx": {
             "scaleInDock": 1
@@ -44,8 +52,8 @@
             "scale": 1.5,
             "selectedLayer": 3,
             "viewCenter": {
-                "x": 498,
-                "y": 319.33333333333337
+                "x": 503.3333333333333,
+                "y": 320
             }
         },
         "ruleTileset.tsx": {
@@ -64,14 +72,14 @@
         },
         "tilemap.tmx": {
             "expandedObjectLayers": [
-                5,
-                19
+                19,
+                5
             ],
             "scale": 0.5,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 4420,
-                "y": 8648
+                "x": 3200,
+                "y": 6400
             }
         },
         "tiles.tsx": {
@@ -92,7 +100,8 @@
         "tilesheet.tsx",
         "rulesheet.tsx",
         "ruleSpawns.tmx",
-        "tilemap.tmx"
+        "tilemap.tmx",
+        "C:/Users/user0/Desktop/TBD/assets/map/tilemap.tmx"
     ],
     "project": "map2.tiled-project",
     "property.type": "bool",
@@ -102,6 +111,7 @@
         "rulesheet.tsx",
         "ruleSpawns.tmx",
         "tilemap.tmx",
+        "C:/Users/user0/Desktop/TBD/assets/map/tilemap.tmx",
         "spawnsheet.tsx",
         "ruleTileset.tsx",
         "C:/Users/user0/Desktop/TBD/assets/map/rule.tmx"
