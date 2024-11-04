@@ -21,7 +21,7 @@ public class Golem extends Monster{
         healthbar = new Healthbar(myGame, this, GOLEM_HEALTH);
 
         createBody(GOLEM_INITIAL_X_POSITION, GOLEM_INITIAL_Y_POSITION);
-        weapon = new RangedWeapon(myGame, this, GOLEM_BULLET_SPEED, GOLEM_BULLET_ATTACK_DAMAGE, GOLEM_BULLET_ATTACKS_PER_SECOND, GOLEM_BULLET_RADIUS);
+        weapon = new RangedWeapon(myGame, this, GOLEM_BULLET_SPEED, GOLEM_BULLET_ATTACK_DAMAGE, GOLEM_BULLET_ATTACKS_PER_SECOND, GOLEM_BULLET_RADIUS, null);
 
         lastJump = 0;
         directionTime = 0;
@@ -31,7 +31,7 @@ public class Golem extends Monster{
         healthbar = new Healthbar(myGame, this, GOLEM_HEALTH);
 
         createBody(initialX, initialY);
-        weapon = new RangedWeapon(myGame, this, GOLEM_BULLET_SPEED, GOLEM_BULLET_ATTACK_DAMAGE, GOLEM_BULLET_ATTACKS_PER_SECOND, GOLEM_BULLET_RADIUS);
+        weapon = new RangedWeapon(myGame, this, GOLEM_BULLET_SPEED, GOLEM_BULLET_ATTACK_DAMAGE, GOLEM_BULLET_ATTACKS_PER_SECOND, GOLEM_BULLET_RADIUS, null);
 
         lastJump = 0;
         directionTime = 0;
@@ -41,7 +41,7 @@ public class Golem extends Monster{
         healthbar = new Healthbar(myGame, this, GOLEM_HEALTH);
 
         createBody(initialX, initialY);
-        weapon = new RangedWeapon(myGame, this, GOLEM_BULLET_SPEED, GOLEM_BULLET_ATTACK_DAMAGE, GOLEM_BULLET_ATTACKS_PER_SECOND, GOLEM_BULLET_RADIUS);
+        weapon = new RangedWeapon(myGame, this, GOLEM_BULLET_SPEED, GOLEM_BULLET_ATTACK_DAMAGE, GOLEM_BULLET_ATTACKS_PER_SECOND, GOLEM_BULLET_RADIUS, null);
 
         if (range != null) this.range = new Range(range, this);
 

@@ -2,6 +2,7 @@ package com.tbd.game.Entities.PlayerPackage;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -55,7 +56,7 @@ public class Player extends Entity {
         combatTimer = 0;
 
         currentState = PlayerState.Still;
-        weapon = new RangedWeapon(myGame, this);
+        weapon = new RangedWeapon(myGame, this, 20, 3, 8, 0.2f * METERS_PER_PIXEL, myGame.playerFireNoise);
 
         // Create Body
         createBody(PLAYER_INITIAL_X_POSITION, PLAYER_INITIAL_Y_POSITION);
@@ -86,7 +87,7 @@ public class Player extends Entity {
         combatTimer = 0;
 
         currentState = PlayerState.Still;
-        weapon = new RangedWeapon(myGame, this);
+        weapon = new RangedWeapon(myGame, this, 20, 3, 8, 0.2f * METERS_PER_PIXEL, myGame.playerFireNoise);
 
         // Create Body
         createBody(initialX, initialY);

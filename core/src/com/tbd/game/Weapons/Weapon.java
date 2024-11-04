@@ -1,5 +1,6 @@
 package com.tbd.game.Weapons;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.tbd.game.Entities.Entity;
@@ -11,6 +12,7 @@ public abstract class Weapon {
     public Entity user;
     public float attackDamage;
     public float attacksPerSecond;
+    public Sound attackSound;
     public Weapon(MyGame myGame, Entity user) {
         this.myGame = myGame;
         this.user = user;

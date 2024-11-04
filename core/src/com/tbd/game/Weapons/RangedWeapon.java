@@ -1,9 +1,11 @@
 package com.tbd.game.Weapons;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.tbd.game.Entities.Entity;
+import com.tbd.game.Entities.PlayerPackage.Player;
 import com.tbd.game.Listener;
 import com.tbd.game.MyGame;
 
@@ -37,13 +39,14 @@ public class RangedWeapon extends Weapon {
         totalBullets = new ArrayList<>();
         lastFired = 0;
     }
-    public RangedWeapon(MyGame myGame, Entity user, float bulletSpeed, float attackDamage, float attacksPerSecond, float bulletRadius) {
+    public RangedWeapon(MyGame myGame, Entity user, float bulletSpeed, float attackDamage, float attacksPerSecond, float bulletRadius, Sound fireSound) {
         super(myGame, user);
 
         this.bulletSpeed = bulletSpeed;
         this.attackDamage = attackDamage;
         this.attacksPerSecond = attacksPerSecond;
         this.bulletRadius = bulletRadius;
+        this.attackSound = fireSound;
 
         totalBullets = new ArrayList<>();
         lastFired = 0;
@@ -69,6 +72,7 @@ public class RangedWeapon extends Weapon {
             newBullet.body.setLinearVelocity(bulletSpeed / hypotenuse * diffX,bulletSpeed / hypotenuse * diffY);
             totalBullets.add(newBullet);
             lastFired = myGame.timePassed;
+            attackSound.play();
         }
     }
     /*public Vector2 calculatePrediction(Entity e) {
@@ -152,6 +156,9 @@ public class RangedWeapon extends Weapon {
             Weapon weapon = (Weapon) weaponFixture.getUserData();
             if (contactFixture.getUserData() == null || weapon.user.getClass() != contactFixture.getUserData().getClass()) {
                 if (weapon.user.enemy.isInstance(contactFixture.getUserData())) {
+                    if (weapon.user.getClass() == Player.class) {
+                        myGame.playerHitmarkerNoise.play();
+                    }
                     //System.out.println(fixtureA.getUserData() + ", " + fixtureB.getUserData() + " | " + contactFixture.getUserData());
                     Entity e = (Entity) contactFixture.getUserData();
                     if (weapon.getClass() == BodyWeapon.class) {

@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -50,6 +51,8 @@ public class MyGame implements Screen {
 	public Texture bat2;
 	public Texture bat3;
 	public TextureAtlas healthbarAtlas;
+	public Sound playerFireNoise;
+	public Sound playerHitmarkerNoise;
 	boolean canEscape;
 	public MyGame(GameStateManager gsm) {
 		this.gsm = gsm;
@@ -72,6 +75,8 @@ public class MyGame implements Screen {
 		bat1 = new Texture("bat1.png");
 		bat2 = new Texture("bat2.png");
 		bat3 = new Texture("bat3.png");
+		playerFireNoise = Gdx.audio.newSound(Gdx.files.internal("fire.mp3"));
+		playerHitmarkerNoise = Gdx.audio.newSound(Gdx.files.internal("hitmarker.mp3"));
 		mapEntity = new MapEntity();
 
 		activeMonsters = new ArrayList<>();
