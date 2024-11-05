@@ -80,7 +80,7 @@ public class Map {
                     Direction dir = Direction.parseDirection((String) mapObject.getProperties().get("Laser"));
                     myGame.activeLasers.add(new Laser(myGame, dir, rectangleMapObject.getRectangle().x * UNIT_SCALE, rectangleMapObject.getRectangle().y * UNIT_SCALE));
                 } else if (mapObject.getProperties().containsKey("GolemArmorItem")) {
-                    myGame.createItem(ItemType.GolemArmor,rectangleMapObject.getRectangle().x * UNIT_SCALE, rectangleMapObject.getRectangle().y * UNIT_SCALE);
+                    myGame.itemMapManager.addItem(new Armor(0.8f, myGame.itemMapManager.getID(),rectangleMapObject.getRectangle().x * UNIT_SCALE, rectangleMapObject.getRectangle().y * UNIT_SCALE, myGame.rockArmor, myGame));
                 }
             }
         }

@@ -53,6 +53,10 @@ public class MyGame implements Screen {
 	public TextureAtlas healthbarAtlas;
 	public Texture slot;
 	public Texture rockArmor;
+	public Texture armorIcon;
+	public Texture abilityIcon;
+	public Texture bootsIcon;
+	public Texture attributeIcon;
 	public Sound playerFireNoise;
 	public Sound playerHitmarkerNoise;
 	boolean canEscape;
@@ -95,6 +99,10 @@ public class MyGame implements Screen {
 		bat3 = new Texture("bat3.png");
 		slot = new Texture("slot.png");
 		rockArmor = new Texture("rock_armor.png");
+		armorIcon = new Texture("armorIcon.png");
+		attributeIcon = new Texture("attributeIcon.png");
+		bootsIcon = new Texture("bootsIcon.png");
+		abilityIcon = new Texture("abilityIcon.png");
 		playerFireNoise = Gdx.audio.newSound(Gdx.files.internal("fire.mp3"));
 		playerHitmarkerNoise = Gdx.audio.newSound(Gdx.files.internal("hitmarker.mp3"));
 
@@ -120,9 +128,6 @@ public class MyGame implements Screen {
 	}
 	public Vector3 getMousePosition() {
 		return gsm.camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
-	}
-	public void createItem(ItemType itemType, float x, float y) {
-		itemMapManager.createItem(itemType, x, y);
 	}
 
 	private void step(float delta) {
@@ -165,10 +170,6 @@ public class MyGame implements Screen {
 
 		stage.act();
 		stage.draw();
-
-		gsm.batch.begin();
-		if (player.inventory.open) player.inventory.render();
-		gsm.batch.end();
 
 		step(delta);
 		if (!Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {

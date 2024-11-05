@@ -13,23 +13,16 @@ public class Item {
     public ItemType itemType;
     public Body body;
     public Texture itemTexture;
-    public Item(int id, ItemType itemType, Body body, MyGame myGame) {
-        this.id = id;
-        this.myGame = myGame;
-        this.itemType = itemType;
-        this.body = body;
-        itemTexture = ItemType.getTexture(itemType, myGame);
-    }
-    public Item(int id, ItemType itemType, float x, float y, MyGame myGame) {
+    public Item(int id, ItemType itemType, float x, float y, Texture itemTexture, MyGame myGame) {
         this.id = id;
         this.myGame = myGame;
         this.itemType = itemType;
         createBody(x, y);
-        itemTexture = ItemType.getTexture(itemType, myGame);
+        this.itemTexture = itemTexture;
     }
     public void createBody(float x, float y) {
         BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.DynamicBody;
+        bodyDef.type = BodyDef.BodyType.StaticBody;
         //bodyDef.position.set(INITIAL_X_POSITION, INITIAL_Y_POSITION);
 
         body = myGame.world.createBody(bodyDef);
@@ -40,10 +33,10 @@ public class Item {
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = polygon;
-        fixtureDef.density = 1f;
-        fixtureDef.friction = 500f;
-        fixtureDef.restitution = 0f;
-        //fixtureDef.isSensor = true;
+        //fixtureDef.density = 1f;
+        //fixtureDef.friction = 500f;
+        //fixtureDef.restitution = 0f;
+        fixtureDef.isSensor = true;
 
         body.createFixture(fixtureDef).setUserData(this);
         body.setFixedRotation(true);

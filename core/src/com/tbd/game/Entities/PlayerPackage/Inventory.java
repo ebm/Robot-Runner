@@ -3,6 +3,7 @@ package com.tbd.game.Entities.PlayerPackage;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
@@ -20,25 +21,28 @@ public class Inventory {
     MyGame myGame;
     public boolean open;
     Item[] inventoryItems;
-    /**
-     * Helmet = 0
-     * Armor = 1
-     * Boots = 2
-     * Attribute = 3
-     */
-    public final int HELMET_POSITION = 0;
-    public final int ARMOR_POSITION = 1;
-    public final int BOOTS_POSITION = 2;
-    public final int ATTRIBUTE_POSITION = 3;
-    Item[] attributes;
     Table table;
     boolean canEscape;
     Item currentSelection;
     int selectionNumber;
+    Image selectedImage;
+    public ItemType getItemType(int index) {
+        if (index == 0) return ItemType.Ability;
+        if (index == 1) return ItemType.Armor;
+        if (index == 2) return ItemType.Boots;
+        if (index == 3) return ItemType.Attribute;
+        return ItemType.Any;
+    }
+    public Texture getItemTexture(int index) {
+        if (index == 0) return myGame.abilityIcon;
+        if (index == 1) return myGame.armorIcon;
+        if (index == 2) return myGame.bootsIcon;
+        if (index == 3) return myGame.attributeIcon;
+        return null;
+    }
     public Inventory(MyGame myGame) {
         this.myGame = myGame;
-        inventoryItems = new Item[PLAYER_INVENTORY_SPACE];
-        attributes = new Item[PLAYER_ATTRIBUTE_SPACE];
+        inventoryItems = new Item[PLAYER_INVENTORY_SPACE + PLAYER_ATTRIBUTE_SPACE];
 
         currentSelection = null;
         selectionNumber = -1;
@@ -47,6 +51,24 @@ public class Inventory {
         table.setFillParent(true);
         table.setDebug(true);
         //table.setName("Table");
+        for (int i = 0; i < PLAYER_ATTRIBUTE_SPACE; i++) {
+            Image image = new Image(myGame.slot);
+            //image.setName("Image");
+            image.setTouchable(Touchable.disabled);
+            Stack overlay = new Stack(image);
+            Image typeImage = new Image(getItemTexture(i));
+            typeImage.setTouchable(Touchable.disabled);
+            Container<Image> container = new Container<>(typeImage);
+            container.size(50,50);
+            overlay.add(container);
+            overlay.setTouchable(Touchable.enabled);
+            //overlay.setName("Overlay");
+            overlay.setUserObject(i);
+            Cell<Stack> cell = table.add(overlay).maxHeight(80).maxWidth(80);
+            cell.minHeight(80).minWidth(80);
+            cell.pad(5, 5, 50, 5);
+        }
+        table.row();
         int rows = 3;
         int cols = 4;
         for (int i = 0; i < rows; i++) {
@@ -57,33 +79,36 @@ public class Inventory {
                 Stack overlay = new Stack(image);
                 overlay.setTouchable(Touchable.enabled);
                 //overlay.setName("Overlay");
-                overlay.setUserObject(i * cols + j);
+                overlay.setUserObject(i * cols + j + PLAYER_ATTRIBUTE_SPACE);
                 Cell<Stack> cell = table.add(overlay).maxHeight(80).maxWidth(80);
                 cell.minHeight(80).minWidth(80);
                 cell.pad(5, 5, 5, 5);
             }
             table.row();
         }
-        table.addListener(new InputListener() {
+        table.addListener(new ClickListener() {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 Actor actor = table.hit(x, y, true);
-                if (actor == null) return false;
+                if (actor == null || button != Input.Buttons.LEFT) return false;
                 int selection = (int) actor.getUserObject();
-                //System.out.println("down " + (selection));
+                System.out.println("down " + (selection));
                 if (inventoryItems[selection] != null) {
                     selectionNumber = selection;
                     currentSelection = inventoryItems[selectionNumber];
                     removeItem(currentSelection, selectionNumber);
+                    selectedImage = new Image(currentSelection.itemTexture);
+                    selectedImage.setSize(50, 50);
+                    myGame.stage.addActor(selectedImage);
                 }
                 return true;
             }
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 Actor actor = table.hit(x, y, true);
-                if (actor == null) return;
+                if (actor == null || button != Input.Buttons.LEFT) return;
                 int selection = (int) actor.getUserObject();
-                //System.out.println("up " + (selection));
+                System.out.println("up " + (selection));
                 if (currentSelection == null) return;
-                if (inventoryItems[selection] == null) {
+                if (inventoryItems[selection] == null && (getItemType(selection) == currentSelection.itemType || getItemType(selection) == ItemType.Any)) {
                     addItem(currentSelection, selection);
                     currentSelection = null;
                     selectionNumber = -1;
@@ -92,6 +117,7 @@ public class Inventory {
                     currentSelection = null;
                     selectionNumber = -1;
                 }
+                myGame.stage.getActors().removeValue(selectedImage, true);
             }
         });
         open = false;
@@ -104,24 +130,20 @@ public class Inventory {
         //    }
         //}
         if (index == -1) {
-            for (int i = 0; i < PLAYER_INVENTORY_SPACE; i++) {
-                if (inventoryItems[i] == null) {
+            for (int i = 0; i < PLAYER_INVENTORY_SPACE + PLAYER_ATTRIBUTE_SPACE; i++) {
+                if (inventoryItems[i] == null && (getItemType(i) == item.itemType || getItemType(i) == ItemType.Any)) {
                     index = i;
                     break;
                 }
             }
         }
-        if (index == -1) return false;
+        if (index == -1 || !(getItemType(index) == item.itemType || getItemType(index) == ItemType.Any)) return false;
         inventoryItems[index] = item;
         Image image = new Image(item.itemTexture);
-        image.setOrigin(Align.center);
-        image.setScale(0.4f);
         image.setTouchable(Touchable.disabled);
         Container<Image> container = new Container<>(image);
-        container.setTransform(true);
-        container.align(Align.center);
+        container.size(50,50);
         item.body.setActive(false);
-        container.pad(-20);
         ((Stack) table.getCells().get(index).getActor()).add(container);
 
         return true;
@@ -192,13 +214,19 @@ public class Inventory {
             canEscape = true;
         }
         if (canEscape && Gdx.input.isKeyPressed(Input.Keys.E)) {
+            if (currentSelection != null) {
+                addItem(currentSelection, selectionNumber);
+                currentSelection = null;
+                selectionNumber = -1;
+                myGame.stage.getActors().removeValue(selectedImage, true);
+            }
             setOpen(false);
         }
         if (currentSelection != null) {
-            currentSelection.render(myGame.getMousePosition().x, myGame.getMousePosition().y);
+            Vector2 pos = myGame.stage.screenToStageCoordinates(new Vector2(Gdx.input.getX(), Gdx.input.getY()));
+            selectedImage.setPosition(pos.x - selectedImage.getWidth() / 2, pos.y - selectedImage.getHeight() / 2);
+            //currentSelection.render(myGame.getMousePosition().x, myGame.getMousePosition().y);
             if (!Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
-                System.out.println(selectionNumber);
-                System.out.println(currentSelection);
                 Direction direction;
                 if (myGame.getMousePosition().x > myGame.player.getBodyCenter().x) {
                     direction = Direction.Right;
@@ -206,6 +234,7 @@ public class Inventory {
                 dropItem(currentSelection, direction);
                 currentSelection = null;
                 selectionNumber = -1;
+                myGame.stage.getActors().removeValue(selectedImage, true);
             }
             //myGame.batch.draw(currentSelection.itemTexture, Gdx.input.getX(), Gdx.input.getY(), 50, 50);
         }
