@@ -35,8 +35,9 @@ public class Constants {
     public static int PLAYER_MAXIMUM_JUMPS = 2;
     public static float PLAYER_HORIZONTAL_OFFSET = 5 * UNIT_SCALE;
     public static float PLAYER_VERTICAL_OFFSET = 2 * UNIT_SCALE;
-    public static float PLAYER_SECONDS_TILL_REGEN = 5;
+    public static float PLAYER_COMBAT_TIMER = 5;
     public static float PLAYER_HEALTH_REGEN_PER_SEC = 20;
+    public static float PLAYER_DASH_COOLDOWN = 3;
 
     // Bullet
     public static float BULLET_DESPAWN_HITBOX = 1/5f;

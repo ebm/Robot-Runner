@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class Pause implements Screen {
     GameStateManager gsm;
@@ -21,7 +22,7 @@ public class Pause implements Screen {
     public Pause(GameStateManager gsm) {
         this.gsm = gsm;
 
-        stage = new Stage();
+        stage = new Stage(new ScreenViewport());
         table = new Table();
         table.setFillParent(true);
         table.setDebug(true);
@@ -71,8 +72,7 @@ public class Pause implements Screen {
     @Override
     public void resize(int width, int height) {
         //gsm.vp.update(width, height, true);
-        gsm.vp.update(width, height);
-        stage.getViewport().update(width, height);
+        stage.getViewport().update(width, height, true);
     }
 
     @Override

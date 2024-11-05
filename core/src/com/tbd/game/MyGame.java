@@ -13,6 +13,10 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.*;
 import com.tbd.game.Entities.MapEntity;
@@ -54,9 +58,22 @@ public class MyGame implements Screen {
 	public Sound playerFireNoise;
 	public Sound playerHitmarkerNoise;
 	boolean canEscape;
+	public Stage stage;
+	public Table table;
+	public LabelStyle labelStyle;
 	public MyGame(GameStateManager gsm) {
 		this.gsm = gsm;
 		batch = gsm.batch;
+
+		stage = new Stage(new ScreenViewport());
+		table = new Table();
+		table.setFillParent(true);
+		table.setDebug(true);
+		stage.addActor(table);
+		labelStyle = new Label.LabelStyle();
+		labelStyle.font = gsm.font;
+		table.bottom();
+		table.right();
 
 		Box2D.init();
 		atlas = new TextureAtlas("game_atlas.atlas");
@@ -90,7 +107,7 @@ public class MyGame implements Screen {
 		world.setContactListener(listener);
 		map = new Map(this);
 
-		if (player == null) player = new Player(this);
+		if (player == null) player = new Player(this, PLAYER_INITIAL_X_POSITION, PLAYER_INITIAL_Y_POSITION);
 		canEscape = false;
 	}
 	@Override
@@ -134,10 +151,11 @@ public class MyGame implements Screen {
 		for (Laser l : activeLasers) {
 			l.render();
 		}
-
 		//debugRenderer.render(world, camera.combined);
 		gsm.batch.end();
 
+		stage.act();
+		stage.draw();
 		step(delta);
 		if (!Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
 			canEscape = true;
@@ -149,6 +167,7 @@ public class MyGame implements Screen {
 	@Override
 	public void resize(int width, int height) {
 		gsm.vp.update(width, height);
+		stage.getViewport().update(width, height, true);
 	}
 
 	@Override

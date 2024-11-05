@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.tbd.game.Entities.Entity;
 import com.tbd.game.Entities.Healthbar;
 import com.tbd.game.Entities.MonsterPackage.Monster;
@@ -41,37 +42,9 @@ public class Player extends Entity {
     Animation<TextureRegion> still;
     float timePassed;
     Weapon weapon;
-
-    public Player(MyGame myGame) {
-        this.myGame = myGame;
-        touchingFloor = false;
-        touchingRightWall = false;
-        touchingLeftWall = false;
-        canJump = false;
-        wallClimbFinished = false;
-        wallClimbTime = 0;
-        dashFinished = false;
-        dashTime = 0;
-        lastDash = 0;
-        combatTimer = 0;
-
-        currentState = PlayerState.Still;
-        weapon = new RangedWeapon(myGame, this, 20, 3, 8, 0.2f * METERS_PER_PIXEL, myGame.playerFireNoise);
-
-        // Create Body
-        createBody(PLAYER_INITIAL_X_POSITION, PLAYER_INITIAL_Y_POSITION);
-        // Create Sensors
-        createFeet();
-        createLeftArm();
-        createRightArm();
-
-        createAnimations();
-
-        health = PLAYER_HEALTH;
-        friendly = Player.class;
-        enemy = Monster.class;
-        healthbar = new Healthbar(myGame, this, health);
-    }
+    public Label healthLabel;
+    public Label dashCooldownLabel;
+    public Label combatLabel;
 
     public Player(MyGame myGame, float initialX, float initialY) {
         this.myGame = myGame;
@@ -102,6 +75,15 @@ public class Player extends Entity {
         friendly = Player.class;
         enemy = Monster.class;
         healthbar = new Healthbar(myGame, this, health);
+
+        healthLabel = new Label("Health: " + (int) health + " / " + (int) PLAYER_HEALTH, myGame.labelStyle);
+        dashCooldownLabel = new Label("Dash CD: " + Math.max((int) Math.ceil((PLAYER_DASH_COOLDOWN - (myGame.timePassed - dashTime))), 0), myGame.labelStyle);
+        combatLabel = new Label("Combat Timer: " + Math.max((int) Math.ceil((PLAYER_COMBAT_TIMER - (myGame.timePassed - combatTimer))), 0), myGame.labelStyle);
+
+        myGame.table.add(combatLabel);
+        myGame.table.add(dashCooldownLabel).pad(5);
+        myGame.table.pad(5);
+        myGame.table.add(healthLabel);
     }
 
     private void createBody(float initialX, float initialY) {
@@ -251,7 +233,7 @@ public class Player extends Entity {
             if (wallClimbTime != 0) wallClimbFinished = true;
         }
         // Dash
-        if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) && (myGame.timePassed - dashTime) > 3) {
+        if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) && (myGame.timePassed - dashTime) > PLAYER_DASH_COOLDOWN) {
             float dashXVelocity = body.getLinearVelocity().x;
             float dashYVelocity = PLAYER_DASH_VERTICAL_VELOCITY;
             if (currentState == PlayerState.WalkingLeft) {
@@ -273,10 +255,13 @@ public class Player extends Entity {
     @Override
     public void render() {
         weapon.render();
-        if (health < PLAYER_HEALTH && (myGame.timePassed - combatTimer) > PLAYER_SECONDS_TILL_REGEN) {
+        if (health < PLAYER_HEALTH && (myGame.timePassed - combatTimer) > PLAYER_COMBAT_TIMER) {
             health += Gdx.graphics.getDeltaTime() * PLAYER_HEALTH_REGEN_PER_SEC;
             if (health >= 100) health = 100;
         }
+        healthLabel.setText("Health: " + (int) health + " / " + (int) PLAYER_HEALTH);
+        dashCooldownLabel.setText("Dash CD: " + Math.max((int) Math.ceil((PLAYER_DASH_COOLDOWN - (myGame.timePassed - dashTime))), 0));
+        combatLabel.setText("Combat Timer: " + Math.max((int) Math.ceil((PLAYER_COMBAT_TIMER - (myGame.timePassed - combatTimer))), 0));
         timePassed += Gdx.graphics.getDeltaTime();
         TextureRegion currentFrame;
         if (currentState == PlayerState.WalkingLeft) {
@@ -299,7 +284,8 @@ public class Player extends Entity {
     public void death() {
         super.death();
         myGame.listener.resetContacts();
-        myGame.player = new Player(myGame);
+        myGame.table.clear();
+        myGame.player = new Player(myGame, PLAYER_INITIAL_X_POSITION, PLAYER_INITIAL_Y_POSITION);
     }
     public static void handleContact(Fixture fixtureA, Fixture fixtureB, boolean beginContact, MyGame myGame) {
         BodyPart bp = null;

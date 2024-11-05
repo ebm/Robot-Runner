@@ -9,12 +9,16 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class Menu implements Screen {
     GameStateManager gsm;
@@ -23,7 +27,7 @@ public class Menu implements Screen {
     public Menu(GameStateManager gsm) {
         this.gsm = gsm;
 
-        stage = new Stage();
+        stage = new Stage(new ScreenViewport());
         table = new Table();
         table.setFillParent(true);
         table.setDebug(true);
@@ -44,6 +48,11 @@ public class Menu implements Screen {
                 gsm.setScreen(gsm.myGame);
             }
         });
+        LabelStyle labelStyle = new LabelStyle();
+        labelStyle.font = gsm.font;
+        Label label = new Label("Game", labelStyle);
+        table.add(label).padBottom(30);
+        table.row();
         table.add(textButton);
     }
     @Override
@@ -55,10 +64,10 @@ public class Menu implements Screen {
     public void render(float v) {
         ScreenUtils.clear(0, 0, 0, 1);
         gsm.batch.setProjectionMatrix(gsm.camera.combined);
-        gsm.batch.begin();
+        //gsm.batch.begin();
+        //gsm.batch.end();
         stage.act();
         stage.draw();
-        gsm.batch.end();
         if (Gdx.input.isKeyPressed(Input.Keys.ENTER)) {
             gsm.setScreen(gsm.myGame);
         }
@@ -67,8 +76,7 @@ public class Menu implements Screen {
     @Override
     public void resize(int width, int height) {
         //gsm.vp.update(width, height, true);
-        gsm.vp.update(width, height);
-        stage.getViewport().update(width, height);
+        stage.getViewport().update(width, height, true);
     }
 
     @Override
