@@ -266,7 +266,6 @@ public class Player extends Entity {
     @Override
     public void render() {
         weapon.render();
-        if (inventory.open) inventory.render();
         if (health < PLAYER_HEALTH && (myGame.timePassed - combatTimer) > PLAYER_COMBAT_TIMER) {
             health += Gdx.graphics.getDeltaTime() * PLAYER_HEALTH_REGEN_PER_SEC;
             if (health >= 100) health = 100;

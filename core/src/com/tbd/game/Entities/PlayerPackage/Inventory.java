@@ -6,13 +6,11 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import com.badlogic.gdx.scenes.scene2d.ui.Container;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Stack;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.utils.Align;
+import com.tbd.game.Direction;
 import com.tbd.game.Item;
 import com.tbd.game.ItemType;
 import com.tbd.game.MyGame;
@@ -37,7 +35,6 @@ public class Inventory {
     boolean canEscape;
     Item currentSelection;
     int selectionNumber;
-    int oldNumber;
     public Inventory(MyGame myGame) {
         this.myGame = myGame;
         inventoryItems = new Item[PLAYER_INVENTORY_SPACE];
@@ -45,7 +42,6 @@ public class Inventory {
 
         currentSelection = null;
         selectionNumber = -1;
-        oldNumber = -1;
 
         table = new Table();
         table.setFillParent(true);
@@ -62,7 +58,9 @@ public class Inventory {
                 overlay.setTouchable(Touchable.enabled);
                 //overlay.setName("Overlay");
                 overlay.setUserObject(i * cols + j);
-                table.add(overlay).maxHeight(100).maxWidth(100);
+                Cell<Stack> cell = table.add(overlay).maxHeight(80).maxWidth(80);
+                cell.minHeight(80).minWidth(80);
+                cell.pad(5, 5, 5, 5);
             }
             table.row();
         }
@@ -150,9 +148,13 @@ public class Inventory {
         ((Stack) table.getCells().get(index).getActor()).getChildren().pop();
         return true;
     }
-    public boolean dropItem(Item item) {
+    public boolean dropItem(Item item, Direction dir) {
         item.body.setActive(true);
-        item.body.setTransform(myGame.player.body.getPosition().x - 2, myGame.player.body.getPosition().y, 0);
+        if (dir == Direction.Right) {
+            item.body.setTransform(myGame.player.body.getPosition().x + 1.5f, myGame.player.body.getPosition().y, 0);
+        } else {
+            item.body.setTransform(myGame.player.body.getPosition().x - 1.5f, myGame.player.body.getPosition().y, 0);
+        }
         myGame.itemMapManager.addItem(item);
         return true;
     }
@@ -197,7 +199,11 @@ public class Inventory {
             if (!Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
                 System.out.println(selectionNumber);
                 System.out.println(currentSelection);
-                dropItem(currentSelection);
+                Direction direction;
+                if (myGame.getMousePosition().x > myGame.player.getBodyCenter().x) {
+                    direction = Direction.Right;
+                } else direction = Direction.Left;
+                dropItem(currentSelection, direction);
                 currentSelection = null;
                 selectionNumber = -1;
             }

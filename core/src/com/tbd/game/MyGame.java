@@ -93,7 +93,7 @@ public class MyGame implements Screen {
 		bat1 = new Texture("bat1.png");
 		bat2 = new Texture("bat2.png");
 		bat3 = new Texture("bat3.png");
-		slot = new Texture("slot.jpg");
+		slot = new Texture("slot.png");
 		rockArmor = new Texture("rock_armor.png");
 		playerFireNoise = Gdx.audio.newSound(Gdx.files.internal("fire.mp3"));
 		playerHitmarkerNoise = Gdx.audio.newSound(Gdx.files.internal("hitmarker.mp3"));
@@ -160,9 +160,16 @@ public class MyGame implements Screen {
 		}
 		itemMapManager.render();
 		gsm.batch.end();
+
 		debugRenderer.render(world, gsm.camera.combined);
+
 		stage.act();
 		stage.draw();
+
+		gsm.batch.begin();
+		if (player.inventory.open) player.inventory.render();
+		gsm.batch.end();
+
 		step(delta);
 		if (!Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
 			canEscape = true;
