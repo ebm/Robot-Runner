@@ -7,7 +7,7 @@ import com.tbd.game.Entities.PlayerPackage.Player;
 
 import static com.tbd.game.Constants.METERS_PER_PIXEL;
 
-public class Item {
+public abstract class Item {
     public MyGame myGame;
     public int id;
     public ItemType itemType;
@@ -45,11 +45,9 @@ public class Item {
 
         body.setTransform(x, y, 0);
     }
+    public abstract void apply();
     public void render() {
         myGame.batch.draw(itemTexture, body.getPosition().x, body.getPosition().y, 1 * METERS_PER_PIXEL, 1 * METERS_PER_PIXEL);
-    }
-    public void render(float x, float y) {
-        myGame.batch.draw(itemTexture, x - 1.5f, y - 1.5f, 3 * METERS_PER_PIXEL, 3 * METERS_PER_PIXEL);
     }
     public static void handleContact(Fixture fixtureA, Fixture fixtureB, boolean beginContact, MyGame myGame) {
         if (!beginContact) return;

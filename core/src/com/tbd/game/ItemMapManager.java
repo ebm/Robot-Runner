@@ -17,9 +17,6 @@ public class ItemMapManager {
         itemsOnMap = new ArrayList<>();
         id = 0;
     }
-    public void createItem(ItemType itemType, float x, float y, Texture itemTexture) {
-        itemsOnMap.add(new Item(id++, itemType, x, y, itemTexture, myGame));
-    }
     public int getID() {
         return id++;
     }

@@ -209,6 +209,14 @@ public class Inventory {
             table.addAction(Actions.removeActor());
         }
     }
+    public void applyMultipliers() {
+        myGame.player.resetMultipliers();
+        for (int i = 0; i < PLAYER_ATTRIBUTE_SPACE; i++) {
+            if (inventoryItems[i] != null) {
+                inventoryItems[i].apply();
+            }
+        }
+    }
     public void render() {
         if (!Gdx.input.isKeyPressed(Input.Keys.E)) {
             canEscape = true;

@@ -81,6 +81,8 @@ public class Map {
                     myGame.activeLasers.add(new Laser(myGame, dir, rectangleMapObject.getRectangle().x * UNIT_SCALE, rectangleMapObject.getRectangle().y * UNIT_SCALE));
                 } else if (mapObject.getProperties().containsKey("GolemArmorItem")) {
                     myGame.itemMapManager.addItem(new Armor(0.8f, myGame.itemMapManager.getID(),rectangleMapObject.getRectangle().x * UNIT_SCALE, rectangleMapObject.getRectangle().y * UNIT_SCALE, myGame.rockArmor, myGame));
+                } else if (mapObject.getProperties().containsKey("BootsFastItem")) {
+                    myGame.itemMapManager.addItem(new Boots(1.2f, myGame.itemMapManager.getID(),rectangleMapObject.getRectangle().x * UNIT_SCALE, rectangleMapObject.getRectangle().y * UNIT_SCALE, myGame.fastBoots, myGame));
                 }
             }
         }

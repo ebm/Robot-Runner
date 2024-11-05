@@ -53,6 +53,7 @@ public class MyGame implements Screen {
 	public TextureAtlas healthbarAtlas;
 	public Texture slot;
 	public Texture rockArmor;
+	public Texture fastBoots;
 	public Texture armorIcon;
 	public Texture abilityIcon;
 	public Texture bootsIcon;
@@ -99,6 +100,7 @@ public class MyGame implements Screen {
 		bat3 = new Texture("bat3.png");
 		slot = new Texture("slot.png");
 		rockArmor = new Texture("rock_armor.png");
+		fastBoots = new Texture("boots_fast.png");
 		armorIcon = new Texture("armorIcon.png");
 		attributeIcon = new Texture("attributeIcon.png");
 		bootsIcon = new Texture("bootsIcon.png");

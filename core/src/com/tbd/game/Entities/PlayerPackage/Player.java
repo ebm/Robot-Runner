@@ -46,6 +46,8 @@ public class Player extends Entity {
     public Label combatLabel;
     public Inventory inventory;
     public boolean canOpenInventory;
+    public float dmgTakenMultiplier;
+    public float speedMultiplier;
     public Player(MyGame myGame, float initialX, float initialY) {
         this.myGame = myGame;
         touchingFloor = false;
@@ -87,6 +89,9 @@ public class Player extends Entity {
 
         inventory = new Inventory(myGame);
         canOpenInventory = false;
+
+        speedMultiplier = 1;
+        dmgTakenMultiplier = 1;
     }
 
     private void createBody(float initialX, float initialY) {
@@ -173,8 +178,12 @@ public class Player extends Entity {
     public Vector2 getBodyCenter() {
         return new Vector2(body.getPosition().x - PLAYER_HORIZONTAL_OFFSET + PLAYER_SPRITE_WIDTH / 2, body.getPosition().y - PLAYER_VERTICAL_OFFSET + PLAYER_SPRITE_HEIGHT / 2);
     }
-
+    public void resetMultipliers() {
+        speedMultiplier = 1;
+        dmgTakenMultiplier = 1;
+    }
     public void update() {
+        inventory.applyMultipliers();
         currentState = PlayerState.Still;
         // ON GROUND
         if (touchingFloor) {
@@ -195,9 +204,9 @@ public class Player extends Entity {
         // LEFT
         if (Gdx.input.isKeyPressed(Input.Keys.A) && !Gdx.input.isKeyPressed(Input.Keys.D)) {
             if (touchingFloor) {
-                body.setLinearVelocity(-PLAYER_HORIZONTAL_VELOCITY, body.getLinearVelocity().y);
+                body.setLinearVelocity(-PLAYER_HORIZONTAL_VELOCITY * speedMultiplier, body.getLinearVelocity().y);
             } else {
-                if (body.getLinearVelocity().x - PLAYER_HORIZONTAL_AIR_ACCELERATION > -PLAYER_MAXIMUM_HORIZONTAL_AIR_VELOCITY) {
+                if (body.getLinearVelocity().x - PLAYER_HORIZONTAL_AIR_ACCELERATION > -PLAYER_MAXIMUM_HORIZONTAL_AIR_VELOCITY * speedMultiplier) {
                     body.setLinearVelocity(body.getLinearVelocity().x - PLAYER_HORIZONTAL_AIR_ACCELERATION, body.getLinearVelocity().y);
                 }
             }
@@ -206,9 +215,9 @@ public class Player extends Entity {
         // RIGHT
         if (Gdx.input.isKeyPressed(Input.Keys.D) && !Gdx.input.isKeyPressed(Input.Keys.A)) {
             if (touchingFloor) {
-                body.setLinearVelocity(PLAYER_HORIZONTAL_VELOCITY, body.getLinearVelocity().y);
+                body.setLinearVelocity(PLAYER_HORIZONTAL_VELOCITY * speedMultiplier, body.getLinearVelocity().y);
             } else {
-                if (body.getLinearVelocity().x + PLAYER_HORIZONTAL_AIR_ACCELERATION < PLAYER_MAXIMUM_HORIZONTAL_AIR_VELOCITY) {
+                if (body.getLinearVelocity().x + PLAYER_HORIZONTAL_AIR_ACCELERATION < PLAYER_MAXIMUM_HORIZONTAL_AIR_VELOCITY * speedMultiplier) {
                     body.setLinearVelocity(body.getLinearVelocity().x + PLAYER_HORIZONTAL_AIR_ACCELERATION, body.getLinearVelocity().y);
                 }
             }
@@ -219,9 +228,9 @@ public class Player extends Entity {
             body.setTransform(body.getPosition().x, body.getPosition().y + UNIT_SCALE, 0);
             body.setLinearVelocity(body.getLinearVelocity().x, PLAYER_JUMP_VELOCITY);
             if (currentState == PlayerState.WalkingLeft) {
-                body.setLinearVelocity(-PLAYER_HORIZONTAL_VELOCITY, body.getLinearVelocity().y);
+                body.setLinearVelocity(-PLAYER_HORIZONTAL_VELOCITY * speedMultiplier, body.getLinearVelocity().y);
             } else if (currentState == PlayerState.WalkingRight) {
-                body.setLinearVelocity(PLAYER_HORIZONTAL_VELOCITY, body.getLinearVelocity().y);
+                body.setLinearVelocity(PLAYER_HORIZONTAL_VELOCITY * speedMultiplier, body.getLinearVelocity().y);
             }
             remainingJumps--;
             canJump = false;
@@ -248,9 +257,9 @@ public class Player extends Entity {
             float dashXVelocity = body.getLinearVelocity().x;
             float dashYVelocity = PLAYER_DASH_VERTICAL_VELOCITY;
             if (currentState == PlayerState.WalkingLeft) {
-                dashXVelocity = -PLAYER_DASH_HORIZONTAL_VELOCITY;
+                dashXVelocity = -PLAYER_DASH_HORIZONTAL_VELOCITY * speedMultiplier;
             } else if (currentState == PlayerState.WalkingRight) {
-                dashXVelocity = PLAYER_DASH_HORIZONTAL_VELOCITY;
+                dashXVelocity = PLAYER_DASH_HORIZONTAL_VELOCITY * speedMultiplier;
             }
             body.setTransform(body.getPosition().x, body.getPosition().y + UNIT_SCALE, 0);
             body.setLinearVelocity(dashXVelocity, dashYVelocity);
@@ -289,7 +298,7 @@ public class Player extends Entity {
     }
     @Override
     public void takeDamage(float damage) {
-        super.takeDamage(damage);
+        super.takeDamage(damage * dmgTakenMultiplier);
         combatTimer = myGame.timePassed;
     }
     @Override
