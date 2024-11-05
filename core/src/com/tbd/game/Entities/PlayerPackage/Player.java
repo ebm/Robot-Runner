@@ -2,7 +2,6 @@ package com.tbd.game.Entities.PlayerPackage;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -45,7 +44,8 @@ public class Player extends Entity {
     public Label healthLabel;
     public Label dashCooldownLabel;
     public Label combatLabel;
-
+    public Inventory inventory;
+    public boolean canOpenInventory;
     public Player(MyGame myGame, float initialX, float initialY) {
         this.myGame = myGame;
         touchingFloor = false;
@@ -84,6 +84,9 @@ public class Player extends Entity {
         myGame.table.add(dashCooldownLabel).pad(5);
         myGame.table.pad(5);
         myGame.table.add(healthLabel);
+
+        inventory = new Inventory(myGame);
+        canOpenInventory = false;
     }
 
     private void createBody(float initialX, float initialY) {
@@ -181,6 +184,14 @@ public class Player extends Entity {
             wallClimbTime = 0;
             //canJump = true; // enable this to allow user to hold spacebar to continuously jump
         }
+        if (inventory.open) {
+            return;
+        } else if (canOpenInventory && Gdx.input.isKeyPressed(Input.Keys.E)) {
+            inventory.setOpen(true);
+            canOpenInventory = false;
+            return;
+        }
+        if (!Gdx.input.isKeyPressed(Input.Keys.E)) canOpenInventory = true;
         // LEFT
         if (Gdx.input.isKeyPressed(Input.Keys.A) && !Gdx.input.isKeyPressed(Input.Keys.D)) {
             if (touchingFloor) {
@@ -255,6 +266,7 @@ public class Player extends Entity {
     @Override
     public void render() {
         weapon.render();
+        if (inventory.open) inventory.render();
         if (health < PLAYER_HEALTH && (myGame.timePassed - combatTimer) > PLAYER_COMBAT_TIMER) {
             health += Gdx.graphics.getDeltaTime() * PLAYER_HEALTH_REGEN_PER_SEC;
             if (health >= 100) health = 100;

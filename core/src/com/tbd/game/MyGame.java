@@ -1,12 +1,10 @@
 package com.tbd.game;
 
-import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -20,7 +18,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.*;
 import com.tbd.game.Entities.MapEntity;
-import com.tbd.game.Entities.MonsterPackage.Bat;
 import com.tbd.game.Entities.MonsterPackage.Monster;
 import com.tbd.game.Entities.PlayerPackage.Player;
 import com.tbd.game.Weapons.Laser;
@@ -42,7 +39,6 @@ public class MyGame implements Screen {
 	public TextureAtlas atlas;
 	Map map;
 	Texture shadow;
-	public MapEntity mapEntity;
 	public Listener listener;
 	public ArrayList<Monster> activeMonsters;
 	public ArrayList<Laser> activeLasers;
@@ -55,16 +51,21 @@ public class MyGame implements Screen {
 	public Texture bat2;
 	public Texture bat3;
 	public TextureAtlas healthbarAtlas;
+	public Texture slot;
+	public Texture rockArmor;
 	public Sound playerFireNoise;
 	public Sound playerHitmarkerNoise;
 	boolean canEscape;
 	public Stage stage;
 	public Table table;
 	public LabelStyle labelStyle;
+	public ItemMapManager itemMapManager;
+	public MapEntity mapEntity;
 	public MyGame(GameStateManager gsm) {
 		this.gsm = gsm;
 		batch = gsm.batch;
 
+		mapEntity = new MapEntity();
 		stage = new Stage(new ScreenViewport());
 		table = new Table();
 		table.setFillParent(true);
@@ -92,10 +93,12 @@ public class MyGame implements Screen {
 		bat1 = new Texture("bat1.png");
 		bat2 = new Texture("bat2.png");
 		bat3 = new Texture("bat3.png");
+		slot = new Texture("slot.jpg");
+		rockArmor = new Texture("rock_armor.png");
 		playerFireNoise = Gdx.audio.newSound(Gdx.files.internal("fire.mp3"));
 		playerHitmarkerNoise = Gdx.audio.newSound(Gdx.files.internal("hitmarker.mp3"));
-		mapEntity = new MapEntity();
 
+		itemMapManager = new ItemMapManager(this);
 		activeMonsters = new ArrayList<>();
 		activeLasers = new ArrayList<>();
 		//activeMonsters.add(new Golem(this));
@@ -112,10 +115,14 @@ public class MyGame implements Screen {
 	}
 	@Override
 	public void show() {
+		Gdx.input.setInputProcessor(stage);
 		canEscape = false;
 	}
 	public Vector3 getMousePosition() {
 		return gsm.camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
+	}
+	public void createItem(ItemType itemType, float x, float y) {
+		itemMapManager.createItem(itemType, x, y);
 	}
 
 	private void step(float delta) {
@@ -151,9 +158,9 @@ public class MyGame implements Screen {
 		for (Laser l : activeLasers) {
 			l.render();
 		}
-		//debugRenderer.render(world, camera.combined);
+		itemMapManager.render();
 		gsm.batch.end();
-
+		debugRenderer.render(world, gsm.camera.combined);
 		stage.act();
 		stage.draw();
 		step(delta);

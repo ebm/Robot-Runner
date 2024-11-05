@@ -58,6 +58,7 @@ public class Listener implements ContactListener {
             ContactVar cv = allContacts.get(0);
             Player.handleContact(cv.fixtureA, cv.fixtureB, cv.beginContact, myGame);
             Weapon.handleContact(cv.fixtureA, cv.fixtureB, cv.beginContact, myGame);
+            Item.handleContact(cv.fixtureA, cv.fixtureB, cv.beginContact, myGame);
             if (!allContacts.isEmpty()) allContacts.remove(0);
         }
     }

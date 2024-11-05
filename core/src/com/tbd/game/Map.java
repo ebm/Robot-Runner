@@ -1,9 +1,7 @@
 package com.tbd.game;
 
-import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapObjects;
-import com.badlogic.gdx.maps.objects.PolygonMapObject;
 import com.badlogic.gdx.maps.objects.PolylineMapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -13,7 +11,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.EdgeShape;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.tbd.game.Entities.MonsterPackage.Bat;
 import com.tbd.game.Entities.MonsterPackage.Golem;
 import com.tbd.game.Entities.PlayerPackage.Player;
@@ -21,8 +18,6 @@ import com.tbd.game.Weapons.Laser;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
 
 import static com.tbd.game.Constants.*;
 
@@ -84,6 +79,8 @@ public class Map {
                 } else if (mapObject.getProperties().containsKey("Laser")) {
                     Direction dir = Direction.parseDirection((String) mapObject.getProperties().get("Laser"));
                     myGame.activeLasers.add(new Laser(myGame, dir, rectangleMapObject.getRectangle().x * UNIT_SCALE, rectangleMapObject.getRectangle().y * UNIT_SCALE));
+                } else if (mapObject.getProperties().containsKey("GolemArmorItem")) {
+                    myGame.createItem(ItemType.GolemArmor,rectangleMapObject.getRectangle().x * UNIT_SCALE, rectangleMapObject.getRectangle().y * UNIT_SCALE);
                 }
             }
         }
