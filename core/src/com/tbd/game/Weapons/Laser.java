@@ -2,14 +2,13 @@ package com.tbd.game.Weapons;
 
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import com.tbd.game.Direction;
-import com.tbd.game.Listener;
-import com.tbd.game.MyGame;
+import com.tbd.game.World.Direction;
+import com.tbd.game.World.Listener;
+import com.tbd.game.States.MyGame;
 
-import static com.tbd.game.Constants.*;
+import static com.tbd.game.World.Constants.*;
 
 
 public class Laser {

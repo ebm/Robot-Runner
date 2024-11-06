@@ -1,4 +1,4 @@
-package com.tbd.game;
+package com.tbd.game.World;
 
 import com.badlogic.gdx.math.Vector2;
 import com.tbd.game.Entities.MapEntity;

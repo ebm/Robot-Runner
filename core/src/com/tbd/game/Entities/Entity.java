@@ -2,8 +2,7 @@ package com.tbd.game.Entities;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.Fixture;
-import com.tbd.game.MyGame;
+import com.tbd.game.States.MyGame;
 
 public abstract class Entity {
     public MyGame myGame;

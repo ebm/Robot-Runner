@@ -1,7 +1,7 @@
 package com.tbd.game.Entities;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.tbd.game.MyGame;
+import com.tbd.game.States.MyGame;
 
 public class Healthbar {
     MyGame myGame;

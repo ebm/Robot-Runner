@@ -10,12 +10,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.tbd.game.Entities.Entity;
 import com.tbd.game.Entities.Healthbar;
 import com.tbd.game.Entities.MonsterPackage.Monster;
-import com.tbd.game.Listener;
-import com.tbd.game.MyGame;
+import com.tbd.game.World.Listener;
+import com.tbd.game.States.MyGame;
 import com.tbd.game.Weapons.RangedWeapon;
 import com.tbd.game.Weapons.Weapon;
 
-import static com.tbd.game.Constants.*;
+import static com.tbd.game.World.Constants.*;
 
 public class Player extends Entity {
     int contactFeet;

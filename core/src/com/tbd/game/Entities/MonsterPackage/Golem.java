@@ -4,13 +4,13 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.tbd.game.Armor;
+import com.tbd.game.Items.Armor;
 import com.tbd.game.Entities.Healthbar;
-import com.tbd.game.MyGame;
+import com.tbd.game.States.MyGame;
 import com.tbd.game.Weapons.RangedWeapon;
 import com.tbd.game.Weapons.Weapon;
 
-import static com.tbd.game.Constants.*;
+import static com.tbd.game.World.Constants.*;
 
 public class Golem extends Monster{
     Weapon weapon;

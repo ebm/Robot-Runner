@@ -1,4 +1,4 @@
-package com.tbd.game;
+package com.tbd.game.States;
 
 public abstract class State {
     public GameStateManager gsm;

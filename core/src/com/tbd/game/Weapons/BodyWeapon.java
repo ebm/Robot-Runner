@@ -4,11 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.tbd.game.Entities.Entity;
-import com.tbd.game.Listener;
-import com.tbd.game.MyGame;
-
-import static com.tbd.game.Constants.BAT_INITIAL_X_POSITION;
-import static com.tbd.game.Constants.BAT_INITIAL_Y_POSITION;
+import com.tbd.game.World.Listener;
+import com.tbd.game.States.MyGame;
 
 public class BodyWeapon extends Weapon {
     public Body body;

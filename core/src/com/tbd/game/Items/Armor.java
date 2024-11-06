@@ -1,7 +1,7 @@
-package com.tbd.game;
+package com.tbd.game.Items;
 
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.physics.box2d.Body;
+import com.tbd.game.States.MyGame;
 
 public class Armor extends Item {
     public float dmgTakenMultiplier;

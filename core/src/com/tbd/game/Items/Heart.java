@@ -1,6 +1,7 @@
-package com.tbd.game;
+package com.tbd.game.Items;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.tbd.game.States.MyGame;
 
 public class Heart extends Item {
     public float additionalHealth;

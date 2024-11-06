@@ -9,10 +9,10 @@ import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.tbd.game.Weapons.BodyWeapon;
 import com.tbd.game.Entities.Healthbar;
-import com.tbd.game.MyGame;
+import com.tbd.game.States.MyGame;
 import com.tbd.game.Weapons.Weapon;
 
-import static com.tbd.game.Constants.*;
+import static com.tbd.game.World.Constants.*;
 
 public class Bat extends Monster {
     Weapon weapon;

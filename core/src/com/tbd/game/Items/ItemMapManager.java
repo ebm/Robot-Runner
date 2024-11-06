@@ -1,13 +1,9 @@
-package com.tbd.game;
+package com.tbd.game.Items;
 
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.*;
-import com.tbd.game.Entities.PlayerPackage.Player;
+import com.tbd.game.States.MyGame;
 
 import java.util.ArrayList;
 
-import static com.tbd.game.Constants.METERS_PER_PIXEL;
 public class ItemMapManager {
     MyGame myGame;
     ArrayList<Item> itemsOnMap;

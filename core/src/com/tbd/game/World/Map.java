@@ -1,4 +1,4 @@
-package com.tbd.game;
+package com.tbd.game.World;
 
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapObjects;
@@ -14,12 +14,16 @@ import com.badlogic.gdx.physics.box2d.EdgeShape;
 import com.tbd.game.Entities.MonsterPackage.Bat;
 import com.tbd.game.Entities.MonsterPackage.Golem;
 import com.tbd.game.Entities.PlayerPackage.Player;
+import com.tbd.game.Items.Armor;
+import com.tbd.game.Items.Boots;
+import com.tbd.game.Items.Heart;
+import com.tbd.game.States.MyGame;
 import com.tbd.game.Weapons.Laser;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
-import static com.tbd.game.Constants.*;
+import static com.tbd.game.World.Constants.*;
 
 public class Map {
     static class Edge {

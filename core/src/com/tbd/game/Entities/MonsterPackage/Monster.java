@@ -2,7 +2,7 @@ package com.tbd.game.Entities.MonsterPackage;
 
 import com.tbd.game.Entities.Entity;
 import com.tbd.game.Entities.PlayerPackage.Player;
-import com.tbd.game.MyGame;
+import com.tbd.game.States.MyGame;
 
 public abstract class Monster extends Entity {
     Range range;

@@ -1,4 +1,4 @@
-package com.tbd.game;
+package com.tbd.game.World;
 
 public enum Direction {
     Up, Down, Left, Right;

@@ -1,15 +1,12 @@
-package com.tbd.game;
+package com.tbd.game.World;
 
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import com.tbd.game.Entities.PlayerPackage.BodyPart;
-import com.tbd.game.Entities.Entity;
 import com.tbd.game.Entities.PlayerPackage.Player;
+import com.tbd.game.Items.Item;
+import com.tbd.game.States.MyGame;
 import com.tbd.game.Weapons.*;
 
 import java.util.ArrayList;
-
-import static com.tbd.game.Constants.*;
 
 public class Listener implements ContactListener {
     static class ContactVar {

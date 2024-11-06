@@ -1,4 +1,4 @@
-package com.tbd.game;
+package com.tbd.game.States;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;

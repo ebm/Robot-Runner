@@ -1,4 +1,4 @@
-package com.tbd.game;
+package com.tbd.game.Items;
 
 import com.badlogic.gdx.graphics.Texture;
 

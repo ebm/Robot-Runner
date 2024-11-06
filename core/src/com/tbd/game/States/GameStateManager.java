@@ -1,17 +1,15 @@
-package com.tbd.game;
+package com.tbd.game.States;
 
-import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-import static com.tbd.game.Constants.VISIBLE_HORIZONTAL_TILES;
-import static com.tbd.game.Constants.VISIBLE_VERTICAL_TILES;
+import static com.tbd.game.World.Constants.VISIBLE_HORIZONTAL_TILES;
+import static com.tbd.game.World.Constants.VISIBLE_VERTICAL_TILES;
 
 public class GameStateManager extends Game {
     public SpriteBatch batch;

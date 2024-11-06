@@ -2,6 +2,7 @@ package com.tbd.game;
 
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
+import com.tbd.game.States.GameStateManager;
 
 public class DesktopLauncher {
 	public static int fps = 240;

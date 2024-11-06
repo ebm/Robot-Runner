@@ -1,4 +1,4 @@
-package com.tbd.game;
+package com.tbd.game.States;
 
 import com.badlogic.gdx.Gdx;
 
@@ -20,9 +20,12 @@ import com.badlogic.gdx.utils.viewport.*;
 import com.tbd.game.Entities.MapEntity;
 import com.tbd.game.Entities.MonsterPackage.Monster;
 import com.tbd.game.Entities.PlayerPackage.Player;
+import com.tbd.game.Items.ItemMapManager;
+import com.tbd.game.World.Listener;
+import com.tbd.game.World.Map;
 import com.tbd.game.Weapons.Laser;
 
-import static com.tbd.game.Constants.*;
+import static com.tbd.game.World.Constants.*;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -175,7 +178,7 @@ public class MyGame implements Screen {
 		itemMapManager.render();
 		gsm.batch.end();
 
-		//debugRenderer.render(world, gsm.camera.combined);
+		debugRenderer.render(world, gsm.camera.combined);
 
 		stage.act();
 		stage.draw();

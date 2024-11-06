@@ -1,13 +1,13 @@
-package com.tbd.game;
+package com.tbd.game.Items;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.tbd.game.Entities.PlayerPackage.Player;
+import com.tbd.game.World.Listener;
+import com.tbd.game.States.MyGame;
 
-import java.util.Random;
-
-import static com.tbd.game.Constants.METERS_PER_PIXEL;
+import static com.tbd.game.World.Constants.METERS_PER_PIXEL;
 
 public abstract class Item {
     public MyGame myGame;
@@ -36,8 +36,8 @@ public abstract class Item {
         body = myGame.world.createBody(bodyDef);
 
         PolygonShape polygon = new PolygonShape();
-        polygon.set(new Vector2[] {new Vector2(0, 0), new Vector2(1 * METERS_PER_PIXEL, 0),
-                new Vector2(0, 1 * METERS_PER_PIXEL), new Vector2(1 * METERS_PER_PIXEL, 1 * METERS_PER_PIXEL)});
+        polygon.set(new Vector2[] {new Vector2(0, 0), new Vector2(0.75f * METERS_PER_PIXEL, 0),
+                new Vector2(0, 0.75f * METERS_PER_PIXEL), new Vector2(0.75f * METERS_PER_PIXEL, 0.75f * METERS_PER_PIXEL)});
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = polygon;
@@ -52,7 +52,7 @@ public abstract class Item {
 
         polygon.dispose();
 
-        body.setTransform(x, y, 0);
+        body.setTransform(x, y + 0.25f, 0);
     }
     public abstract void apply();
     public void render() {
@@ -62,7 +62,7 @@ public abstract class Item {
             lastSwitch = myGame.timePassed;
         }
 
-        myGame.batch.draw(itemTexture, body.getPosition().x, body.getPosition().y + 0.25f, 0.75f * METERS_PER_PIXEL, 0.75f * METERS_PER_PIXEL);
+        myGame.batch.draw(itemTexture, body.getPosition().x, body.getPosition().y, 0.75f * METERS_PER_PIXEL, 0.75f * METERS_PER_PIXEL);
     }
     public static void handleContact(Fixture fixtureA, Fixture fixtureB, boolean beginContact, MyGame myGame) {
         if (!beginContact) return;

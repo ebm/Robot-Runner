@@ -1,11 +1,10 @@
 package com.tbd.game.Weapons;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import com.tbd.game.Listener;
-import com.tbd.game.MyGame;
-import static com.tbd.game.Constants.*;
+import com.tbd.game.World.Listener;
+import com.tbd.game.States.MyGame;
+import static com.tbd.game.World.Constants.*;
 
 public class BulletClass extends Weapon{
     float bulletSpeed;

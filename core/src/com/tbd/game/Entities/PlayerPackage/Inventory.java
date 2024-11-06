@@ -2,7 +2,6 @@ package com.tbd.game.Entities.PlayerPackage;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
@@ -11,14 +10,13 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
-import com.tbd.game.Direction;
-import com.tbd.game.Item;
-import com.tbd.game.ItemType;
-import com.tbd.game.MyGame;
-import static com.tbd.game.Constants.*;
+import com.tbd.game.World.Direction;
+import com.tbd.game.Items.Item;
+import com.tbd.game.Items.ItemType;
+import com.tbd.game.States.MyGame;
+import static com.tbd.game.World.Constants.*;
 
 public class Inventory {
     MyGame myGame;
@@ -194,9 +192,9 @@ public class Inventory {
     public boolean dropItem(Item item, Direction dir) {
         item.body.setActive(true);
         if (dir == Direction.Right) {
-            item.body.setTransform(myGame.player.body.getPosition().x + 1.5f, myGame.player.body.getPosition().y, 0);
+            item.body.setTransform(myGame.player.body.getPosition().x + 1.5f, myGame.player.body.getPosition().y + 0.25f, 0);
         } else {
-            item.body.setTransform(myGame.player.body.getPosition().x - 1.5f, myGame.player.body.getPosition().y, 0);
+            item.body.setTransform(myGame.player.body.getPosition().x - 1.5f, myGame.player.body.getPosition().y + 0.25f, 0);
         }
         myGame.itemMapManager.addItem(item);
         return true;

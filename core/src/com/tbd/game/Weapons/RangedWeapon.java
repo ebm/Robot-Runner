@@ -6,10 +6,10 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.tbd.game.Entities.Entity;
 import com.tbd.game.Entities.PlayerPackage.Player;
-import com.tbd.game.Listener;
-import com.tbd.game.MyGame;
+import com.tbd.game.World.Listener;
+import com.tbd.game.States.MyGame;
 
-import static com.tbd.game.Constants.*;
+import static com.tbd.game.World.Constants.*;
 
 import java.util.ArrayList;
 

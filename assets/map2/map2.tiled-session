@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "C:/Users/user0/Desktop/TBD/assets/map/tilemap.tmx",
+    "activeFile": "tilemap.tmx",
     "automapping.whileDrawing": false,
     "expandedProjectPaths": [
         "."
@@ -76,10 +76,10 @@
                 5
             ],
             "scale": 1.5,
-            "selectedLayer": 0,
+            "selectedLayer": 5,
             "viewCenter": {
-                "x": 3473.333333333333,
-                "y": 9324.666666666666
+                "x": 3174,
+                "y": 9321.333333333332
             }
         },
         "tiles.tsx": {
@@ -100,18 +100,17 @@
         "tilesheet.tsx",
         "rulesheet.tsx",
         "ruleSpawns.tmx",
-        "tilemap.tmx",
-        "C:/Users/user0/Desktop/TBD/assets/map/tilemap.tmx"
+        "tilemap.tmx"
     ],
     "project": "map2.tiled-project",
     "property.type": "string",
     "recentFiles": [
-        "C:/Users/user0/Desktop/TBD/assets/map/tilemap.tmx",
         "rule.tmx",
         "tilesheet.tsx",
         "rulesheet.tsx",
         "ruleSpawns.tmx",
         "tilemap.tmx",
+        "C:/Users/user0/Desktop/TBD/assets/map/tilemap.tmx",
         "spawnsheet.tsx",
         "ruleTileset.tsx",
         "C:/Users/user0/Desktop/TBD/assets/map/rule.tmx"
