@@ -38,7 +38,9 @@ public class Constants {
     public static float PLAYER_COMBAT_TIMER = 5;
     public static float PLAYER_HEALTH_REGEN_PER_SEC = 20;
     public static float PLAYER_DASH_COOLDOWN = 3;
-    public static int PLAYER_INVENTORY_SPACE = 12;
+    public static int PLAYER_INVENTORY_ROWS = 3;
+    public static int PLAYER_INVENTORY_COLS = 4;
+    public static int PLAYER_INVENTORY_SPACE = PLAYER_INVENTORY_ROWS * PLAYER_INVENTORY_COLS;
     public static int PLAYER_ATTRIBUTE_SPACE = 4;
 
     // Bullet

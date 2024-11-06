@@ -74,7 +74,7 @@ public class MyGame implements Screen {
 		stage = new Stage(new ScreenViewport());
 		table = new Table();
 		table.setFillParent(true);
-		table.setDebug(true);
+		//table.setDebug(true);
 		stage.addActor(table);
 		labelStyle = new Label.LabelStyle();
 		labelStyle.font = gsm.font;
@@ -168,7 +168,7 @@ public class MyGame implements Screen {
 		itemMapManager.render();
 		gsm.batch.end();
 
-		debugRenderer.render(world, gsm.camera.combined);
+		//debugRenderer.render(world, gsm.camera.combined);
 
 		stage.act();
 		stage.draw();

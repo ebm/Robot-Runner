@@ -49,7 +49,7 @@ public class Inventory {
 
         table = new Table();
         table.setFillParent(true);
-        table.setDebug(true);
+        //table.setDebug(true);
         //table.setName("Table");
         for (int i = 0; i < PLAYER_ATTRIBUTE_SPACE; i++) {
             Image image = new Image(myGame.slot);
@@ -69,17 +69,15 @@ public class Inventory {
             cell.pad(5, 5, 50, 5);
         }
         table.row();
-        int rows = 3;
-        int cols = 4;
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
+        for (int i = 0; i < PLAYER_INVENTORY_ROWS; i++) {
+            for (int j = 0; j < PLAYER_INVENTORY_COLS; j++) {
                 Image image = new Image(myGame.slot);
                 //image.setName("Image");
                 image.setTouchable(Touchable.disabled);
                 Stack overlay = new Stack(image);
                 overlay.setTouchable(Touchable.enabled);
                 //overlay.setName("Overlay");
-                overlay.setUserObject(i * cols + j + PLAYER_ATTRIBUTE_SPACE);
+                overlay.setUserObject(i * PLAYER_INVENTORY_COLS + j + PLAYER_ATTRIBUTE_SPACE);
                 Cell<Stack> cell = table.add(overlay).maxHeight(80).maxWidth(80);
                 cell.minHeight(80).minWidth(80);
                 cell.pad(5, 5, 5, 5);
@@ -96,6 +94,9 @@ public class Inventory {
                     selectionNumber = selection;
                     currentSelection = inventoryItems[selectionNumber];
                     removeItem(currentSelection, selectionNumber);
+                    if (selectionNumber < 4) {
+                        ((Container<Image>) ((Stack) table.getCells().get(selectionNumber).getActor()).getChildren().peek()).getActor().setVisible(true);
+                    }
                     selectedImage = new Image(currentSelection.itemTexture);
                     selectedImage.setSize(50, 50);
                     myGame.stage.addActor(selectedImage);
@@ -138,12 +139,18 @@ public class Inventory {
             }
         }
         if (index == -1 || !(getItemType(index) == item.itemType || getItemType(index) == ItemType.Any)) return false;
+        //if (index < 4) {
+        //    ((Container<Image>) (((Stack) actor).getChildren().peek())).getActor().setVisible(false);
+        //}
         inventoryItems[index] = item;
         Image image = new Image(item.itemTexture);
         image.setTouchable(Touchable.disabled);
         Container<Image> container = new Container<>(image);
         container.size(50,50);
         item.body.setActive(false);
+        if (index < 4) {
+            ((Container<Image>) ((Stack) table.getCells().get(index).getActor()).getChildren().peek()).getActor().setVisible(false);
+        }
         ((Stack) table.getCells().get(index).getActor()).add(container);
 
         return true;
