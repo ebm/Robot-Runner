@@ -6,7 +6,7 @@ import com.tbd.game.MyGame;
 public class Healthbar {
     MyGame myGame;
     Entity entity;
-    float maxHealth;
+    public float maxHealth;
     TextureRegion[] healthbarArray;
     public Healthbar(MyGame myGame, Entity entity, float maxHealth) {
         this.myGame = myGame;

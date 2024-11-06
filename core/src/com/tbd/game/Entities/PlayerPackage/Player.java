@@ -48,6 +48,7 @@ public class Player extends Entity {
     public boolean canOpenInventory;
     public float dmgTakenMultiplier;
     public float speedMultiplier;
+    public float additionalHealth;
     public Player(MyGame myGame, float initialX, float initialY) {
         this.myGame = myGame;
         touchingFloor = false;
@@ -92,6 +93,7 @@ public class Player extends Entity {
 
         speedMultiplier = 1;
         dmgTakenMultiplier = 1;
+        additionalHealth  = 0;
     }
 
     private void createBody(float initialX, float initialY) {
@@ -181,6 +183,7 @@ public class Player extends Entity {
     public void resetMultipliers() {
         speedMultiplier = 1;
         dmgTakenMultiplier = 1;
+        additionalHealth  = 0;
     }
     public void update() {
         inventory.applyMultipliers();
@@ -276,11 +279,11 @@ public class Player extends Entity {
     public void render() {
         weapon.render();
         if (inventory.open) inventory.render();
-        if (health < PLAYER_HEALTH && (myGame.timePassed - combatTimer) > PLAYER_COMBAT_TIMER) {
+        if (health < PLAYER_HEALTH + additionalHealth && (myGame.timePassed - combatTimer) > PLAYER_COMBAT_TIMER) {
             health += Gdx.graphics.getDeltaTime() * PLAYER_HEALTH_REGEN_PER_SEC;
-            if (health >= 100) health = 100;
+            if (health >= PLAYER_HEALTH + additionalHealth) health = PLAYER_HEALTH + additionalHealth;
         }
-        healthLabel.setText("Health: " + (int) health + " / " + (int) PLAYER_HEALTH);
+        healthLabel.setText("Health: " + (int) health + " / " + (int) (PLAYER_HEALTH + additionalHealth));
         dashCooldownLabel.setText("Dash CD: " + Math.max((int) Math.ceil((PLAYER_DASH_COOLDOWN - (myGame.timePassed - dashTime))), 0));
         combatLabel.setText("Combat Timer: " + Math.max((int) Math.ceil((PLAYER_COMBAT_TIMER - (myGame.timePassed - combatTimer))), 0));
         timePassed += Gdx.graphics.getDeltaTime();
@@ -294,6 +297,8 @@ public class Player extends Entity {
         }
         //if (touchingFloor) myGame.batch.draw(myGame.shadow, body.getPosition().x - HORIZONTAL_OFFSET, body.getPosition().y - VERTICAL_OFFSET - 5 * UNIT_SCALE, 32 * UNIT_SCALE, 12 * UNIT_SCALE);
         myGame.batch.draw(currentFrame, body.getPosition().x - PLAYER_HORIZONTAL_OFFSET, body.getPosition().y - PLAYER_VERTICAL_OFFSET, PLAYER_SPRITE_WIDTH, PLAYER_SPRITE_HEIGHT);
+        healthbar.maxHealth = PLAYER_HEALTH + additionalHealth;
+        if (PLAYER_HEALTH + additionalHealth < health) health = PLAYER_HEALTH + additionalHealth;
         myGame.batch.draw(healthbar.getHealthBar(), body.getPosition().x - PLAYER_HORIZONTAL_OFFSET, body.getPosition().y + PLAYER_HITBOX_HEIGHT + HEALTHBAR_OFFSET, PLAYER_SPRITE_WIDTH, HEALTHBAR_HEIGHT);
     }
     @Override

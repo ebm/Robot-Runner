@@ -83,6 +83,8 @@ public class Map {
                     myGame.itemMapManager.addItem(new Armor(0.8f, myGame.itemMapManager.getID(),rectangleMapObject.getRectangle().x * UNIT_SCALE, rectangleMapObject.getRectangle().y * UNIT_SCALE, myGame.rockArmor, myGame));
                 } else if (mapObject.getProperties().containsKey("BootsFastItem")) {
                     myGame.itemMapManager.addItem(new Boots(1.2f, myGame.itemMapManager.getID(),rectangleMapObject.getRectangle().x * UNIT_SCALE, rectangleMapObject.getRectangle().y * UNIT_SCALE, myGame.fastBoots, myGame));
+                } else if (mapObject.getProperties().containsKey("HeartSmallItem")) {
+                    myGame.itemMapManager.addItem(new Heart(20, myGame.itemMapManager.getID(),rectangleMapObject.getRectangle().x * UNIT_SCALE, rectangleMapObject.getRectangle().y * UNIT_SCALE, myGame.heartSmall, myGame));
                 }
             }
         }

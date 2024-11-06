@@ -5,6 +5,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.tbd.game.Entities.PlayerPackage.Player;
 
+import java.util.Random;
+
 import static com.tbd.game.Constants.METERS_PER_PIXEL;
 
 public abstract class Item {
@@ -13,16 +15,22 @@ public abstract class Item {
     public ItemType itemType;
     public Body body;
     public Texture itemTexture;
+    public int multiplier;
+    public double lastSwitch;
+    float verticalVelocity;
     public Item(int id, ItemType itemType, float x, float y, Texture itemTexture, MyGame myGame) {
         this.id = id;
         this.myGame = myGame;
         this.itemType = itemType;
         createBody(x, y);
         this.itemTexture = itemTexture;
+        lastSwitch = 0;
+        multiplier = 1;
+        verticalVelocity = myGame.rand.nextFloat() % 0.15f + 0.05f;
     }
     public void createBody(float x, float y) {
         BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.StaticBody;
+        bodyDef.type = BodyDef.BodyType.DynamicBody;
         //bodyDef.position.set(INITIAL_X_POSITION, INITIAL_Y_POSITION);
 
         body = myGame.world.createBody(bodyDef);
@@ -37,6 +45,7 @@ public abstract class Item {
         //fixtureDef.friction = 500f;
         //fixtureDef.restitution = 0f;
         fixtureDef.isSensor = true;
+        body.setGravityScale(0);
 
         body.createFixture(fixtureDef).setUserData(this);
         body.setFixedRotation(true);
@@ -47,7 +56,13 @@ public abstract class Item {
     }
     public abstract void apply();
     public void render() {
-        myGame.batch.draw(itemTexture, body.getPosition().x, body.getPosition().y, 1 * METERS_PER_PIXEL, 1 * METERS_PER_PIXEL);
+        if (myGame.timePassed - lastSwitch > 1) {
+            body.setLinearVelocity(0, verticalVelocity * multiplier);
+            multiplier *= -1;
+            lastSwitch = myGame.timePassed;
+        }
+
+        myGame.batch.draw(itemTexture, body.getPosition().x, body.getPosition().y + 0.25f, 0.75f * METERS_PER_PIXEL, 0.75f * METERS_PER_PIXEL);
     }
     public static void handleContact(Fixture fixtureA, Fixture fixtureB, boolean beginContact, MyGame myGame) {
         if (!beginContact) return;

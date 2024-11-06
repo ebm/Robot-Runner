@@ -25,6 +25,7 @@ import com.tbd.game.Weapons.Laser;
 import static com.tbd.game.Constants.*;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class MyGame implements Screen {
 	public GameStateManager gsm;
@@ -54,6 +55,7 @@ public class MyGame implements Screen {
 	public Texture slot;
 	public Texture rockArmor;
 	public Texture fastBoots;
+	public Texture heartSmall;
 	public Texture armorIcon;
 	public Texture abilityIcon;
 	public Texture bootsIcon;
@@ -67,9 +69,11 @@ public class MyGame implements Screen {
 	public LabelStyle labelStyle;
 	public ItemMapManager itemMapManager;
 	public MapEntity mapEntity;
+	public Random rand;
 	public MyGame(GameStateManager gsm) {
 		this.gsm = gsm;
 		batch = gsm.batch;
+		rand = new Random();
 
 		mapEntity = new MapEntity();
 		stage = new Stage(new ScreenViewport());
@@ -102,6 +106,7 @@ public class MyGame implements Screen {
 		slot = new Texture("slot.png");
 		rockArmor = new Texture("rock_armor.png");
 		fastBoots = new Texture("boots_fast.png");
+		heartSmall = new Texture("heart_small.png");
 		armorIcon = new Texture("armorIcon.png");
 		attributeIcon = new Texture("attributeIcon.png");
 		bootsIcon = new Texture("bootsIcon.png");
