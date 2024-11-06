@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
+import com.tbd.game.Items.Ability;
 import com.tbd.game.World.Direction;
 import com.tbd.game.Items.Item;
 import com.tbd.game.Items.ItemType;
@@ -41,6 +42,9 @@ public class Inventory {
         if (index == 2) return myGame.bootsIcon;
         if (index == 3) return myGame.attributeIcon;
         return null;
+    }
+    public Item getAbility() {
+        return inventoryItems[0];
     }
     public Inventory(MyGame myGame) {
         this.myGame = myGame;
@@ -155,6 +159,7 @@ public class Inventory {
         //    ((Container<Image>) (((Stack) actor).getChildren().peek())).getActor().setVisible(false);
         //}
         inventoryItems[index] = item;
+        if (item instanceof Ability) ((Ability) item).lastUse = myGame.timePassed;
         Image image = new Image(item.itemTexture);
         image.setTouchable(Touchable.disabled);
         Container<Image> container = new Container<>(image);

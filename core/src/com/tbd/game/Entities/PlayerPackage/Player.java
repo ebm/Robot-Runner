@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.tbd.game.Entities.Entity;
 import com.tbd.game.Entities.Healthbar;
 import com.tbd.game.Entities.MonsterPackage.Monster;
+import com.tbd.game.Items.Ability;
 import com.tbd.game.World.Listener;
 import com.tbd.game.States.MyGame;
 import com.tbd.game.Weapons.RangedWeapon;
@@ -29,20 +30,18 @@ public class Player extends Entity {
     boolean canJump;
     double wallClimbTime;
     boolean wallClimbFinished;
-    double dashTime;
-    boolean dashFinished;
     double lastDash;
     double combatTimer;
     //float dashXVelocity;
     //float dashYVelocity;
-    PlayerState currentState;
+    public PlayerState currentState;
     Animation<TextureRegion> walkingLeft;
     Animation<TextureRegion> walkingRight;
     Animation<TextureRegion> still;
     float timePassed;
     Weapon weapon;
     public Label healthLabel;
-    public Label dashCooldownLabel;
+    public Label abilityCooldownLabel;
     public Label combatLabel;
     public Inventory inventory;
     public boolean canOpenInventory;
@@ -57,8 +56,6 @@ public class Player extends Entity {
         canJump = false;
         wallClimbFinished = false;
         wallClimbTime = 0;
-        dashFinished = false;
-        dashTime = 0;
         lastDash = 0;
         combatTimer = 0;
 
@@ -80,11 +77,11 @@ public class Player extends Entity {
         healthbar = new Healthbar(myGame, this, health);
 
         healthLabel = new Label("Health: " + (int) health + " / " + (int) PLAYER_HEALTH, myGame.labelStyle);
-        dashCooldownLabel = new Label("Dash CD: " + Math.max((int) Math.ceil((PLAYER_DASH_COOLDOWN - (myGame.timePassed - dashTime))), 0), myGame.labelStyle);
+        abilityCooldownLabel = new Label("Cooldown: 0", myGame.labelStyle);
         combatLabel = new Label("Combat Timer: " + Math.max((int) Math.ceil((PLAYER_COMBAT_TIMER - (myGame.timePassed - combatTimer))), 0), myGame.labelStyle);
 
         myGame.table.add(combatLabel);
-        myGame.table.add(dashCooldownLabel).pad(5);
+        myGame.table.add(abilityCooldownLabel).pad(5);
         myGame.table.pad(5);
         myGame.table.add(healthLabel);
 
@@ -186,7 +183,6 @@ public class Player extends Entity {
         additionalHealth  = 0;
     }
     public void update() {
-        inventory.applyMultipliers();
         currentState = PlayerState.Still;
         // ON GROUND
         if (touchingFloor) {
@@ -255,25 +251,12 @@ public class Player extends Entity {
         } else if (!wallClimbFinished) {
             if (wallClimbTime != 0) wallClimbFinished = true;
         }
-        // Dash
-        if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) && (myGame.timePassed - dashTime) > PLAYER_DASH_COOLDOWN) {
-            float dashXVelocity = body.getLinearVelocity().x;
-            float dashYVelocity = PLAYER_DASH_VERTICAL_VELOCITY;
-            if (currentState == PlayerState.WalkingLeft) {
-                dashXVelocity = -PLAYER_DASH_HORIZONTAL_VELOCITY * speedMultiplier;
-            } else if (currentState == PlayerState.WalkingRight) {
-                dashXVelocity = PLAYER_DASH_HORIZONTAL_VELOCITY * speedMultiplier;
-            }
-            body.setTransform(body.getPosition().x, body.getPosition().y + UNIT_SCALE, 0);
-            body.setLinearVelocity(dashXVelocity, dashYVelocity);
-            dashTime = myGame.timePassed;
-        }
-
         // Fire
         if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
             weapon.attack(new Vector2(myGame.getMousePosition().x, myGame.getMousePosition().y));
             combatTimer = myGame.timePassed;
         }
+        inventory.applyMultipliers();
     }
     @Override
     public void render() {
@@ -284,7 +267,7 @@ public class Player extends Entity {
             if (health >= PLAYER_HEALTH + additionalHealth) health = PLAYER_HEALTH + additionalHealth;
         }
         healthLabel.setText("Health: " + (int) health + " / " + (int) (PLAYER_HEALTH + additionalHealth));
-        dashCooldownLabel.setText("Dash CD: " + Math.max((int) Math.ceil((PLAYER_DASH_COOLDOWN - (myGame.timePassed - dashTime))), 0));
+        if (inventory.getAbility() != null) abilityCooldownLabel.setText("Cooldown: " + Math.max((int) Math.ceil((((Ability) inventory.getAbility()).cooldown - (myGame.timePassed - ((Ability) inventory.getAbility()).lastUse))), 0));
         combatLabel.setText("Combat Timer: " + Math.max((int) Math.ceil((PLAYER_COMBAT_TIMER - (myGame.timePassed - combatTimer))), 0));
         timePassed += Gdx.graphics.getDeltaTime();
         TextureRegion currentFrame;

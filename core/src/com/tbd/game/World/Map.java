@@ -16,6 +16,7 @@ import com.tbd.game.Entities.MonsterPackage.Golem;
 import com.tbd.game.Entities.PlayerPackage.Player;
 import com.tbd.game.Items.Armor;
 import com.tbd.game.Items.Boots;
+import com.tbd.game.Items.Dash;
 import com.tbd.game.Items.Heart;
 import com.tbd.game.States.MyGame;
 import com.tbd.game.Weapons.Laser;
@@ -89,6 +90,8 @@ public class Map {
                     myGame.itemMapManager.addItem(new Boots(1.2f, myGame.itemMapManager.getID(),rectangleMapObject.getRectangle().x * UNIT_SCALE, rectangleMapObject.getRectangle().y * UNIT_SCALE, myGame.fastBoots, myGame));
                 } else if (mapObject.getProperties().containsKey("HeartSmallItem")) {
                     myGame.itemMapManager.addItem(new Heart(20, myGame.itemMapManager.getID(),rectangleMapObject.getRectangle().x * UNIT_SCALE, rectangleMapObject.getRectangle().y * UNIT_SCALE, myGame.heartSmall, myGame));
+                } else if (mapObject.getProperties().containsKey("DashItem")) {
+                    myGame.itemMapManager.addItem(new Dash(myGame.itemMapManager.getID(),rectangleMapObject.getRectangle().x * UNIT_SCALE, rectangleMapObject.getRectangle().y * UNIT_SCALE, myGame.dashAbility, myGame));
                 }
             }
         }

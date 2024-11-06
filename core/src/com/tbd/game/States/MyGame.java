@@ -59,6 +59,7 @@ public class MyGame implements Screen {
 	public Texture rockArmor;
 	public Texture fastBoots;
 	public Texture heartSmall;
+	public Texture dashAbility;
 	public Texture armorIcon;
 	public Texture abilityIcon;
 	public Texture bootsIcon;
@@ -110,6 +111,7 @@ public class MyGame implements Screen {
 		rockArmor = new Texture("rock_armor.png");
 		fastBoots = new Texture("boots_fast.png");
 		heartSmall = new Texture("heart_small.png");
+		dashAbility = new Texture("dash.png");
 		armorIcon = new Texture("armorIcon.png");
 		attributeIcon = new Texture("attributeIcon.png");
 		bootsIcon = new Texture("bootsIcon.png");
