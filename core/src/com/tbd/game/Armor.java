@@ -14,4 +14,9 @@ public class Armor extends Item {
     public void apply() {
         myGame.player.dmgTakenMultiplier = dmgTakenMultiplier;
     }
+
+    @Override
+    public String toString() {
+        return "Reduces damage taken by " + (int) Math.ceil(((1 - dmgTakenMultiplier) * 100)) + "%.";
+    }
 }

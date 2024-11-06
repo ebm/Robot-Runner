@@ -27,7 +27,7 @@ import static com.tbd.game.Constants.*;
 import java.util.ArrayList;
 
 public class MyGame implements Screen {
-	GameStateManager gsm;
+	public GameStateManager gsm;
 	public SpriteBatch batch;
 	//OrthographicCamera camera;
 	//Viewport vp;
@@ -58,6 +58,7 @@ public class MyGame implements Screen {
 	public Texture abilityIcon;
 	public Texture bootsIcon;
 	public Texture attributeIcon;
+	public Texture textBackground;
 	public Sound playerFireNoise;
 	public Sound playerHitmarkerNoise;
 	boolean canEscape;
@@ -105,6 +106,7 @@ public class MyGame implements Screen {
 		attributeIcon = new Texture("attributeIcon.png");
 		bootsIcon = new Texture("bootsIcon.png");
 		abilityIcon = new Texture("abilityIcon.png");
+		textBackground = new Texture("textBorder.png");
 		playerFireNoise = Gdx.audio.newSound(Gdx.files.internal("fire.mp3"));
 		playerHitmarkerNoise = Gdx.audio.newSound(Gdx.files.internal("hitmarker.mp3"));
 

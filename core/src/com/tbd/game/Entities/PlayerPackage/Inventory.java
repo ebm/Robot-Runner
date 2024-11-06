@@ -3,13 +3,16 @@ package com.tbd.game.Entities.PlayerPackage;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.tbd.game.Direction;
 import com.tbd.game.Item;
@@ -26,6 +29,7 @@ public class Inventory {
     Item currentSelection;
     int selectionNumber;
     Image selectedImage;
+    TextField itemInfo;
     public ItemType getItemType(int index) {
         if (index == 0) return ItemType.Ability;
         if (index == 1) return ItemType.Armor;
@@ -47,6 +51,14 @@ public class Inventory {
         currentSelection = null;
         selectionNumber = -1;
 
+        TextFieldStyle textFieldStyle = new TextFieldStyle();
+        textFieldStyle.font = myGame.gsm.font;
+        textFieldStyle.fontColor = Color.WHITE;
+        textFieldStyle.background = new TextureRegionDrawable(myGame.textBackground);
+        itemInfo = new TextField("", textFieldStyle);
+        itemInfo.setWidth(300);
+        itemInfo.setAlignment(Align.center);
+        itemInfo.setVisible(false);
         table = new Table();
         table.setFillParent(true);
         //table.setDebug(true);
@@ -97,6 +109,7 @@ public class Inventory {
                     if (selectionNumber < 4) {
                         ((Container<Image>) ((Stack) table.getCells().get(selectionNumber).getActor()).getChildren().peek()).getActor().setVisible(true);
                     }
+                    itemInfo.setVisible(false);
                     selectedImage = new Image(currentSelection.itemTexture);
                     selectedImage.setSize(50, 50);
                     myGame.stage.addActor(selectedImage);
@@ -123,6 +136,7 @@ public class Inventory {
         });
         open = false;
         canEscape = false;
+        myGame.stage.addActor(itemInfo);
     }
     public boolean addItem(Item item, int index) {
         //if (item == Item.GolemArmor) {
@@ -224,6 +238,12 @@ public class Inventory {
             }
         }
     }
+    public void renderSelectionInfo(Item item, Vector2 pos) {
+        itemInfo.setText(item.toString());
+        itemInfo.setPosition(pos.x + 10, pos.y + 10);
+        itemInfo.setVisible(true);
+        itemInfo.toFront();
+    }
     public void render() {
         if (!Gdx.input.isKeyPressed(Input.Keys.E)) {
             canEscape = true;
@@ -235,7 +255,9 @@ public class Inventory {
                 selectionNumber = -1;
                 myGame.stage.getActors().removeValue(selectedImage, true);
             }
+            itemInfo.setVisible(false);
             setOpen(false);
+            return;
         }
         if (currentSelection != null) {
             Vector2 pos = myGame.stage.screenToStageCoordinates(new Vector2(Gdx.input.getX(), Gdx.input.getY()));
@@ -252,6 +274,16 @@ public class Inventory {
                 myGame.stage.getActors().removeValue(selectedImage, true);
             }
             //myGame.batch.draw(currentSelection.itemTexture, Gdx.input.getX(), Gdx.input.getY(), 50, 50);
+        }
+        if (!Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+            Vector2 pos = myGame.stage.screenToStageCoordinates(new Vector2(Gdx.input.getX(), Gdx.input.getY()));
+            Actor actor = table.hit(pos.x, pos.y, true);
+            if (actor != null) {
+                int selection = (int) actor.getUserObject();
+                if (inventoryItems[selection] != null) {
+                    renderSelectionInfo(inventoryItems[selection], pos);
+                }
+            } else itemInfo.setVisible(false);
         }
 
         //myGame.batch.begin();

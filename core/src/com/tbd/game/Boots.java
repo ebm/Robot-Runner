@@ -13,4 +13,8 @@ public class Boots extends Item {
     public void apply() {
         myGame.player.speedMultiplier = speedMultiplier;
     }
+    @Override
+    public String toString() {
+        return "Increases movement speed by " + (int) ((speedMultiplier - 1) * 100) + "%.";
+    }
 }
