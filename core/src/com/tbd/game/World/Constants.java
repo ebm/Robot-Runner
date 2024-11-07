@@ -50,10 +50,11 @@ public class Constants {
     // Laser
     public static float LASER_ATTACK_DAMAGE_PER_SECOND = 300;
     public static float LASER_MAXIMUM_DISTANCE = 10;
+    public static float LASER_MINIMUM_DISTANCE = 1.1f;
     public static float LASER_THREAT_SECONDS = 3;
     public static float LASER_SAFE_SECONDS = 1;
-    public static float LASER_RADIUS = 0.2f * METERS_PER_PIXEL;
-    public static float LASER_TEST_PROJECTILE_VELOCITY = 30 * METERS_PER_PIXEL;
+    public static float LASER_RADIUS = 0.1f * METERS_PER_PIXEL;
+    public static float LASER_TEST_PROJECTILE_VELOCITY = 30f * METERS_PER_PIXEL;
 
     // Golem
     public static float GOLEM_INITIAL_X_POSITION = 50 * METERS_PER_PIXEL;

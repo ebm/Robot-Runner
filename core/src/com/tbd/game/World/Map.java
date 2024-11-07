@@ -83,8 +83,7 @@ public class Map {
                 } else if (mapObject.getProperties().containsKey("Bat")) {
                     myGame.activeMonsters.add(new Bat(myGame, rectangleMapObject.getRectangle().x * UNIT_SCALE, rectangleMapObject.getRectangle().y * UNIT_SCALE));
                 } else if (mapObject.getProperties().containsKey("Laser")) {
-                    Direction dir = Direction.parseDirection((String) mapObject.getProperties().get("Laser"));
-                    myGame.activeLasers.add(new Laser(myGame, dir, rectangleMapObject.getRectangle().x * UNIT_SCALE, rectangleMapObject.getRectangle().y * UNIT_SCALE));
+                    myGame.activeLasers.add(new Laser(myGame, Integer.parseInt((String) mapObject.getProperties().get("Laser")), rectangleMapObject.getRectangle().x * UNIT_SCALE, rectangleMapObject.getRectangle().y * UNIT_SCALE, LASER_MAXIMUM_DISTANCE));
                 } else if (mapObject.getProperties().containsKey("GolemArmorItem")) {
                     myGame.itemMapManager.addItem(new Armor(0.8f, myGame.itemMapManager.getID(),rectangleMapObject.getRectangle().x * UNIT_SCALE, rectangleMapObject.getRectangle().y * UNIT_SCALE, myGame.rockArmor, myGame));
                 } else if (mapObject.getProperties().containsKey("BootsFastItem")) {

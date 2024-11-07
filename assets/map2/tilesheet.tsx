@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.10" tiledversion="1.11.0" name="tilesheet" tilewidth="32" tileheight="32" tilecount="22" columns="0">
+<tileset version="1.10" tiledversion="1.11.0" name="tilesheet" tilewidth="32" tileheight="32" tilecount="19" columns="0">
  <grid orientation="orthogonal" width="1" height="1"/>
  <tile id="0">
   <image source="Tiles/2.png" width="32" height="32"/>
@@ -57,14 +57,5 @@
  </tile>
  <tile id="24">
   <image source="../laser.png" width="32" height="32"/>
- </tile>
- <tile id="25">
-  <image source="../laser2.png" width="32" height="32"/>
- </tile>
- <tile id="26">
-  <image source="../laser3.png" width="32" height="32"/>
- </tile>
- <tile id="27">
-  <image source="../laser4.png" width="32" height="32"/>
  </tile>
 </tileset>

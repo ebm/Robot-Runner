@@ -48,8 +48,8 @@ public class MyGame implements Screen {
 	public ArrayList<Laser> activeLasers;
 	public Texture golem;
 	public Texture bullet;
-	public Texture laserVertical;
-	public Texture laserHorizontal;
+	public Texture laserTexture;
+	public Texture laserBeam;
 	public Texture bat;
 	public Texture bat1;
 	public Texture bat2;
@@ -76,6 +76,7 @@ public class MyGame implements Screen {
 	public MapEntity mapEntity;
 	public Random rand;
 	public Label fpsLabel;
+	public boolean cameraLocked;
 	public MyGame(GameStateManager gsm) {
 		this.gsm = gsm;
 		batch = gsm.batch;
@@ -102,8 +103,8 @@ public class MyGame implements Screen {
 
 		shadow = new Texture("player/shadow.png");
 		golem = new Texture("golem.png");
-		laserVertical = new Texture("laserVertical.png");
-		laserHorizontal = new Texture("laserHorizontal.png");
+		laserTexture = new Texture("laser.png");
+		laserBeam = new Texture("laserBeam.png");
 		bullet = new Texture("bullet.png");
 		bat = new Texture("bat.png");
 		bat1 = new Texture("bat1.png");
@@ -140,6 +141,7 @@ public class MyGame implements Screen {
 
 		if (player == null) player = new Player(this, PLAYER_INITIAL_X_POSITION, PLAYER_INITIAL_Y_POSITION);
 		canEscape = false;
+		cameraLocked = true;
 	}
 	@Override
 	public void show() {
@@ -169,10 +171,29 @@ public class MyGame implements Screen {
 		ScreenUtils.clear(0, 0, 0, 1);
 		gsm.vp.apply();
 		gsm.batch.setProjectionMatrix(gsm.camera.combined);
-		gsm.batch.begin();
-		gsm.camera.position.x = player.getBodyCenter().x;
-		gsm.camera.position.y = player.getBodyCenter().y + CAMERA_Y_OFFSET;
+		if (Gdx.input.isKeyPressed(Input.Keys.UP) && !Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+			gsm.camera.position.y += 0.1f;
+			cameraLocked = false;
+		}
+		if (Gdx.input.isKeyPressed(Input.Keys.DOWN) && !Gdx.input.isKeyPressed(Input.Keys.UP)) {
+			gsm.camera.position.y -= 0.1f;
+			cameraLocked = false;
+		}
+		if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+			gsm.camera.position.x -= 0.1f;
+			cameraLocked = false;
+		}
+		if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && !Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+			gsm.camera.position.x += 0.1f;
+			cameraLocked = false;
+		}
+		if (cameraLocked || Gdx.input.isKeyPressed(Input.Keys.C)) {
+			cameraLocked = true;
+			gsm.camera.position.x = player.getBodyCenter().x;
+			gsm.camera.position.y = player.getBodyCenter().y + CAMERA_Y_OFFSET;
+		}
 		gsm.camera.update();
+		gsm.batch.begin();
 
 		map.render();
 
