@@ -54,6 +54,7 @@ public class MyGame implements Screen {
 	public Texture bat1;
 	public Texture bat2;
 	public Texture bat3;
+	public Texture spaceship;
 	public TextureAtlas healthbarAtlas;
 	public Texture slot;
 	public Texture rockArmor;
@@ -109,6 +110,7 @@ public class MyGame implements Screen {
 		bat2 = new Texture("bat2.png");
 		bat3 = new Texture("bat3.png");
 		slot = new Texture("slot.png");
+		spaceship = new Texture("spaceship.png");
 		rockArmor = new Texture("rock_armor.png");
 		fastBoots = new Texture("boots_fast.png");
 		heartSmall = new Texture("heart_small.png");

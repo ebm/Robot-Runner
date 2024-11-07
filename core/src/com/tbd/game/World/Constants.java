@@ -61,13 +61,11 @@ public class Constants {
     public static float GOLEM_HEALTH = 300;
     public static float GOLEM_HORIZONTAL_VELOCITY = 2 * METERS_PER_PIXEL;
     public static float GOLEM_JUMP_VELOCITY = 10 * METERS_PER_PIXEL;
-    public static float GOLEM_BULLET_ATTACK_DAMAGE = 30;
-    public static float GOLEM_BULLET_ATTACKS_PER_SECOND = 0.5f;
-    public static float GOLEM_BULLET_RADIUS = 0.5f * METERS_PER_PIXEL;
-    public static float GOLEM_BULLET_SPEED = 10 * METERS_PER_PIXEL;
-    public static float GOLEM_MAXIMUM_HORIZONTAL_JUMP_VELOCITY = 30 * METERS_PER_PIXEL;
+    public static float GOLEM_ATTACK_DAMAGE = 55;
+    public static float GOLEM_ATTACK_COOLDOWN = 0.5f;
+    public static float GOLEM_MAXIMUM_HORIZONTAL_JUMP_VELOCITY = 40 * METERS_PER_PIXEL;
     public static float GOLEM_ACTIVATION_RANGE = 20 * METERS_PER_PIXEL;
-    public static float GOLEM_JUMP_COOLDOWN = 6;
+    public static float GOLEM_JUMP_COOLDOWN = 3;
     public static float GOLEM_DIRECTION_DELAY = 0.5f;
     public static float GOLEM_HITBOX_WIDTH = 1.5f;//3 * METERS_PER_PIXEL;
     public static float GOLEM_HITBOX_HEIGHT = 1.5f;//3 * METERS_PER_PIXEL;
@@ -84,7 +82,13 @@ public class Constants {
     public static float BAT_RADIUS = 0.5f * METERS_PER_PIXEL;
     public static float BAT_WEAPON_RADIUS = BAT_RADIUS + 0.1f * METERS_PER_PIXEL;
 
-
+    // Spaceship
+    public static float SPACESHIP_HEALTH = 1000;
+    public static float SPACESHIP_WIDTH = 3;
+    public static float SPACESHIP_HEIGHT = 1;
+    public static float SPACESHIP_VERTICAL_VELOCITY = 0.15f;
+    public static float SPACESHIP_ACTIVATION_RANGE = 20;
+    public static float SPACESHIP_VELOCITY = 8;
 
 
     public static float getDistance(Vector2 a, Vector2 b) {

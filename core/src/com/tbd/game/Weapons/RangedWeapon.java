@@ -172,6 +172,7 @@ public class RangedWeapon extends Weapon {
                 if (fixtureA.getUserData() != null && fixtureB.getUserData() != null && fixtureA.getUserData().getClass() == BulletClass.class && fixtureB.getUserData().getClass() == BulletClass.class) {
                     BulletClass b1 = (BulletClass) fixtureA.getUserData();
                     BulletClass b2 = (BulletClass) fixtureB.getUserData();
+                    if (!b1.user.enemy.isInstance(b2.user)) return;
                     float b1AttackDamage = b1.attackDamage;
                     float b2AttackDamage = b2.attackDamage;
 

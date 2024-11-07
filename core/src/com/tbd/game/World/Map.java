@@ -13,6 +13,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.EdgeShape;
 import com.tbd.game.Entities.MonsterPackage.Bat;
 import com.tbd.game.Entities.MonsterPackage.Golem;
+import com.tbd.game.Entities.MonsterPackage.Spaceship;
 import com.tbd.game.Entities.PlayerPackage.Player;
 import com.tbd.game.Items.Armor;
 import com.tbd.game.Items.Boots;
@@ -92,6 +93,8 @@ public class Map {
                     myGame.itemMapManager.addItem(new Heart(20, myGame.itemMapManager.getID(),rectangleMapObject.getRectangle().x * UNIT_SCALE, rectangleMapObject.getRectangle().y * UNIT_SCALE, myGame.heartSmall, myGame));
                 } else if (mapObject.getProperties().containsKey("DashItem")) {
                     myGame.itemMapManager.addItem(new Dash(myGame.itemMapManager.getID(),rectangleMapObject.getRectangle().x * UNIT_SCALE, rectangleMapObject.getRectangle().y * UNIT_SCALE, myGame.dashAbility, myGame));
+                } else if (mapObject.getProperties().containsKey("Spaceship")) {
+                    myGame.activeMonsters.add(new Spaceship(myGame, rectangleMapObject.getRectangle().x * UNIT_SCALE, rectangleMapObject.getRectangle().y * UNIT_SCALE));
                 }
             }
         }
