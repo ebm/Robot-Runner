@@ -79,7 +79,7 @@ public class Constants {
     public static float BAT_VELOCITY = 3 * METERS_PER_PIXEL;
     public static float BAT_VERTICAL_VELOCITY = 1 * METERS_PER_PIXEL;
     public static float BAT_VERTICAL_DELAY = 0.2f;
-    public static float BAT_ATTACK_DAMAGE = 30;
+    public static float BAT_ATTACK_DAMAGE = 20;
     public static float BAT_ACTIVATION_RANGE = 20 * METERS_PER_PIXEL;
     public static float BAT_RADIUS = 0.5f * METERS_PER_PIXEL;
     public static float BAT_WEAPON_RADIUS = BAT_RADIUS + 0.1f * METERS_PER_PIXEL;

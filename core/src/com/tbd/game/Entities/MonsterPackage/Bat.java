@@ -22,21 +22,6 @@ public class Bat extends Monster {
     Animation<Texture> batAnimation;
     float timePassed;
     boolean asleep;
-    public Bat(MyGame myGame) {
-        super(myGame, BAT_HEALTH);
-        healthbar = new Healthbar(myGame, this, BAT_HEALTH);
-
-        createBody(BAT_INITIAL_X_POSITION, BAT_INITIAL_Y_POSITION);
-
-        CircleShape shape = new CircleShape();
-        shape.setRadius(BAT_WEAPON_RADIUS);
-        weapon = new BodyWeapon(myGame, this, BAT_ATTACK_DAMAGE, shape);
-        weapon.attack(body.getPosition());
-        currentVerticalVelocityAdder = BAT_VERTICAL_VELOCITY;
-        lastVerticalChange = myGame.timePassed;
-        asleep = false;
-        createAnimations();
-    }
     public Bat(MyGame myGame, float initialX, float initialY) {
         super(myGame, BAT_HEALTH);
         healthbar = new Healthbar(myGame, this, BAT_HEALTH);
@@ -45,7 +30,7 @@ public class Bat extends Monster {
 
         CircleShape shape = new CircleShape();
         shape.setRadius(BAT_WEAPON_RADIUS);
-        weapon = new BodyWeapon(myGame, this, BAT_ATTACK_DAMAGE, shape);
+        weapon = new BodyWeapon(myGame, this, BAT_ATTACK_DAMAGE, shape, 0.5f);
         weapon.attack(body.getPosition());
         currentVerticalVelocityAdder = BAT_VERTICAL_VELOCITY;
         lastVerticalChange = myGame.timePassed;

@@ -167,7 +167,7 @@ public class Laser {
         if (width == 0 || height == 0) return;
         PolygonShape polygon = new PolygonShape();
         polygon.set(new Vector2[] {new Vector2(0, 0), new Vector2(0, height), new Vector2(width, height), new Vector2(width, 0)});
-        weapon = new BodyWeapon(myGame, myGame.mapEntity, LASER_ATTACK_DAMAGE_PER_SECOND, polygon);
+        weapon = new BodyWeapon(myGame, myGame.mapEntity, LASER_ATTACK_DAMAGE_PER_SECOND, polygon, 0);
 
         body = weapon.body;
 

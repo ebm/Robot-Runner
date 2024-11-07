@@ -10,10 +10,14 @@ import com.tbd.game.States.MyGame;
 public class BodyWeapon extends Weapon {
     public Body body;
     Entity contactEntity;
-    public BodyWeapon(MyGame myGame, Entity user, float attackDamage, Shape shape) {
+    float cooldown;
+    double lastUse;
+    public BodyWeapon(MyGame myGame, Entity user, float attackDamage, Shape shape, float cooldown) {
         super(myGame, user);
         this.attackDamage = attackDamage;
         contactEntity = null;
+        this.cooldown = cooldown;
+        lastUse = 0;
 
         createBody(shape);
     }
@@ -48,8 +52,11 @@ public class BodyWeapon extends Weapon {
 
     @Override
     public void render() {
-        if (contactEntity != null) {
-            float damage = Gdx.graphics.getDeltaTime() * attackDamage;
+        if (contactEntity != null && myGame.timePassed - lastUse > cooldown) {
+            lastUse = myGame.timePassed;
+            float damage;
+            if (cooldown == 0) damage = Gdx.graphics.getDeltaTime() * attackDamage;
+            else damage = attackDamage;
             if (contactEntity.death) {
                 contactEntity = null;
                 return;
