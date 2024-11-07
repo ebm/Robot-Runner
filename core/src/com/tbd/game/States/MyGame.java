@@ -74,6 +74,7 @@ public class MyGame implements Screen {
 	public ItemMapManager itemMapManager;
 	public MapEntity mapEntity;
 	public Random rand;
+	public Label fpsLabel;
 	public MyGame(GameStateManager gsm) {
 		this.gsm = gsm;
 		batch = gsm.batch;
@@ -119,6 +120,9 @@ public class MyGame implements Screen {
 		textBackground = new Texture("textBorder.png");
 		playerFireNoise = Gdx.audio.newSound(Gdx.files.internal("fire.mp3"));
 		playerHitmarkerNoise = Gdx.audio.newSound(Gdx.files.internal("hitmarker.mp3"));
+		fpsLabel = new Label("FPS: " + Gdx.graphics.getFramesPerSecond(), labelStyle);
+		fpsLabel.setPosition(0, Gdx.graphics.getHeight() - 25);
+		stage.addActor(fpsLabel);
 
 		itemMapManager = new ItemMapManager(this);
 		activeMonsters = new ArrayList<>();
@@ -178,6 +182,7 @@ public class MyGame implements Screen {
 			l.render();
 		}
 		itemMapManager.render();
+		fpsLabel.setText("FPS: " + Gdx.graphics.getFramesPerSecond());
 		gsm.batch.end();
 
 		debugRenderer.render(world, gsm.camera.combined);
@@ -197,6 +202,7 @@ public class MyGame implements Screen {
 	public void resize(int width, int height) {
 		gsm.vp.update(width, height);
 		stage.getViewport().update(width, height, true);
+		fpsLabel.setPosition(0, Gdx.graphics.getHeight() - 25);
 	}
 
 	@Override
