@@ -47,6 +47,7 @@ public class MyGame implements Screen {
 	public ArrayList<Monster> activeMonsters;
 	public ArrayList<Laser> activeLasers;
 	public Texture golem;
+	public Texture gun;
 	public Texture bullet;
 	public Texture laserTexture;
 	public Texture laserBeam;
@@ -103,6 +104,7 @@ public class MyGame implements Screen {
 
 		shadow = new Texture("player/shadow.png");
 		golem = new Texture("golem.png");
+		gun = new Texture("gun.png");
 		laserTexture = new Texture("laser.png");
 		laserBeam = new Texture("laserBeam.png");
 		bullet = new Texture("bullet.png");
@@ -208,7 +210,7 @@ public class MyGame implements Screen {
 		fpsLabel.setText("FPS: " + Gdx.graphics.getFramesPerSecond());
 		gsm.batch.end();
 
-		debugRenderer.render(world, gsm.camera.combined);
+		//debugRenderer.render(world, gsm.camera.combined);
 
 		stage.act();
 		stage.draw();

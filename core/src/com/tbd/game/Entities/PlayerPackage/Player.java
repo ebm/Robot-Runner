@@ -48,6 +48,9 @@ public class Player extends Entity {
     public float dmgTakenMultiplier;
     public float speedMultiplier;
     public float additionalHealth;
+    TextureRegion gunTextureRegion;
+    public float angle;
+    boolean flip;
     public Player(MyGame myGame, float initialX, float initialY) {
         this.myGame = myGame;
         touchingFloor = false;
@@ -91,6 +94,8 @@ public class Player extends Entity {
         speedMultiplier = 1;
         dmgTakenMultiplier = 1;
         additionalHealth  = 0;
+        gunTextureRegion = new TextureRegion(myGame.gun);
+        flip = false;
     }
 
     private void createBody(float initialX, float initialY) {
@@ -255,6 +260,16 @@ public class Player extends Entity {
         if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
             weapon.attack(new Vector2(myGame.getMousePosition().x, myGame.getMousePosition().y));
             combatTimer = myGame.timePassed;
+            if (myGame.getMousePosition().x > getBodyCenter().x) {
+                currentState = PlayerState.ShootingRight;
+                if (flip) gunTextureRegion.flip(true, false);
+                flip = false;
+            } else {
+                currentState = PlayerState.ShootingLeft;
+                if (!flip) gunTextureRegion.flip(true, false);
+                flip = true;
+            }
+            angle = (float) Math.atan((getBodyCenter().y - myGame.getMousePosition().y) / (getBodyCenter().x - myGame.getMousePosition().x));
         }
         inventory.applyMultipliers();
     }
@@ -272,8 +287,18 @@ public class Player extends Entity {
         timePassed += Gdx.graphics.getDeltaTime();
         TextureRegion currentFrame;
         if (currentState == PlayerState.WalkingLeft) {
+            walkingRight.setPlayMode(Animation.PlayMode.NORMAL);
             currentFrame = walkingLeft.getKeyFrame(timePassed, true);
         } else if (currentState == PlayerState.WalkingRight) {
+            walkingLeft.setPlayMode(Animation.PlayMode.NORMAL);
+            currentFrame = walkingRight.getKeyFrame(timePassed, true);
+        } else if (currentState == PlayerState.ShootingLeft) {
+            if (body.getLinearVelocity().x < 0) walkingLeft.setPlayMode(Animation.PlayMode.NORMAL);
+            else walkingLeft.setPlayMode(Animation.PlayMode.REVERSED);
+            currentFrame = walkingLeft.getKeyFrame(timePassed, true);
+        } else if (currentState == PlayerState.ShootingRight) {
+            if (body.getLinearVelocity().x > 0) walkingRight.setPlayMode(Animation.PlayMode.NORMAL);
+            else walkingRight.setPlayMode(Animation.PlayMode.REVERSED);
             currentFrame = walkingRight.getKeyFrame(timePassed, true);
         } else {
             currentFrame = still.getKeyFrame(timePassed, true);
@@ -283,6 +308,11 @@ public class Player extends Entity {
         healthbar.maxHealth = PLAYER_HEALTH + additionalHealth;
         if (PLAYER_HEALTH + additionalHealth < health) health = PLAYER_HEALTH + additionalHealth;
         myGame.batch.draw(healthbar.getHealthBar(), body.getPosition().x - PLAYER_HORIZONTAL_OFFSET, body.getPosition().y + PLAYER_HITBOX_HEIGHT + HEALTHBAR_OFFSET, PLAYER_SPRITE_WIDTH, HEALTHBAR_HEIGHT);
+        if (currentState == PlayerState.ShootingRight) {
+            myGame.batch.draw(gunTextureRegion, getBodyCenter().x - 0.5f, getBodyCenter().y - 0.25f, 0.5f, 0.25f, 1, 0.5f, 1, 1, (float) Math.toDegrees(angle));
+        } else if (currentState == PlayerState.ShootingLeft) {
+            myGame.batch.draw(gunTextureRegion, getBodyCenter().x - 0.5f, getBodyCenter().y - 0.25f, 0.5f, 0.25f, 1, 0.5f, 1, 1, (float) Math.toDegrees(angle));
+        }
     }
     @Override
     public void takeDamage(float damage) {
