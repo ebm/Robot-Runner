@@ -52,8 +52,8 @@
             "scale": 2,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": 894,
-                "y": 174
+                "x": 497.5,
+                "y": 320
             }
         },
         "ruleTileset.tsx": {
@@ -75,11 +75,11 @@
                 19,
                 5
             ],
-            "scale": 3,
+            "scale": 0.5,
             "selectedLayer": 5,
             "viewCenter": {
-                "x": 3989,
-                "y": 9095.666666666666
+                "x": 784,
+                "y": 12188
             }
         },
         "tiles.tsx": {

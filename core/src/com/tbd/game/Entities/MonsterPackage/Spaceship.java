@@ -7,6 +7,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.Shape;
 import com.tbd.game.Entities.Healthbar;
+import com.tbd.game.Items.Armor;
 import com.tbd.game.States.MyGame;
 import com.tbd.game.Weapons.BodyWeapon;
 import com.tbd.game.Weapons.RangedWeapon;
@@ -25,7 +26,7 @@ public class Spaceship extends Monster {
     TextureRegion spaceshipTextureRegion;
     public Spaceship(MyGame myGame, float initialX, float initialY) {
         super(myGame, SPACESHIP_HEALTH);
-        healthbar = new Healthbar(myGame, this, GOLEM_HEALTH);
+        healthbar = new Healthbar(myGame, this, SPACESHIP_HEALTH);
 
         weapon = new RangedWeapon(myGame, this, 15, 80, 0.5f, 1, null);
         createBody(initialX, initialY);
@@ -99,11 +100,17 @@ public class Spaceship extends Monster {
                 body.setAngularVelocity(0);
             }
             //if (body.getAngle() == 0 && !follow) body.setAngularVelocity(0);
-            ((RangedWeapon) weapon).attackWithAimbot(myGame.player);
+            if (myGame.rand.nextInt() % 2 == 0) ((RangedWeapon) weapon).attackWithAimbot(myGame.player);
+            else ((RangedWeapon) weapon).attack(myGame.player.getBodyCenter());
         } else if (getDistance(getBodyCenter(), myGame.player.getBodyCenter()) < SPACESHIP_ACTIVATION_RANGE) {
             activated = true;
         }
 
+    }
+    @Override
+    public void death() {
+        super.death();
+        myGame.activeMonsters.remove(this);
     }
 
     @Override

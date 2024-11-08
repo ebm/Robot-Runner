@@ -121,7 +121,6 @@ public class Golem extends Monster{
     public void death() {
         super.death();
         myGame.itemMapManager.addItem(new Armor(0.8f, myGame.itemMapManager.getID(), getBodyCenter().x, getBodyCenter().y, myGame.rockArmor, myGame));
-        ((RangedWeapon) weapon).destroy();
         myGame.activeMonsters.remove(this);
     }
 }

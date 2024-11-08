@@ -188,6 +188,7 @@ public class Player extends Entity {
         additionalHealth  = 0;
     }
     public void update() {
+        if (getBodyCenter().y < 0) death();
         currentState = PlayerState.Still;
         // ON GROUND
         if (touchingFloor) {
@@ -256,6 +257,7 @@ public class Player extends Entity {
         } else if (!wallClimbFinished) {
             if (wallClimbTime != 0) wallClimbFinished = true;
         }
+        inventory.applyMultipliers();
         // Fire
         if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
             weapon.attack(new Vector2(myGame.getMousePosition().x, myGame.getMousePosition().y));
@@ -271,7 +273,6 @@ public class Player extends Entity {
             }
             angle = (float) Math.atan((getBodyCenter().y - myGame.getMousePosition().y) / (getBodyCenter().x - myGame.getMousePosition().x));
         }
-        inventory.applyMultipliers();
     }
     @Override
     public void render() {
@@ -309,9 +310,9 @@ public class Player extends Entity {
         if (PLAYER_HEALTH + additionalHealth < health) health = PLAYER_HEALTH + additionalHealth;
         myGame.batch.draw(healthbar.getHealthBar(), body.getPosition().x - PLAYER_HORIZONTAL_OFFSET, body.getPosition().y + PLAYER_HITBOX_HEIGHT + HEALTHBAR_OFFSET, PLAYER_SPRITE_WIDTH, HEALTHBAR_HEIGHT);
         if (currentState == PlayerState.ShootingRight) {
-            myGame.batch.draw(gunTextureRegion, getBodyCenter().x - 0.5f, getBodyCenter().y - 0.25f, 0.5f, 0.25f, 1, 0.5f, 1, 1, (float) Math.toDegrees(angle));
+            myGame.batch.draw(gunTextureRegion, getBodyCenter().x - 0.5f + 0.25f, getBodyCenter().y - 0.25f, 0.5f, 0.25f, 1, 0.5f, 1, 1, (float) Math.toDegrees(angle));
         } else if (currentState == PlayerState.ShootingLeft) {
-            myGame.batch.draw(gunTextureRegion, getBodyCenter().x - 0.5f, getBodyCenter().y - 0.25f, 0.5f, 0.25f, 1, 0.5f, 1, 1, (float) Math.toDegrees(angle));
+            myGame.batch.draw(gunTextureRegion, getBodyCenter().x - 0.5f - 0.25f, getBodyCenter().y - 0.25f, 0.5f, 0.25f, 1, 0.5f, 1, 1, (float) Math.toDegrees(angle));
         }
     }
     @Override

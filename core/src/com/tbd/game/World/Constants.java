@@ -84,7 +84,7 @@ public class Constants {
     public static float BAT_WEAPON_RADIUS = BAT_RADIUS + 0.1f * METERS_PER_PIXEL;
 
     // Spaceship
-    public static float SPACESHIP_HEALTH = 1000;
+    public static float SPACESHIP_HEALTH = 600;
     public static float SPACESHIP_WIDTH = 3;
     public static float SPACESHIP_HEIGHT = 1;
     public static float SPACESHIP_VERTICAL_VELOCITY = 0.15f;

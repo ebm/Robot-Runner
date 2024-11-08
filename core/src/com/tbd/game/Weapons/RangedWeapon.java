@@ -72,7 +72,7 @@ public class RangedWeapon extends Weapon {
             newBullet.body.setLinearVelocity(bulletSpeed / hypotenuse * diffX,bulletSpeed / hypotenuse * diffY);
             totalBullets.add(newBullet);
             lastFired = myGame.timePassed;
-            attackSound.play();
+            if (attackSound != null) attackSound.play();
         }
     }
     /*public Vector2 calculatePrediction(Entity e) {
