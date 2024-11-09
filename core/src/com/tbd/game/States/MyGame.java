@@ -100,7 +100,7 @@ public class MyGame implements Screen {
 
 		world = new World(new Vector2(0, GRAVITY), true);
 
-		debugRenderer = new Box2DDebugRenderer();
+		//debugRenderer = new Box2DDebugRenderer();
 
 		shadow = new Texture("player/shadow.png");
 		golem = new Texture("golem.png");

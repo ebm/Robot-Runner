@@ -27,7 +27,7 @@ public class Menu implements Screen {
         stage = new Stage(new ScreenViewport());
         table = new Table();
         table.setFillParent(true);
-        table.setDebug(true);
+        //table.setDebug(true);
 
         stage.addActor(table);
         TextButtonStyle textButtonStyle = new TextButtonStyle();

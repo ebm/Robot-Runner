@@ -25,7 +25,7 @@ public class Pause implements Screen {
         stage = new Stage(new ScreenViewport());
         table = new Table();
         table.setFillParent(true);
-        table.setDebug(true);
+        //table.setDebug(true);
 
         stage.addActor(table);
         TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();

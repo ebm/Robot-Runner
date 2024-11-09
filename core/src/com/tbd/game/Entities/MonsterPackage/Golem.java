@@ -40,6 +40,7 @@ public class Golem extends Monster{
 
         lastJump = 0;
         directionTime = 0;
+        weapon.attack(body.getPosition());
     }
     public float calculateTrajectory(float initialYVelocity, Vector2 monsterPosition, Vector2 playerPosition) {
         float initialYPosition = monsterPosition.y;
