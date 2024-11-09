@@ -128,6 +128,7 @@ public class RangedWeapon extends Weapon {
         }
         //attack(new Vector2(e.getBodyCenter().x, e.getBodyCenter().y + 0.2f));
     }
+    @Override
     public void destroy() {
         while (!totalBullets.isEmpty()) {
             totalBullets.get(0).destroy();

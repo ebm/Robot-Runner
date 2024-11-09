@@ -15,6 +15,9 @@ public class Constants {
     public static float HEALTHBAR_OFFSET = 0.25f * METERS_PER_PIXEL;
     public static float HEALTHBAR_HEIGHT = 0.25f * METERS_PER_PIXEL;
 
+    // Entity Constants
+    public static float ENTITY_APPENDAGE_DISTANCE = UNIT_SCALE / 3f;
+
     // Player Constants
     public static float PLAYER_INITIAL_X_POSITION = 4 * METERS_PER_PIXEL;
     public static float PLAYER_INITIAL_Y_POSITION = 8 * METERS_PER_PIXEL;
@@ -31,7 +34,6 @@ public class Constants {
     public static float PLAYER_SPRITE_HEIGHT = 32f * UNIT_SCALE;
     public static float PLAYER_HITBOX_WIDTH = 22f * UNIT_SCALE;
     public static float PLAYER_HITBOX_HEIGHT = 28f * UNIT_SCALE;
-    public static float PLAYER_APPENDAGE_DISTANCE = UNIT_SCALE / 3f;
     public static int PLAYER_MAXIMUM_JUMPS = 2;
     public static float PLAYER_HORIZONTAL_OFFSET = 5 * UNIT_SCALE;
     public static float PLAYER_VERTICAL_OFFSET = 2 * UNIT_SCALE;
@@ -49,12 +51,12 @@ public class Constants {
 
     // Laser
     public static float LASER_ATTACK_DAMAGE_PER_SECOND = 300;
-    public static float LASER_MAXIMUM_DISTANCE = 10;
+    public static float LASER_MAXIMUM_DISTANCE = 15;
     public static float LASER_MINIMUM_DISTANCE = 1.1f;
     public static float LASER_THREAT_SECONDS = 3;
     public static float LASER_SAFE_SECONDS = 1;
     public static float LASER_RADIUS = 0.1f * METERS_PER_PIXEL;
-    public static float LASER_TEST_PROJECTILE_VELOCITY = 30f * METERS_PER_PIXEL;
+    public static float LASER_TEST_PROJECTILE_VELOCITY = 100/*30f * METERS_PER_PIXEL*/;
 
     // Golem
     public static float GOLEM_INITIAL_X_POSITION = 50 * METERS_PER_PIXEL;
@@ -72,8 +74,6 @@ public class Constants {
     public static float GOLEM_HITBOX_HEIGHT = 1.5f;//3 * METERS_PER_PIXEL;
 
     // Bat
-    public static float BAT_INITIAL_X_POSITION = 50 * METERS_PER_PIXEL;
-    public static float BAT_INITIAL_Y_POSITION = 72 * METERS_PER_PIXEL;
     public static float BAT_HEALTH = 50;
     public static float BAT_VELOCITY = 3 * METERS_PER_PIXEL;
     public static float BAT_VERTICAL_VELOCITY = 1 * METERS_PER_PIXEL;

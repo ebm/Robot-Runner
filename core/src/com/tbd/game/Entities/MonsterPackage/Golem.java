@@ -23,38 +23,23 @@ public class Golem extends Monster{
         super(myGame, GOLEM_HEALTH);
         healthbar = new Healthbar(myGame, this, GOLEM_HEALTH);
 
-        Shape shape = createShape();
-        createBody(initialX, initialY, shape);
-        weapon = new BodyWeapon(myGame, this, GOLEM_ATTACK_DAMAGE, shape, GOLEM_ATTACK_COOLDOWN);
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.density = 1000f;
+        fixtureDef.friction = 100f;
+        fixtureDef.restitution = 0f;
+        createBody(GOLEM_HITBOX_WIDTH, GOLEM_HITBOX_HEIGHT, fixtureDef);
+        body.setTransform(initialX, initialY, 0);
+
+        PolygonShape bodyWeaponShape = new PolygonShape();
+        float offset = 0.1f;
+        bodyWeaponShape.set(new Vector2[] {new Vector2(-offset, -offset), new Vector2(-offset, GOLEM_HITBOX_HEIGHT + offset),
+                new Vector2(GOLEM_HITBOX_WIDTH + offset, GOLEM_HITBOX_HEIGHT + offset), new Vector2(GOLEM_HITBOX_WIDTH + offset, -offset)});
+        weapon = new BodyWeapon(myGame, this, GOLEM_ATTACK_DAMAGE, bodyWeaponShape, GOLEM_ATTACK_COOLDOWN);
 
         if (range != null) this.range = new Range(range, this);
 
         lastJump = 0;
         directionTime = 0;
-    }
-    public Shape createShape() {
-        PolygonShape polygon = new PolygonShape();
-        polygon.set(new Vector2[] {new Vector2(0, 0), new Vector2(0, GOLEM_HITBOX_HEIGHT), new Vector2(GOLEM_HITBOX_WIDTH, GOLEM_HITBOX_HEIGHT), new Vector2(GOLEM_HITBOX_WIDTH, 0)});
-        return polygon;
-    }
-    public void createBody(float initialX, float initialY, Shape shape) {
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.DynamicBody;
-
-        body = myGame.world.createBody(bodyDef);
-        //body.setUserData(this);
-
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = shape;
-        fixtureDef.density = 1000f;
-        fixtureDef.friction = 100f;
-        fixtureDef.restitution = 0f;
-
-        body.createFixture(fixtureDef).setUserData(this);
-
-        body.setFixedRotation(true);
-
-        body.setTransform(initialX, initialY, 0);
     }
     public float calculateTrajectory(float initialYVelocity, Vector2 monsterPosition, Vector2 playerPosition) {
         float initialYPosition = monsterPosition.y;
@@ -78,9 +63,8 @@ public class Golem extends Monster{
     }
     public void update() {
         if (getDistance(body.getPosition(), myGame.player.body.getPosition()) < GOLEM_ACTIVATION_RANGE) {
-            double timeFromLastJump = (myGame.timePassed - lastJump);
-            if (timeFromLastJump > 1) {
-                weapon.attack(body.getPosition());
+            weapon.attack(body.getPosition());
+            if (contactFeet >= 1) {
                 if (getBodyCenter().x < myGame.player.getBodyCenter().x && body.getLinearVelocity().x <= 0 || getBodyCenter().x > myGame.player.getBodyCenter().x && body.getLinearVelocity().x >= 0) {
                     if (directionTime == 0) directionTime = myGame.timePassed;
                 }
@@ -94,7 +78,7 @@ public class Golem extends Monster{
                         else body.setLinearVelocity(0, body.getLinearVelocity().y);
                     }
                 }
-                if (timeFromLastJump > GOLEM_JUMP_COOLDOWN) {
+                if (myGame.timePassed - lastJump > GOLEM_JUMP_COOLDOWN) {
                     body.setTransform(body.getPosition().x, body.getPosition().y + UNIT_SCALE, 0);
                     Vector2 playerPos = new Vector2(myGame.player.getBodyCenter());
                     Vector2 monsterPos = new Vector2(body.getPosition().x + GOLEM_HITBOX_WIDTH / 2, body.getPosition().y);

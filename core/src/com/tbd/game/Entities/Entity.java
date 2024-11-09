@@ -1,8 +1,12 @@
 package com.tbd.game.Entities;
 
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.*;
 import com.tbd.game.States.MyGame;
+import com.tbd.game.World.ContactClass;
+import com.tbd.game.World.Listener;
+
+import static com.tbd.game.World.Constants.*;
 
 public abstract class Entity {
     public MyGame myGame;
@@ -11,6 +15,77 @@ public abstract class Entity {
     public Class<?> friendly;
     public Class<?> enemy;
     public boolean death;
+    public int contactFeet;
+    public int contactLeftArm;
+    public int contactRightArm;
+    public void createBody(float hitboxWidth, float hitboxHeight, FixtureDef fixtureDef) {
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.DynamicBody;
+        //bodyDef.position.set(INITIAL_X_POSITION, INITIAL_Y_POSITION);
+
+        body = myGame.world.createBody(bodyDef);
+
+        float bottomHeight = hitboxHeight / 20;
+        float bottomHorizontalHeight = hitboxWidth / 3;
+
+        float topHeight = hitboxHeight / 5;
+        float verticalWidth = hitboxWidth / 20;
+        PolygonShape polygon = new PolygonShape();
+        polygon.set(new Vector2[] {new Vector2(0, bottomHeight), new Vector2(0, hitboxHeight - topHeight), new Vector2(verticalWidth, hitboxHeight), new Vector2(hitboxWidth - verticalWidth, hitboxHeight), new Vector2(hitboxWidth, hitboxHeight - topHeight), new Vector2(hitboxWidth, bottomHeight), new Vector2(hitboxWidth - bottomHorizontalHeight,0), new Vector2(0 + bottomHorizontalHeight,0)});
+
+        fixtureDef.shape = polygon;
+
+        body.createFixture(fixtureDef).setUserData(this);
+
+        polygon.dispose();
+        body.setFixedRotation(true);
+        //body.setSleepingAllowed(false);
+
+        createFeet(hitboxWidth, hitboxHeight);
+        createLeftArm(hitboxWidth, hitboxHeight);
+        createRightArm(hitboxWidth, hitboxHeight);
+
+        contactFeet = 0;
+        contactLeftArm = 0;
+        contactRightArm = 0;
+    }
+
+    private void createFeet(float hitboxWidth, float hitboxHeight) {
+        PolygonShape shape = new PolygonShape();
+        shape.set(new float[] {ENTITY_APPENDAGE_DISTANCE, 0, ENTITY_APPENDAGE_DISTANCE, -ENTITY_APPENDAGE_DISTANCE, hitboxWidth - ENTITY_APPENDAGE_DISTANCE, 0, hitboxWidth - ENTITY_APPENDAGE_DISTANCE, -ENTITY_APPENDAGE_DISTANCE});
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.isSensor = true;
+
+        body.createFixture(fixtureDef).setUserData(new ContactClass(this, BodyPart.Feet));
+
+        shape.dispose();
+    }
+    private void createLeftArm(float hitboxWidth, float hitboxHeight) {
+        PolygonShape shape = new PolygonShape();
+        shape.set(new float[] {-ENTITY_APPENDAGE_DISTANCE, ENTITY_APPENDAGE_DISTANCE, -ENTITY_APPENDAGE_DISTANCE, hitboxHeight - ENTITY_APPENDAGE_DISTANCE, 0, hitboxHeight - ENTITY_APPENDAGE_DISTANCE, 0, ENTITY_APPENDAGE_DISTANCE});
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.isSensor = true;
+
+        body.createFixture(fixtureDef).setUserData(new ContactClass(this, BodyPart.LeftArm));
+
+        shape.dispose();
+    }
+    private void createRightArm(float hitboxWidth, float hitboxHeight) {
+        PolygonShape shape = new PolygonShape();
+        shape.set(new float[] {hitboxWidth, ENTITY_APPENDAGE_DISTANCE, hitboxWidth, hitboxHeight - ENTITY_APPENDAGE_DISTANCE, hitboxWidth + ENTITY_APPENDAGE_DISTANCE, hitboxHeight - ENTITY_APPENDAGE_DISTANCE, hitboxWidth + ENTITY_APPENDAGE_DISTANCE, ENTITY_APPENDAGE_DISTANCE});
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.isSensor = true;
+
+        body.createFixture(fixtureDef).setUserData(new ContactClass(this, BodyPart.RightArm));
+
+        shape.dispose();
+    }
     public void takeDamage(float damage) {
         //System.out.println("Health: " + health);
         health -= damage;
@@ -26,4 +101,35 @@ public abstract class Entity {
     public abstract Vector2 getBodyCenter();
     public abstract void update();
     public abstract void render();
+    public static void handleContact(Fixture fixtureA, Fixture fixtureB, boolean beginContact, MyGame myGame) {
+        ContactClass c = null;
+        Fixture[] collision = Listener.checkContact(fixtureA, fixtureB, ContactClass.class);
+        if (collision[0] != null) {
+            c = (ContactClass) collision[0].getUserData();
+        }
+        if (fixtureA.isSensor() && fixtureB.isSensor()) return;
+        if (c != null) {
+            if (c.data == BodyPart.Feet) {
+                if (beginContact) {
+                    ((Entity) c.owner).contactFeet++;
+                } else {
+                    ((Entity) c.owner).contactFeet--;
+                }
+            }
+            if (c.data == BodyPart.LeftArm) {
+                if (beginContact) {
+                    ((Entity) c.owner).contactLeftArm++;
+                } else {
+                    ((Entity) c.owner).contactLeftArm--;
+                }
+            }
+            if (c.data == BodyPart.RightArm) {
+                if (beginContact) {
+                    ((Entity) c.owner).contactRightArm++;
+                } else {
+                    ((Entity) c.owner).contactRightArm--;
+                }
+            }
+        }
+    }
 }

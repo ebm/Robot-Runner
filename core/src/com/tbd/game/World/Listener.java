@@ -1,6 +1,7 @@
 package com.tbd.game.World;
 
 import com.badlogic.gdx.physics.box2d.*;
+import com.tbd.game.Entities.Entity;
 import com.tbd.game.Entities.PlayerPackage.Player;
 import com.tbd.game.Items.Item;
 import com.tbd.game.States.MyGame;
@@ -53,7 +54,7 @@ public class Listener implements ContactListener {
     public void update() {
         while (!allContacts.isEmpty()) {
             ContactVar cv = allContacts.get(0);
-            Player.handleContact(cv.fixtureA, cv.fixtureB, cv.beginContact, myGame);
+            Entity.handleContact(cv.fixtureA, cv.fixtureB, cv.beginContact, myGame);
             Weapon.handleContact(cv.fixtureA, cv.fixtureB, cv.beginContact, myGame);
             Item.handleContact(cv.fixtureA, cv.fixtureB, cv.beginContact, myGame);
             if (!allContacts.isEmpty()) allContacts.remove(0);

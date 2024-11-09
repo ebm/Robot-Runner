@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.tbd.game.Entities.BodyPart;
 import com.tbd.game.Entities.Entity;
 import com.tbd.game.Entities.Healthbar;
 import com.tbd.game.Entities.MonsterPackage.Monster;
@@ -19,13 +20,7 @@ import com.tbd.game.Weapons.Weapon;
 import static com.tbd.game.World.Constants.*;
 
 public class Player extends Entity {
-    int contactFeet;
-    int contactLeftArm;
-    int contactRightArm;
     Healthbar healthbar;
-    public boolean touchingFloor;
-    public boolean touchingRightWall;
-    public boolean touchingLeftWall;
     int remainingJumps;
     boolean canJump;
     double wallClimbTime;
@@ -53,9 +48,6 @@ public class Player extends Entity {
     boolean flip;
     public Player(MyGame myGame, float initialX, float initialY) {
         this.myGame = myGame;
-        touchingFloor = false;
-        touchingRightWall = false;
-        touchingLeftWall = false;
         canJump = false;
         wallClimbFinished = false;
         wallClimbTime = 0;
@@ -66,11 +58,7 @@ public class Player extends Entity {
         weapon = new RangedWeapon(myGame, this, 20, 3, 8, 0.2f * METERS_PER_PIXEL, myGame.playerFireNoise);
 
         // Create Body
-        createBody(initialX, initialY);
-        // Create Sensors
-        createFeet();
-        createLeftArm();
-        createRightArm();
+        createPlayer(initialX, initialY);
 
         createAnimations();
 
@@ -97,74 +85,16 @@ public class Player extends Entity {
         gunTextureRegion = new TextureRegion(myGame.gun);
         flip = false;
     }
-
-    private void createBody(float initialX, float initialY) {
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.DynamicBody;
-        //bodyDef.position.set(INITIAL_X_POSITION, INITIAL_Y_POSITION);
-
-        body = myGame.world.createBody(bodyDef);
-
-        float bottomHeight = PLAYER_HITBOX_HEIGHT / 20;
-        float bottomHorizontalHeight = PLAYER_HITBOX_WIDTH / 3;
-
-        float topHeight = PLAYER_HITBOX_HEIGHT / 5;
-        float verticalWidth = PLAYER_HITBOX_WIDTH / 20;
-        PolygonShape polygon = new PolygonShape();
-        System.out.println(topHeight + "," + verticalWidth + "," + bottomHorizontalHeight + "," + bottomHeight);
-        polygon.set(new Vector2[] {new Vector2(0, bottomHeight), new Vector2(0, PLAYER_HITBOX_HEIGHT - topHeight), new Vector2(verticalWidth, PLAYER_HITBOX_HEIGHT), new Vector2(PLAYER_HITBOX_WIDTH - verticalWidth, PLAYER_HITBOX_HEIGHT), new Vector2(PLAYER_HITBOX_WIDTH, PLAYER_HITBOX_HEIGHT - topHeight), new Vector2(PLAYER_HITBOX_WIDTH, bottomHeight), new Vector2(PLAYER_HITBOX_WIDTH - bottomHorizontalHeight,0), new Vector2(0 + bottomHorizontalHeight,0)});
-
+    private void createPlayer(float initialX, float initialY) {
         FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = polygon;
         fixtureDef.density = 1f;
         fixtureDef.friction = 0f;
         fixtureDef.restitution = 0f;
 
-        body.createFixture(fixtureDef).setUserData(this);
-
-        polygon.dispose();
-        body.setFixedRotation(true);
-        //body.setSleepingAllowed(false);
-
+        createBody(PLAYER_HITBOX_WIDTH, PLAYER_HITBOX_HEIGHT, fixtureDef);
         body.setTransform(initialX, initialY, 0);
     }
 
-    private void createFeet() {
-        PolygonShape shape = new PolygonShape();
-        shape.set(new float[] {PLAYER_APPENDAGE_DISTANCE, 0, PLAYER_APPENDAGE_DISTANCE, -PLAYER_APPENDAGE_DISTANCE, PLAYER_HITBOX_WIDTH - PLAYER_APPENDAGE_DISTANCE, 0, PLAYER_HITBOX_WIDTH - PLAYER_APPENDAGE_DISTANCE, -PLAYER_APPENDAGE_DISTANCE});
-
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = shape;
-        fixtureDef.isSensor = true;
-
-        body.createFixture(fixtureDef).setUserData(BodyPart.Feet);
-
-        shape.dispose();
-    }
-    private void createLeftArm() {
-        PolygonShape shape = new PolygonShape();
-        shape.set(new float[] {-PLAYER_APPENDAGE_DISTANCE, PLAYER_APPENDAGE_DISTANCE, -PLAYER_APPENDAGE_DISTANCE, PLAYER_HITBOX_HEIGHT - PLAYER_APPENDAGE_DISTANCE, 0, PLAYER_HITBOX_HEIGHT - PLAYER_APPENDAGE_DISTANCE, 0, PLAYER_APPENDAGE_DISTANCE});
-
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = shape;
-        fixtureDef.isSensor = true;
-
-        body.createFixture(fixtureDef).setUserData(BodyPart.LeftArm);
-
-        shape.dispose();
-    }
-    private void createRightArm() {
-        PolygonShape shape = new PolygonShape();
-        shape.set(new float[] {PLAYER_HITBOX_WIDTH, PLAYER_APPENDAGE_DISTANCE, PLAYER_HITBOX_WIDTH, PLAYER_HITBOX_HEIGHT - PLAYER_APPENDAGE_DISTANCE, PLAYER_HITBOX_WIDTH + PLAYER_APPENDAGE_DISTANCE, PLAYER_HITBOX_HEIGHT - PLAYER_APPENDAGE_DISTANCE, PLAYER_HITBOX_WIDTH + PLAYER_APPENDAGE_DISTANCE, PLAYER_APPENDAGE_DISTANCE});
-
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = shape;
-        fixtureDef.isSensor = true;
-
-        body.createFixture(fixtureDef).setUserData(BodyPart.RightArm);
-
-        shape.dispose();
-    }
     private void createAnimations() {
         TextureRegion[] walkingLeftFrames = {myGame.atlas.findRegion("left1"), myGame.atlas.findRegion("left2"),
                 myGame.atlas.findRegion("left3"), myGame.atlas.findRegion("left4")};
@@ -191,7 +121,7 @@ public class Player extends Entity {
         if (getBodyCenter().y < 0) death();
         currentState = PlayerState.Still;
         // ON GROUND
-        if (touchingFloor) {
+        if (contactFeet >= 1) {
             body.setLinearVelocity(0, body.getLinearVelocity().y);
             remainingJumps = PLAYER_MAXIMUM_JUMPS;
             wallClimbFinished = false;
@@ -208,7 +138,7 @@ public class Player extends Entity {
         if (!Gdx.input.isKeyPressed(Input.Keys.E)) canOpenInventory = true;
         // LEFT
         if (Gdx.input.isKeyPressed(Input.Keys.A) && !Gdx.input.isKeyPressed(Input.Keys.D)) {
-            if (touchingFloor) {
+            if (contactFeet >= 1) {
                 body.setLinearVelocity(-PLAYER_HORIZONTAL_VELOCITY * speedMultiplier, body.getLinearVelocity().y);
             } else {
                 if (body.getLinearVelocity().x - PLAYER_HORIZONTAL_AIR_ACCELERATION > -PLAYER_MAXIMUM_HORIZONTAL_AIR_VELOCITY * speedMultiplier) {
@@ -219,7 +149,7 @@ public class Player extends Entity {
         }
         // RIGHT
         if (Gdx.input.isKeyPressed(Input.Keys.D) && !Gdx.input.isKeyPressed(Input.Keys.A)) {
-            if (touchingFloor) {
+            if (contactFeet >= 1) {
                 body.setLinearVelocity(PLAYER_HORIZONTAL_VELOCITY * speedMultiplier, body.getLinearVelocity().y);
             } else {
                 if (body.getLinearVelocity().x + PLAYER_HORIZONTAL_AIR_ACCELERATION < PLAYER_MAXIMUM_HORIZONTAL_AIR_VELOCITY * speedMultiplier) {
@@ -245,7 +175,7 @@ public class Player extends Entity {
         // WALLCLIMB
         if (Gdx.input.isKeyPressed(Input.Keys.W) && !wallClimbFinished) {
             // Ensure player is walking into wall
-            if ((currentState == PlayerState.WalkingLeft && touchingLeftWall || currentState == PlayerState.WalkingRight && touchingRightWall) &&
+            if ((currentState == PlayerState.WalkingLeft && contactLeftArm >= 1 || currentState == PlayerState.WalkingRight && contactRightArm >= 1) &&
                     // Ensure player has not exceeded climbing wall time
                     (wallClimbTime == 0 || (myGame.timePassed - wallClimbTime) < PLAYER_WALLCLIMB_LENGTH_SECONDS)) {
                 if (wallClimbTime == 0) wallClimbTime = myGame.timePassed;
@@ -325,43 +255,7 @@ public class Player extends Entity {
         super.death();
         myGame.listener.resetContacts();
         myGame.table.clear();
+        weapon.destroy();
         myGame.player = new Player(myGame, PLAYER_INITIAL_X_POSITION, PLAYER_INITIAL_Y_POSITION);
-    }
-    public static void handleContact(Fixture fixtureA, Fixture fixtureB, boolean beginContact, MyGame myGame) {
-        BodyPart bp = null;
-        Fixture[] collision = Listener.checkContact(fixtureA, fixtureB, BodyPart.class);
-        if (collision[0] != null) {
-            bp = (BodyPart) collision[0].getUserData();
-        }
-        if (fixtureA.isSensor() && fixtureB.isSensor()) return;
-        if (bp != null) {
-            if (bp == BodyPart.Feet) {
-                if (beginContact) {
-                    myGame.player.touchingFloor = true;
-                    myGame.player.contactFeet++;
-                } else {
-                    myGame.player.contactFeet--;
-                    if (myGame.player.contactFeet == 0) myGame.player.touchingFloor = false;
-                }
-            }
-            if (bp == BodyPart.LeftArm) {
-                if (beginContact) {
-                    myGame.player.touchingLeftWall = true;
-                    myGame.player.contactLeftArm++;
-                } else {
-                    myGame.player.contactLeftArm--;
-                    if (myGame.player.contactLeftArm == 0) myGame.player.touchingLeftWall = false;
-                }
-            }
-            if (bp == BodyPart.RightArm) {
-                if (beginContact) {
-                    myGame.player.touchingRightWall = true;
-                    myGame.player.contactRightArm++;
-                } else {
-                    myGame.player.contactRightArm--;
-                    if (myGame.player.contactRightArm == 0) myGame.player.touchingRightWall = false;
-                }
-            }
-        }
     }
 }

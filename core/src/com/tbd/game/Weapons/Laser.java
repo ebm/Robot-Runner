@@ -58,15 +58,19 @@ public class Laser {
         shape.setRadius(LASER_RADIUS);
 
         Fixture normalBody = testBody.createFixture(shape, 0.0f);
-        normalBody.setSensor(true);
+        normalBody.setSensor(false);
         normalBody.setUserData(this);
+        Filter filter = new Filter();
+        filter.categoryBits = 0x0010;
+        filter.maskBits = 0x0001;
+        normalBody.setFilterData(filter);
 
         testBody.setBullet(true);
         testBody.setGravityScale(0);
 
         shape.dispose();
 
-        testBody.setTransform(this.initialX, this.initialY, 0);
+        testBody.setTransform(this.initialX + 1.5f * (float) Math.cos(Math.toRadians(angle)), this.initialY + 1.5f * (float) Math.sin(Math.toRadians(angle)), 0);
         testBody.setLinearVelocity(LASER_TEST_PROJECTILE_VELOCITY * (float) Math.cos(Math.toRadians(angle)), LASER_TEST_PROJECTILE_VELOCITY * (float) Math.sin(Math.toRadians(angle)));
     }
     public void createBody() {

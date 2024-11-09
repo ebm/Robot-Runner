@@ -18,6 +18,8 @@ public abstract class Weapon {
     }
     public abstract void attack(Vector2 target);
     public abstract void render();
+    public void destroy() {
+    }
     public static void handleContact(Fixture fixtureA, Fixture fixtureB, boolean beginContact, MyGame myGame) {
         RangedWeapon.handleContact(fixtureA, fixtureB, beginContact, myGame);
         BulletClass.handleContact(fixtureA, fixtureB, beginContact, myGame);

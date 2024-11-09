@@ -173,6 +173,12 @@ public class MyGame implements Screen {
 		ScreenUtils.clear(0, 0, 0, 1);
 		gsm.vp.apply();
 		gsm.batch.setProjectionMatrix(gsm.camera.combined);
+		if (Gdx.input.isKeyPressed(Input.Keys.EQUALS) && !Gdx.input.isKeyPressed(Input.Keys.MINUS)) {
+			gsm.camera.zoom -= 0.01f;
+		}
+		if (Gdx.input.isKeyPressed(Input.Keys.MINUS) && !Gdx.input.isKeyPressed(Input.Keys.EQUALS)) {
+			gsm.camera.zoom += 0.01f;
+		}
 		if (Gdx.input.isKeyPressed(Input.Keys.UP) && !Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
 			gsm.camera.position.y += 0.1f;
 			cameraLocked = false;
@@ -210,7 +216,7 @@ public class MyGame implements Screen {
 		fpsLabel.setText("FPS: " + Gdx.graphics.getFramesPerSecond());
 		gsm.batch.end();
 
-		//debugRenderer.render(world, gsm.camera.combined);
+		debugRenderer.render(world, gsm.camera.combined);
 
 		stage.act();
 		stage.draw();
