@@ -62,7 +62,7 @@ public abstract class Entity {
 
     private void createFeet(float hitboxWidth, float hitboxHeight) {
         PolygonShape shape = new PolygonShape();
-        shape.set(new float[] {ENTITY_APPENDAGE_DISTANCE, 0, ENTITY_APPENDAGE_DISTANCE, -ENTITY_APPENDAGE_DISTANCE, hitboxWidth - ENTITY_APPENDAGE_DISTANCE, 0, hitboxWidth - ENTITY_APPENDAGE_DISTANCE, -ENTITY_APPENDAGE_DISTANCE});
+        shape.set(new float[] {ENTITY_APPENDAGE_DISTANCE_FROM_EDGE, 0, ENTITY_APPENDAGE_DISTANCE_FROM_EDGE, -ENTITY_APPENDAGE_THICKNESS, hitboxWidth - ENTITY_APPENDAGE_DISTANCE_FROM_EDGE, 0, hitboxWidth - ENTITY_APPENDAGE_DISTANCE_FROM_EDGE, -ENTITY_APPENDAGE_THICKNESS});
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
@@ -74,7 +74,7 @@ public abstract class Entity {
     }
     private void createLeftArm(float hitboxWidth, float hitboxHeight) {
         PolygonShape shape = new PolygonShape();
-        shape.set(new float[] {-ENTITY_APPENDAGE_DISTANCE, ENTITY_APPENDAGE_DISTANCE, -ENTITY_APPENDAGE_DISTANCE, hitboxHeight - ENTITY_APPENDAGE_DISTANCE, 0, hitboxHeight - ENTITY_APPENDAGE_DISTANCE, 0, ENTITY_APPENDAGE_DISTANCE});
+        shape.set(new float[] {-ENTITY_APPENDAGE_THICKNESS, ENTITY_APPENDAGE_DISTANCE_FROM_EDGE, -ENTITY_APPENDAGE_THICKNESS, hitboxHeight - ENTITY_APPENDAGE_DISTANCE_FROM_EDGE, 0, hitboxHeight - ENTITY_APPENDAGE_DISTANCE_FROM_EDGE, 0, ENTITY_APPENDAGE_DISTANCE_FROM_EDGE});
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
@@ -86,7 +86,7 @@ public abstract class Entity {
     }
     private void createRightArm(float hitboxWidth, float hitboxHeight) {
         PolygonShape shape = new PolygonShape();
-        shape.set(new float[] {hitboxWidth, ENTITY_APPENDAGE_DISTANCE, hitboxWidth, hitboxHeight - ENTITY_APPENDAGE_DISTANCE, hitboxWidth + ENTITY_APPENDAGE_DISTANCE, hitboxHeight - ENTITY_APPENDAGE_DISTANCE, hitboxWidth + ENTITY_APPENDAGE_DISTANCE, ENTITY_APPENDAGE_DISTANCE});
+        shape.set(new float[] {hitboxWidth, ENTITY_APPENDAGE_DISTANCE_FROM_EDGE, hitboxWidth, hitboxHeight - ENTITY_APPENDAGE_DISTANCE_FROM_EDGE, hitboxWidth + ENTITY_APPENDAGE_THICKNESS, hitboxHeight - ENTITY_APPENDAGE_DISTANCE_FROM_EDGE, hitboxWidth + ENTITY_APPENDAGE_THICKNESS, ENTITY_APPENDAGE_DISTANCE_FROM_EDGE});
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;

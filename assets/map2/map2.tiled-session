@@ -9,6 +9,34 @@
         "."
     ],
     "fileStates": {
+        "C:/Users/user0/Desktop/GameTBD/test/output/main/map2/rulesheet.tsx": {
+            "scaleInDock": 1
+        },
+        "C:/Users/user0/Desktop/GameTBD/test/output/main/map2/tilemap.tmx": {
+            "scale": 0.25,
+            "selectedLayer": 5,
+            "viewCenter": {
+                "x": 2448,
+                "y": 5464
+            }
+        },
+        "C:/Users/user0/Desktop/GameTBD/test/output/main/map2/tilesheet.tsx": {
+            "scaleInDock": 1
+        },
+        "C:/Users/user0/Desktop/GameTBD/test/resources/main/map2/rulesheet.tsx": {
+            "scaleInDock": 1
+        },
+        "C:/Users/user0/Desktop/GameTBD/test/resources/main/map2/tilemap.tmx": {
+            "scale": 0.33,
+            "selectedLayer": 5,
+            "viewCenter": {
+                "x": 2087.878787878788,
+                "y": 11951.515151515152
+            }
+        },
+        "C:/Users/user0/Desktop/GameTBD/test/resources/main/map2/tilesheet.tsx": {
+            "scaleInDock": 1
+        },
         "C:/Users/user0/Desktop/TBD/assets/map/rule.tmx": {
             "scale": 1.0826041666666666,
             "selectedLayer": 0,
@@ -39,10 +67,10 @@
                 4
             ],
             "scale": 1.5,
-            "selectedLayer": 3,
+            "selectedLayer": 0,
             "viewCenter": {
-                "x": 480.3333333333333,
-                "y": 320
+                "x": 480.6666666666667,
+                "y": 319.99999999999994
             }
         },
         "ruleSpawns.tmx": {
@@ -53,7 +81,7 @@
             "selectedLayer": 2,
             "viewCenter": {
                 "x": 497.5,
-                "y": 320
+                "y": 188
             }
         },
         "ruleTileset.tsx": {
@@ -72,14 +100,14 @@
         },
         "tilemap.tmx": {
             "expandedObjectLayers": [
-                5,
-                19
+                19,
+                5
             ],
-            "scale": 0.015625,
-            "selectedLayer": 5,
+            "scale": 2,
+            "selectedLayer": 0,
             "viewCenter": {
-                "x": 46144,
-                "y": 6144
+                "x": 1865,
+                "y": 11816
             }
         },
         "tiles.tsx": {
@@ -110,6 +138,8 @@
         "rulesheet.tsx",
         "ruleSpawns.tmx",
         "tilemap.tmx",
+        "C:/Users/user0/Desktop/GameTBD/test/resources/main/map2/tilemap.tmx",
+        "C:/Users/user0/Desktop/GameTBD/test/output/main/map2/tilemap.tmx",
         "C:/Users/user0/Desktop/TBD/assets/map/tilemap.tmx",
         "spawnsheet.tsx",
         "ruleTileset.tsx",

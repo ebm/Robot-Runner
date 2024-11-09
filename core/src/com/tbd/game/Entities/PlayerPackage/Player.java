@@ -162,7 +162,7 @@ public class Player extends Entity {
         }
         // JUMP
         if (Gdx.input.isKeyPressed(Input.Keys.SPACE) && remainingJumps >= 1 && canJump && (wallClimbTime == 0 || wallClimbFinished)) {
-            body.setTransform(body.getPosition().x, body.getPosition().y + UNIT_SCALE, 0);
+            body.setTransform(body.getPosition().x, body.getPosition().y + 2 * UNIT_SCALE, 0);
             body.setLinearVelocity(body.getLinearVelocity().x, PLAYER_JUMP_VELOCITY);
             if (currentState == PlayerState.WalkingLeft) {
                 body.setLinearVelocity(-PLAYER_HORIZONTAL_VELOCITY * speedMultiplier, body.getLinearVelocity().y);
@@ -175,7 +175,7 @@ public class Player extends Entity {
             canJump = true;
         }
         // WALLCLIMB
-        if (Gdx.input.isKeyPressed(Input.Keys.W) && !wallClimbFinished) {
+        if (/*Gdx.input.isKeyPressed(Input.Keys.W) && */!wallClimbFinished) {
             // Ensure player is walking into wall
             if ((currentState == PlayerState.WalkingLeft && contactLeftArm >= 1 || currentState == PlayerState.WalkingRight && contactRightArm >= 1) &&
                     // Ensure player has not exceeded climbing wall time
