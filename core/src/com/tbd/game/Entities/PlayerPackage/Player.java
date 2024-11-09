@@ -47,6 +47,7 @@ public class Player extends Entity {
     public float angle;
     boolean flip;
     public Player(MyGame myGame, float initialX, float initialY) {
+        super(myGame, PLAYER_HEALTH, Player.class, Monster.class, CATEGORY_BITS_PLAYER);
         this.myGame = myGame;
         canJump = false;
         wallClimbFinished = false;
@@ -55,16 +56,14 @@ public class Player extends Entity {
         combatTimer = 0;
 
         currentState = PlayerState.Still;
-        weapon = new RangedWeapon(myGame, this, 20, 3, 8, 0.2f * METERS_PER_PIXEL, myGame.playerFireNoise);
+//        weapon = new RangedWeapon(myGame, this, 20, 3, 8, 0.2f * METERS_PER_PIXEL, myGame.playerFireNoise);
+        weapon = new RangedWeapon(myGame, this, 50, 3, 8, 0.2f * METERS_PER_PIXEL, myGame.playerFireNoise);
 
         // Create Body
         createPlayer(initialX, initialY);
 
         createAnimations();
 
-        health = PLAYER_HEALTH;
-        friendly = Player.class;
-        enemy = Monster.class;
         healthbar = new Healthbar(myGame, this, health);
 
         healthLabel = new Label("Health: " + (int) health + " / " + (int) PLAYER_HEALTH, myGame.labelStyle);
@@ -90,8 +89,11 @@ public class Player extends Entity {
         fixtureDef.density = 1f;
         fixtureDef.friction = 0f;
         fixtureDef.restitution = 0f;
+        Filter filter = new Filter();
+        filter.categoryBits = 0x0004;
 
         createBody(PLAYER_HITBOX_WIDTH, PLAYER_HITBOX_HEIGHT, fixtureDef);
+        body.getFixtureList().get(0).setFilterData(filter);
         body.setTransform(initialX, initialY, 0);
     }
 

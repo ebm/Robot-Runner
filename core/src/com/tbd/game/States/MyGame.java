@@ -83,7 +83,7 @@ public class MyGame implements Screen {
 		batch = gsm.batch;
 		rand = new Random();
 
-		mapEntity = new MapEntity();
+		mapEntity = new MapEntity(this);
 		stage = new Stage(new ScreenViewport());
 		table = new Table();
 		table.setFillParent(true);

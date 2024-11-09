@@ -61,8 +61,8 @@ public class Laser {
         normalBody.setSensor(false);
         normalBody.setUserData(this);
         Filter filter = new Filter();
-        filter.categoryBits = 0x0010;
-        filter.maskBits = 0x0001;
+        filter.categoryBits = CATEGORY_BITS_LASER_PROJECTILE;
+        filter.maskBits = CATEGORY_BITS_MAP;
         normalBody.setFilterData(filter);
 
         testBody.setBullet(true);

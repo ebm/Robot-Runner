@@ -2,6 +2,8 @@ package com.tbd.game.Entities;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.tbd.game.Entities.MonsterPackage.Monster;
+import com.tbd.game.Entities.PlayerPackage.Player;
 import com.tbd.game.States.MyGame;
 import com.tbd.game.World.ContactClass;
 import com.tbd.game.World.Listener;
@@ -18,6 +20,14 @@ public abstract class Entity {
     public int contactFeet;
     public int contactLeftArm;
     public int contactRightArm;
+    public short categoryBits;
+    public Entity(MyGame myGame, float health, Class<?> friendly, Class<?> enemy, short categoryBits) {
+        this.myGame = myGame;
+        this.friendly = friendly;
+        this.enemy = enemy;
+        this.health = health;
+        this.categoryBits = categoryBits;
+    }
     public void createBody(float hitboxWidth, float hitboxHeight, FixtureDef fixtureDef) {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;

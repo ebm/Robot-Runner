@@ -11,6 +11,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.EdgeShape;
+import com.badlogic.gdx.physics.box2d.Filter;
 import com.tbd.game.Entities.MonsterPackage.Bat;
 import com.tbd.game.Entities.MonsterPackage.Golem;
 import com.tbd.game.Entities.MonsterPackage.Spaceship;
@@ -116,7 +117,9 @@ public class Map {
             EdgeShape edgeShape = new EdgeShape();
             edgeShape.set(e.a, e.b);
              //edgeShape.set(0, 0, e.b.x - e.a.x, e.b.y - e.a.y);
-            body.createFixture(edgeShape, 0.0f);
+            Filter filter  = new Filter();
+            filter.categoryBits = CATEGORY_BITS_MAP;
+            body.createFixture(edgeShape, 0.0f).setFilterData(filter);
 
             //body.setTransform(e.a, 0);
             edgeShape.dispose();

@@ -72,14 +72,14 @@
         },
         "tilemap.tmx": {
             "expandedObjectLayers": [
-                19,
-                5
+                5,
+                19
             ],
-            "scale": 0.5,
+            "scale": 0.015625,
             "selectedLayer": 5,
             "viewCenter": {
-                "x": 784,
-                "y": 12188
+                "x": 46144,
+                "y": 6144
             }
         },
         "tiles.tsx": {

@@ -1,7 +1,6 @@
 package com.tbd.game.World;
 
 import com.badlogic.gdx.math.Vector2;
-import com.tbd.game.Entities.MapEntity;
 
 public class Constants {
     // Game-Wide Constants:
@@ -17,6 +16,10 @@ public class Constants {
 
     // Entity Constants
     public static float ENTITY_APPENDAGE_DISTANCE = UNIT_SCALE / 3f;
+    public static short CATEGORY_BITS_PLAYER = 0x0002;
+    public static short CATEGORY_BITS_MONSTER = 0x0004;
+    public static short CATEGORY_BITS_LASER_PROJECTILE = 0x0008;
+    public static short CATEGORY_BITS_MAP = 0x0008;
 
     // Player Constants
     public static float PLAYER_INITIAL_X_POSITION = 4 * METERS_PER_PIXEL;

@@ -53,9 +53,12 @@ public class BulletClass extends Weapon{
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
 
-        fixtureDef.isSensor = true;
+        //fixtureDef.isSensor = true;
 
+        Filter filter = new Filter();
+        filter.maskBits = CATEGORY_BITS_MAP;
         Fixture despawnBody = body.createFixture(fixtureDef);
+        despawnBody.setFilterData(filter);
         despawnBody.setUserData(BulletType.DespawnHitbox);
 
         shape.dispose();
