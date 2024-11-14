@@ -13,11 +13,11 @@
             "scaleInDock": 1
         },
         "C:/Users/user0/Desktop/GameTBD/test/output/main/map2/tilemap.tmx": {
-            "scale": 0.25,
+            "scale": 2,
             "selectedLayer": 5,
             "viewCenter": {
-                "x": 2448,
-                "y": 5464
+                "x": 2800.5,
+                "y": 5658.5
             }
         },
         "C:/Users/user0/Desktop/GameTBD/test/output/main/map2/tilesheet.tsx": {
@@ -103,11 +103,11 @@
                 19,
                 5
             ],
-            "scale": 2,
-            "selectedLayer": 0,
+            "scale": 1.5,
+            "selectedLayer": 5,
             "viewCenter": {
-                "x": 1865,
-                "y": 11816
+                "x": 3915.333333333333,
+                "y": 9269.333333333332
             }
         },
         "tiles.tsx": {
@@ -138,8 +138,8 @@
         "rulesheet.tsx",
         "ruleSpawns.tmx",
         "tilemap.tmx",
-        "C:/Users/user0/Desktop/GameTBD/test/resources/main/map2/tilemap.tmx",
         "C:/Users/user0/Desktop/GameTBD/test/output/main/map2/tilemap.tmx",
+        "C:/Users/user0/Desktop/GameTBD/test/resources/main/map2/tilemap.tmx",
         "C:/Users/user0/Desktop/TBD/assets/map/tilemap.tmx",
         "spawnsheet.tsx",
         "ruleTileset.tsx",
