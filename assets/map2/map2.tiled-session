@@ -69,8 +69,8 @@
             "scale": 1.5,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 480.6666666666667,
-                "y": 319.99999999999994
+                "x": 480.3333333333333,
+                "y": 320
             }
         },
         "ruleSpawns.tmx": {
@@ -81,7 +81,7 @@
             "selectedLayer": 2,
             "viewCenter": {
                 "x": 497.5,
-                "y": 188
+                "y": 320
             }
         },
         "ruleTileset.tsx": {
