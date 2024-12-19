@@ -2,11 +2,14 @@ package com.tbd.game.Entities.PlayerPackage;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.utils.Array;
 import com.tbd.game.Entities.BodyPart;
 import com.tbd.game.Entities.Entity;
 import com.tbd.game.Entities.Healthbar;
@@ -32,12 +35,20 @@ public class Player extends Entity {
     public PlayerState currentState;
     Animation<TextureRegion> walkingLeft;
     Animation<TextureRegion> walkingRight;
-    Animation<TextureRegion> still;
+    Animation<TextureRegion> jumpRight;
+    Animation<TextureRegion> jumpLeft;
+    Animation<TextureRegion> climbLeft;
+    Animation<TextureRegion> climbRight;
+    Animation<TextureRegion> dashLeft;
+    Animation<TextureRegion> dashRight;
+    Animation<TextureRegion> stillRight;
+    Animation<TextureRegion> stillLeft;
     float timePassed;
     Weapon weapon;
     public Label healthLabel;
     public Label abilityCooldownLabel;
     public Label combatLabel;
+    public Label stateLabel;
     public Inventory inventory;
     public boolean canOpenInventory;
     public float dmgTakenMultiplier;
@@ -45,6 +56,8 @@ public class Player extends Entity {
     public float additionalHealth;
     TextureRegion gunTextureRegion;
     public float angle;
+    public double lastJump;
+    public PlayerState jumpState;
     boolean flip;
     public Player(MyGame myGame, float initialX, float initialY) {
         super(myGame, PLAYER_HEALTH, Player.class, Monster.class, CATEGORY_BITS_PLAYER);
@@ -54,10 +67,11 @@ public class Player extends Entity {
         wallClimbTime = 0;
         lastDash = 0;
         combatTimer = 0;
+        lastJump = 0;
 
-        currentState = PlayerState.Still;
+        currentState = PlayerState.StillRight;
 //        weapon = new RangedWeapon(myGame, this, 20, 3, 8, 0.2f * METERS_PER_PIXEL, myGame.playerFireNoise);
-        weapon = new RangedWeapon(myGame, this, 50, 3, 8, 0.2f * METERS_PER_PIXEL, myGame.playerFireNoise);
+        weapon = new RangedWeapon(myGame, this, 50, 3, 8, 0.2f * METERS_PER_PIXEL, myGame.assetManager.get("fire.mp3"));
 
         // Create Body
         createPlayer(initialX, initialY);
@@ -66,23 +80,28 @@ public class Player extends Entity {
 
         healthbar = new Healthbar(myGame, this, health);
 
-        healthLabel = new Label("Health: " + (int) health + " / " + (int) PLAYER_HEALTH, myGame.labelStyle);
-        abilityCooldownLabel = new Label("Cooldown: 0", myGame.labelStyle);
-        combatLabel = new Label("Combat Timer: " + Math.max((int) Math.ceil((PLAYER_COMBAT_TIMER - (myGame.timePassed - combatTimer))), 0), myGame.labelStyle);
-
-        myGame.table.add(combatLabel);
-        myGame.table.add(abilityCooldownLabel).pad(5);
-        myGame.table.pad(5);
-        myGame.table.add(healthLabel);
-
-        inventory = new Inventory(myGame);
         canOpenInventory = false;
 
         speedMultiplier = 1;
         dmgTakenMultiplier = 1;
         additionalHealth  = 0;
-        gunTextureRegion = new TextureRegion(myGame.gun);
+        gunTextureRegion = new TextureRegion((Texture) myGame.assetManager.get("gun.png"));
         flip = false;
+
+    }
+    public void initializeOnScreenPlayerStats() {
+        healthLabel = new Label("Health: " + (int) health + " / " + (int) PLAYER_HEALTH, myGame.labelStyle);
+        abilityCooldownLabel = new Label("Cooldown: 0", myGame.labelStyle);
+        combatLabel = new Label("Combat Timer: " + Math.max((int) Math.ceil((PLAYER_COMBAT_TIMER - (myGame.timePassed - combatTimer))), 0), myGame.labelStyle);
+        stateLabel = new Label("Current State: " + currentState, myGame.labelStyle);
+
+        myGame.table.add(stateLabel).pad(5);
+        myGame.table.add(combatLabel);
+        myGame.table.add(abilityCooldownLabel).pad(5);
+        myGame.table.add(healthLabel);
+        myGame.table.pad(5);
+
+        inventory = new Inventory(myGame);
     }
     private void createPlayer(float initialX, float initialY) {
         FixtureDef fixtureDef = new FixtureDef();
@@ -98,21 +117,71 @@ public class Player extends Entity {
     }
 
     private void createAnimations() {
-        TextureRegion[] walkingLeftFrames = {myGame.atlas.findRegion("left1"), myGame.atlas.findRegion("left2"),
-                myGame.atlas.findRegion("left3"), myGame.atlas.findRegion("left4")};
-        walkingLeft = new Animation<>(0.08f, walkingLeftFrames);
+        // walking
+        Array<TextureAtlas.AtlasRegion> normalWalkTextures = ((TextureAtlas) myGame.assetManager.get("robot_player/robot_character.atlas")).findRegions(("ebmarantz-walk"));
+        walkingRight = new Animation<>(0.02f, normalWalkTextures);
+        Array<TextureRegion> flippedWalkTextures = new Array<>();
+        for (TextureRegion tr : normalWalkTextures) {
+            TextureRegion curr = new TextureRegion(tr);
+            curr.flip(true, false);
+            flippedWalkTextures.add(curr);
+        }
+        walkingLeft = new Animation<>(0.02f, flippedWalkTextures);
 
-        TextureRegion[] walkingRightFrames = {myGame.atlas.findRegion("right1"), myGame.atlas.findRegion("right2"),
-                myGame.atlas.findRegion("right3"), myGame.atlas.findRegion("right4")};
-        walkingRight = new Animation<>(0.08f, walkingRightFrames);
+        // jumping
+        jumpRight = walkingRight;
+        jumpLeft = walkingLeft;
+//        Array<TextureAtlas.AtlasRegion> normalJumpTextures = myGame.atlas.findRegions(("ebmarantz-jump-double"));
+//        jumpRight = new Animation<>(0.02f, normalJumpTextures);
+//        Array<TextureRegion> flippedJumpTextures = new Array<>();
+//        for (TextureRegion tr : normalJumpTextures) {
+//            TextureRegion curr = new TextureRegion(tr);
+//            curr.flip(true, false);
+//            flippedJumpTextures.add(curr);
+//        }
+//        jumpLeft = new Animation<>(0.02f, flippedJumpTextures);
+//        jumpRight.setPlayMode(Animation.PlayMode.NORMAL);
+//        jumpLeft.setPlayMode(Animation.PlayMode.NORMAL);
 
-        still = new Animation<>(0.08f, myGame.atlas.findRegion("still"));
+        // climbing
+        Array<TextureAtlas.AtlasRegion> normalClimbTextures = ((TextureAtlas) myGame.assetManager.get("robot_player/robot_character.atlas")).findRegions(("ebmarantz-climb"));
+        climbRight = new Animation<>(0.02f, normalClimbTextures);
+        Array<TextureRegion> flippedClimbTextures = new Array<>();
+        for (TextureRegion tr : normalClimbTextures) {
+            TextureRegion curr = new TextureRegion(tr);
+            curr.flip(true, false);
+            flippedClimbTextures.add(curr);
+        }
+        climbLeft = new Animation<>(0.02f, flippedClimbTextures);
+
+        // dash
+        Array<TextureAtlas.AtlasRegion> normalDashTextures = ((TextureAtlas) myGame.assetManager.get("robot_player/robot_character.atlas")).findRegions(("ebmarantz-dash"));
+        dashRight = new Animation<>(0.05f, normalDashTextures);
+        Array<TextureRegion> flippedDashTextures = new Array<>();
+        for (TextureRegion tr : normalDashTextures) {
+            TextureRegion curr = new TextureRegion(tr);
+            curr.flip(true, false);
+            flippedDashTextures.add(curr);
+        }
+        dashLeft = new Animation<>(0.05f, flippedDashTextures);
+
+        // still
+        Array<TextureAtlas.AtlasRegion> normalStillTextures = ((TextureAtlas) myGame.assetManager.get("robot_player/robot_character.atlas")).findRegions(("ebmarantz-idle"));
+        stillRight = new Animation<>(0.05f, normalStillTextures);
+        Array<TextureRegion> flippedStillTextures = new Array<>();
+        for (TextureRegion tr : normalStillTextures) {
+            TextureRegion curr = new TextureRegion(tr);
+            curr.flip(true, false);
+            flippedStillTextures.add(curr);
+        }
+        stillLeft = new Animation<>(0.05f, flippedStillTextures);
+
 
         timePassed = 0;
     }
     @Override
     public Vector2 getBodyCenter() {
-        return new Vector2(body.getPosition().x - PLAYER_HORIZONTAL_OFFSET + PLAYER_SPRITE_WIDTH / 2, body.getPosition().y - PLAYER_VERTICAL_OFFSET + PLAYER_SPRITE_HEIGHT / 2);
+        return new Vector2(body.getPosition().x + PLAYER_HITBOX_WIDTH / 2, body.getPosition().y + PLAYER_HITBOX_HEIGHT / 2);
     }
     public void resetMultipliers() {
         speedMultiplier = 1;
@@ -121,7 +190,11 @@ public class Player extends Entity {
     }
     public void update() {
         if (getBodyCenter().y < 0) death();
-        currentState = PlayerState.Still;
+        if (currentState == PlayerState.ClimbingRight || currentState == PlayerState.JumpingRight || currentState == PlayerState.WalkingRight || currentState == PlayerState.StillRight) {
+            currentState = PlayerState.StillRight;
+        } else {
+            currentState = PlayerState.StillLeft;
+        }
         // ON GROUND
         if (contactFeet >= 1) {
             body.setLinearVelocity(0, body.getLinearVelocity().y);
@@ -166,9 +239,14 @@ public class Player extends Entity {
             body.setLinearVelocity(body.getLinearVelocity().x, PLAYER_JUMP_VELOCITY);
             if (currentState == PlayerState.WalkingLeft) {
                 body.setLinearVelocity(-PLAYER_HORIZONTAL_VELOCITY * speedMultiplier, body.getLinearVelocity().y);
+                jumpState = PlayerState.JumpingLeft;
             } else if (currentState == PlayerState.WalkingRight) {
                 body.setLinearVelocity(PLAYER_HORIZONTAL_VELOCITY * speedMultiplier, body.getLinearVelocity().y);
+                jumpState = PlayerState.JumpingRight;
+            } else {
+                jumpState = currentState;
             }
+            lastJump = myGame.timePassed;
             remainingJumps--;
             canJump = false;
         } else if (!Gdx.input.isKeyPressed(Input.Keys.SPACE)){
@@ -181,7 +259,11 @@ public class Player extends Entity {
                     // Ensure player has not exceeded climbing wall time
                     (wallClimbTime == 0 || (myGame.timePassed - wallClimbTime) < PLAYER_WALLCLIMB_LENGTH_SECONDS)) {
                 if (wallClimbTime == 0) wallClimbTime = myGame.timePassed;
-
+                if (currentState == PlayerState.WalkingLeft) {
+                    currentState = PlayerState.ClimbingLeft;
+                } else {
+                    currentState = PlayerState.ClimbingRight;
+                }
                 body.setLinearVelocity(body.getLinearVelocity().x, PLAYER_WALLCLIMB_VELOCITY);
             } else {
                 if (wallClimbTime != 0) wallClimbFinished = true;
@@ -189,6 +271,9 @@ public class Player extends Entity {
         } else if (!wallClimbFinished) {
             if (wallClimbTime != 0) wallClimbFinished = true;
         }
+        //if (myGame.timePassed - lastJump < 0.5f) {
+        //    currentState = jumpState;
+        //}
         inventory.applyMultipliers();
         // Fire
         if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
@@ -208,6 +293,7 @@ public class Player extends Entity {
     }
     @Override
     public void render() {
+        //System.out.println(currentState);
         weapon.render();
         if (inventory.open) inventory.render();
         if (health < PLAYER_HEALTH + additionalHealth && (myGame.timePassed - combatTimer) > PLAYER_COMBAT_TIMER) {
@@ -217,30 +303,35 @@ public class Player extends Entity {
         healthLabel.setText("Health: " + (int) health + " / " + (int) (PLAYER_HEALTH + additionalHealth));
         if (inventory.getAbility() != null) abilityCooldownLabel.setText("Cooldown: " + Math.max((int) Math.ceil((((Ability) inventory.getAbility()).cooldown - (myGame.timePassed - ((Ability) inventory.getAbility()).lastUse))), 0));
         combatLabel.setText("Combat Timer: " + Math.max((int) Math.ceil((PLAYER_COMBAT_TIMER - (myGame.timePassed - combatTimer))), 0));
+        stateLabel.setText("Current State: " + currentState);
         timePassed += Gdx.graphics.getDeltaTime();
         TextureRegion currentFrame;
         if (currentState == PlayerState.WalkingLeft) {
-            walkingRight.setPlayMode(Animation.PlayMode.NORMAL);
             currentFrame = walkingLeft.getKeyFrame(timePassed, true);
         } else if (currentState == PlayerState.WalkingRight) {
-            walkingLeft.setPlayMode(Animation.PlayMode.NORMAL);
             currentFrame = walkingRight.getKeyFrame(timePassed, true);
-        } else if (currentState == PlayerState.ShootingLeft) {
-            if (body.getLinearVelocity().x < 0) walkingLeft.setPlayMode(Animation.PlayMode.NORMAL);
-            else walkingLeft.setPlayMode(Animation.PlayMode.REVERSED);
-            currentFrame = walkingLeft.getKeyFrame(timePassed, true);
-        } else if (currentState == PlayerState.ShootingRight) {
-            if (body.getLinearVelocity().x > 0) walkingRight.setPlayMode(Animation.PlayMode.NORMAL);
-            else walkingRight.setPlayMode(Animation.PlayMode.REVERSED);
-            currentFrame = walkingRight.getKeyFrame(timePassed, true);
+        } else if (currentState == PlayerState.JumpingLeft) {
+            currentFrame = jumpLeft.getKeyFrame(timePassed, true);
+        } else if (currentState == PlayerState.JumpingRight) {
+            currentFrame = jumpRight.getKeyFrame(timePassed, true);
+        } else if (currentState == PlayerState.ClimbingLeft) {
+            currentFrame = climbLeft.getKeyFrame(timePassed, true);
+        } else if (currentState == PlayerState.ClimbingRight) {
+            currentFrame = climbRight.getKeyFrame(timePassed, true);
+        } else if (currentState == PlayerState.DashingLeft) {
+            currentFrame = dashLeft.getKeyFrame(timePassed, true);
+        } else if (currentState == PlayerState.DashingRight) {
+            currentFrame = dashRight.getKeyFrame(timePassed, true);
+        } else if (currentState == PlayerState.StillLeft){
+            currentFrame = stillLeft.getKeyFrame(timePassed, true);
         } else {
-            currentFrame = still.getKeyFrame(timePassed, true);
+            currentFrame = stillRight.getKeyFrame(timePassed, true);
         }
         //if (touchingFloor) myGame.batch.draw(myGame.shadow, body.getPosition().x - HORIZONTAL_OFFSET, body.getPosition().y - VERTICAL_OFFSET - 5 * UNIT_SCALE, 32 * UNIT_SCALE, 12 * UNIT_SCALE);
         myGame.batch.draw(currentFrame, body.getPosition().x - PLAYER_HORIZONTAL_OFFSET, body.getPosition().y - PLAYER_VERTICAL_OFFSET, PLAYER_SPRITE_WIDTH, PLAYER_SPRITE_HEIGHT);
         healthbar.maxHealth = PLAYER_HEALTH + additionalHealth;
         if (PLAYER_HEALTH + additionalHealth < health) health = PLAYER_HEALTH + additionalHealth;
-        myGame.batch.draw(healthbar.getHealthBar(), body.getPosition().x - PLAYER_HORIZONTAL_OFFSET, body.getPosition().y + PLAYER_HITBOX_HEIGHT + HEALTHBAR_OFFSET, PLAYER_SPRITE_WIDTH, HEALTHBAR_HEIGHT);
+        myGame.batch.draw(healthbar.getHealthBar(), body.getPosition().x, body.getPosition().y + PLAYER_HITBOX_HEIGHT + HEALTHBAR_OFFSET, PLAYER_HITBOX_WIDTH, HEALTHBAR_HEIGHT);
         if (currentState == PlayerState.ShootingRight) {
             myGame.batch.draw(gunTextureRegion, getBodyCenter().x - 0.5f + 0.25f, getBodyCenter().y - 0.25f, 0.5f, 0.25f, 1, 0.5f, 1, 1, (float) Math.toDegrees(angle));
         } else if (currentState == PlayerState.ShootingLeft) {

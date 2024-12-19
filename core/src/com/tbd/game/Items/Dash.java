@@ -9,6 +9,7 @@ import com.tbd.game.States.MyGame;
 import static com.tbd.game.World.Constants.*;
 
 public class Dash extends Ability{
+    PlayerState state;
     public Dash(int id, float x, float y, Texture itemTexture, MyGame myGame) {
         super(id, ItemType.Ability, x, y, itemTexture, myGame);
         lastUse = 0;
@@ -22,12 +23,17 @@ public class Dash extends Ability{
             float dashYVelocity = PLAYER_DASH_VERTICAL_VELOCITY;
             if (myGame.player.currentState == PlayerState.WalkingLeft) {
                 dashXVelocity = -PLAYER_DASH_HORIZONTAL_VELOCITY * myGame.player.speedMultiplier;
+                state = PlayerState.DashingLeft;
             } else if (myGame.player.currentState == PlayerState.WalkingRight) {
                 dashXVelocity = PLAYER_DASH_HORIZONTAL_VELOCITY * myGame.player.speedMultiplier;
+                state = PlayerState.DashingRight;
             }
             myGame.player.body.setTransform(myGame.player.body.getPosition().x, myGame.player.body.getPosition().y + UNIT_SCALE, 0);
             myGame.player.body.setLinearVelocity(dashXVelocity, dashYVelocity);
             lastUse = myGame.timePassed;
+        }
+        if (myGame.timePassed - lastUse < 0.5f && myGame.player.contactFeet == 0) {
+            myGame.player.currentState = state;
         }
     }
 

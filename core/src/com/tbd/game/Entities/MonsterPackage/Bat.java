@@ -59,7 +59,7 @@ public class Bat extends Monster {
         body.setTransform(initialX, initialY, 0);
     }
     public void createAnimations() {
-        Texture[] batFrames = {myGame.bat1, myGame.bat2, myGame.bat3};
+        Texture[] batFrames = {myGame.assetManager.get("bat1.png"), myGame.assetManager.get("bat2.png"), myGame.assetManager.get("bat3.png")};
         batAnimation = new Animation<>(BAT_VERTICAL_DELAY / batFrames.length, batFrames);
         timePassed = 0;
     }

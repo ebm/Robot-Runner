@@ -1,5 +1,6 @@
 package com.tbd.game.Entities;
 
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.tbd.game.States.MyGame;
 
@@ -8,14 +9,17 @@ public class Healthbar {
     Entity entity;
     public float maxHealth;
     TextureRegion[] healthbarArray;
+    TextureAtlas healthbarAtlas;
     public Healthbar(MyGame myGame, Entity entity, float maxHealth) {
         this.myGame = myGame;
         this.entity = entity;
         this.maxHealth = maxHealth;
 
-        healthbarArray = new TextureRegion[] {myGame.healthbarAtlas.findRegion("healthbar1"), myGame.healthbarAtlas.findRegion("healthbar2"),
-                myGame.healthbarAtlas.findRegion("healthbar3"), myGame.healthbarAtlas.findRegion("healthbar4"), myGame.healthbarAtlas.findRegion("healthbar5"),
-                myGame.healthbarAtlas.findRegion("healthbar6"), myGame.healthbarAtlas.findRegion("healthbar7")};
+        healthbarAtlas = myGame.assetManager.get("healthbar/healthbar.atlas");
+
+        healthbarArray = new TextureRegion[] {healthbarAtlas.findRegion("healthbar1"), healthbarAtlas.findRegion("healthbar2"),
+                healthbarAtlas.findRegion("healthbar3"), healthbarAtlas.findRegion("healthbar4"), healthbarAtlas.findRegion("healthbar5"),
+                healthbarAtlas.findRegion("healthbar6"), healthbarAtlas.findRegion("healthbar7")};
     }
     public void changeHealth(float maxHealth) {
         this.maxHealth = maxHealth;

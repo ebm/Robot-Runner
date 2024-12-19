@@ -1,6 +1,7 @@
 package com.tbd.game.Weapons;
 
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -36,8 +37,8 @@ public class Laser {
         createTestProjectile(initialX, initialY);
         //createBody(initialX, initialY);
         this.laserDistance = laserDistance;
-        laserBeamTexture = new TextureRegion(myGame.laserBeam);
-        laserTexture = new TextureRegion(myGame.laserTexture);
+        laserBeamTexture = new TextureRegion((Texture) myGame.assetManager.get("laserBeam.png"));
+        laserTexture = new TextureRegion((Texture) myGame.assetManager.get("laser.png"));
         lastSwitch = 0;
         active = true;
     }

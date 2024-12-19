@@ -1,5 +1,6 @@
 package com.tbd.game.Entities.MonsterPackage;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -34,7 +35,7 @@ public class Spaceship extends Monster {
         multiplier = 1;
         activated = false;
         follow = true;
-        spaceshipTextureRegion = new TextureRegion(myGame.spaceship);
+        spaceshipTextureRegion = new TextureRegion((Texture) myGame.assetManager.get("spaceship.png"));
     }
     public void createBody(float initialX, float initialY) {
         BodyDef bodyDef = new BodyDef();

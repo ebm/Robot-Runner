@@ -158,7 +158,7 @@ public class RangedWeapon extends Weapon {
             if (contactFixture.getUserData() == null || weapon.user.getClass() != contactFixture.getUserData().getClass()) {
                 if (weapon.user.enemy.isInstance(contactFixture.getUserData())) {
                     if (weapon.user.getClass() == Player.class) {
-                        myGame.playerHitmarkerNoise.play();
+                        ((Sound) myGame.assetManager.get("hitmarker.mp3")).play();
                     }
                     //System.out.println(fixtureA.getUserData() + ", " + fixtureB.getUserData() + " | " + contactFixture.getUserData());
                     Entity e = (Entity) contactFixture.getUserData();

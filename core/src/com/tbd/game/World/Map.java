@@ -58,16 +58,15 @@ public class Map {
         }
     }
     MyGame myGame;
-    TiledMap tileMap;
-    OrthogonalTiledMapRenderer orthogonalTiledMapRenderer;
-    public Map(MyGame myGame) {
+    public OrthogonalTiledMapRenderer orthogonalTiledMapRenderer;
+    public Map(MyGame myGame, OrthogonalTiledMapRenderer orthogonalTiledMapRenderer) {
         this.myGame = myGame;
-        tileMap = new TmxMapLoader().load("map2/tilemap.tmx");
-        orthogonalTiledMapRenderer = new OrthogonalTiledMapRenderer(tileMap, UNIT_SCALE);
+
+        this.orthogonalTiledMapRenderer = orthogonalTiledMapRenderer;
         orthogonalTiledMapRenderer.setView(myGame.gsm.camera);
 
-        setupMap(tileMap.getLayers().get("objects").getObjects());
-        setupSpawns(tileMap.getLayers().get("points").getObjects());
+        setupMap(((TiledMap) myGame.assetManager.get("map2/tilemap.tmx")).getLayers().get("objects").getObjects());
+        setupSpawns(((TiledMap) myGame.assetManager.get("map2/tilemap.tmx")).getLayers().get("points").getObjects());
     }
     private void setupSpawns(MapObjects mapObjects) {
         for (MapObject mapObject : mapObjects) {
@@ -86,19 +85,19 @@ public class Map {
                 } else if (mapObject.getProperties().containsKey("Laser")) {
                     myGame.activeLasers.add(new Laser(myGame, Integer.parseInt((String) mapObject.getProperties().get("Laser")), rectangleMapObject.getRectangle().x * UNIT_SCALE, rectangleMapObject.getRectangle().y * UNIT_SCALE, LASER_MAXIMUM_DISTANCE));
                 } else if (mapObject.getProperties().containsKey("GolemArmorItem")) {
-                    myGame.itemMapManager.addItem(new Armor(0.8f, myGame.itemMapManager.getID(),rectangleMapObject.getRectangle().x * UNIT_SCALE, rectangleMapObject.getRectangle().y * UNIT_SCALE, myGame.rockArmor, myGame));
+                    myGame.itemMapManager.addItem(new Armor(0.8f, myGame.itemMapManager.getID(),rectangleMapObject.getRectangle().x * UNIT_SCALE, rectangleMapObject.getRectangle().y * UNIT_SCALE, myGame.assetManager.get("rock_armor.png"), myGame));
                 } else if (mapObject.getProperties().containsKey("BootsFastItem")) {
-                    myGame.itemMapManager.addItem(new Boots(1.2f, myGame.itemMapManager.getID(),rectangleMapObject.getRectangle().x * UNIT_SCALE, rectangleMapObject.getRectangle().y * UNIT_SCALE, myGame.fastBoots, myGame));
+                    myGame.itemMapManager.addItem(new Boots(1.2f, myGame.itemMapManager.getID(),rectangleMapObject.getRectangle().x * UNIT_SCALE, rectangleMapObject.getRectangle().y * UNIT_SCALE, myGame.assetManager.get("boots_fast.png"), myGame));
                 } else if (mapObject.getProperties().containsKey("HeartSmallItem")) {
-                    myGame.itemMapManager.addItem(new Heart(20, myGame.itemMapManager.getID(),rectangleMapObject.getRectangle().x * UNIT_SCALE, rectangleMapObject.getRectangle().y * UNIT_SCALE, myGame.heartSmall, myGame));
+                    myGame.itemMapManager.addItem(new Heart(20, myGame.itemMapManager.getID(),rectangleMapObject.getRectangle().x * UNIT_SCALE, rectangleMapObject.getRectangle().y * UNIT_SCALE, myGame.assetManager.get("heart_small.png"), myGame));
                 } else if (mapObject.getProperties().containsKey("DashItem")) {
-                    myGame.itemMapManager.addItem(new Dash(myGame.itemMapManager.getID(),rectangleMapObject.getRectangle().x * UNIT_SCALE, rectangleMapObject.getRectangle().y * UNIT_SCALE, myGame.dashAbility, myGame));
+                    myGame.itemMapManager.addItem(new Dash(myGame.itemMapManager.getID(),rectangleMapObject.getRectangle().x * UNIT_SCALE, rectangleMapObject.getRectangle().y * UNIT_SCALE, myGame.assetManager.get("dash.png"), myGame));
                 } else if (mapObject.getProperties().containsKey("Spaceship")) {
                     myGame.activeMonsters.add(new Spaceship(myGame, rectangleMapObject.getRectangle().x * UNIT_SCALE, rectangleMapObject.getRectangle().y * UNIT_SCALE));
                 }
             }
         }
-
+        if (myGame.player == null) myGame.player = new Player(myGame, PLAYER_INITIAL_X_POSITION, PLAYER_INITIAL_Y_POSITION);
     }
     private void setupMap(MapObjects mapObjects) {
         ArrayList<Edge> edgeList = new ArrayList<>();
@@ -145,6 +144,6 @@ public class Map {
         orthogonalTiledMapRenderer.render();
     }
     public void dispose() {
-        tileMap.dispose();
+
     }
 }

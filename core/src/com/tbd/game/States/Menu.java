@@ -21,6 +21,8 @@ public class Menu implements Screen {
     GameStateManager gsm;
     Stage stage;
     Table table;
+    boolean switchToGameVar;
+    Label loadingLabel;
     public Menu(GameStateManager gsm) {
         this.gsm = gsm;
 
@@ -38,25 +40,39 @@ public class Menu implements Screen {
         textButtonStyle.pressedOffsetX = -1;
         textButtonStyle.pressedOffsetY = -1;
         textButtonStyle.font = gsm.font;
+        switchToGameVar = false;
         TextButton textButton = new TextButton("Play", textButtonStyle);
         textButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
-                gsm.setScreen(gsm.myGame);
+                switchToGame();
             }
         });
         LabelStyle labelStyle = new LabelStyle();
         labelStyle.font = gsm.font;
-        Label label = new Label("Game", labelStyle);
-        table.add(label).padBottom(30);
+        Label title = new Label("Game", labelStyle);
+        loadingLabel = new Label("Loading: 0%.", labelStyle);
+        loadingLabel.setVisible(false);
+        table.add(title).padBottom(30);
         table.row();
         table.add(textButton);
+        table.row();
+        table.add(loadingLabel).padTop(30);
+
     }
     @Override
     public void show() {
         Gdx.input.setInputProcessor(stage);
     }
 
+    public void switchToGame() { // gsm.myGame.assetManager.isFinished()
+        if (gsm.ready) gsm.setScreen(gsm.myGame);
+        else {
+            loadingLabel.setVisible(true);
+            loadingLabel.setText("Loading: " + (int) (100 * gsm.myGame.assetManager.getProgress()) + "%.");
+            switchToGameVar = true;
+        }
+    }
     @Override
     public void render(float v) {
         ScreenUtils.clear(0, 0, 0, 1);
@@ -65,8 +81,8 @@ public class Menu implements Screen {
         //gsm.batch.end();
         stage.act();
         stage.draw();
-        if (Gdx.input.isKeyPressed(Input.Keys.ENTER)) {
-            gsm.setScreen(gsm.myGame);
+        if (Gdx.input.isKeyPressed(Input.Keys.ENTER) || switchToGameVar) {
+            switchToGame();
         }
     }
 

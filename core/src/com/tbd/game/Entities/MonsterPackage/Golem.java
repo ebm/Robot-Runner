@@ -1,5 +1,6 @@
 package com.tbd.game.Entities.MonsterPackage;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
@@ -94,7 +95,7 @@ public class Golem extends Monster{
     @Override
     public void render() {
         weapon.render();
-        myGame.batch.draw(myGame.golem, body.getPosition().x, body.getPosition().y, GOLEM_HITBOX_WIDTH, GOLEM_HITBOX_HEIGHT);
+        myGame.batch.draw((Texture) myGame.assetManager.get("golem.png"), body.getPosition().x, body.getPosition().y, GOLEM_HITBOX_WIDTH, GOLEM_HITBOX_HEIGHT);
         myGame.batch.draw(healthbar.getHealthBar(), body.getPosition().x, body.getPosition().y + GOLEM_HITBOX_HEIGHT + HEALTHBAR_OFFSET, GOLEM_HITBOX_WIDTH, HEALTHBAR_HEIGHT);
     }
 
@@ -105,7 +106,7 @@ public class Golem extends Monster{
     @Override
     public void death() {
         super.death();
-        myGame.itemMapManager.addItem(new Armor(0.8f, myGame.itemMapManager.getID(), getBodyCenter().x, getBodyCenter().y, myGame.rockArmor, myGame));
+        myGame.itemMapManager.addItem(new Armor(0.8f, myGame.itemMapManager.getID(), getBodyCenter().x, getBodyCenter().y, myGame.assetManager.get("rock_armor.png"), myGame));
         myGame.activeMonsters.remove(this);
     }
 }

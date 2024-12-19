@@ -37,10 +37,10 @@ public class Inventory {
         return ItemType.Any;
     }
     public Texture getItemTexture(int index) {
-        if (index == 0) return myGame.abilityIcon;
-        if (index == 1) return myGame.armorIcon;
-        if (index == 2) return myGame.bootsIcon;
-        if (index == 3) return myGame.attributeIcon;
+        if (index == 0) return myGame.assetManager.get("abilityIcon.png");
+        if (index == 1) return myGame.assetManager.get("armorIcon.png");
+        if (index == 2) return myGame.assetManager.get("bootsIcon.png");
+        if (index == 3) return myGame.assetManager.get("attributeIcon.png");
         return null;
     }
     public Item getAbility() {
@@ -56,7 +56,7 @@ public class Inventory {
         TextFieldStyle textFieldStyle = new TextFieldStyle();
         textFieldStyle.font = myGame.gsm.font;
         textFieldStyle.fontColor = Color.WHITE;
-        textFieldStyle.background = new TextureRegionDrawable(myGame.textBackground);
+        textFieldStyle.background = new TextureRegionDrawable((Texture) myGame.assetManager.get("textBorder.png"));
         itemInfo = new TextField("", textFieldStyle);
         itemInfo.setWidth(300);
         itemInfo.setAlignment(Align.center);
@@ -66,7 +66,7 @@ public class Inventory {
         //table.setDebug(true);
         //table.setName("Table");
         for (int i = 0; i < PLAYER_ATTRIBUTE_SPACE; i++) {
-            Image image = new Image(myGame.slot);
+            Image image = new Image((Texture) myGame.assetManager.get("slot.png"));
             //image.setName("Image");
             image.setTouchable(Touchable.disabled);
             Stack overlay = new Stack(image);
@@ -85,7 +85,7 @@ public class Inventory {
         table.row();
         for (int i = 0; i < PLAYER_INVENTORY_ROWS; i++) {
             for (int j = 0; j < PLAYER_INVENTORY_COLS; j++) {
-                Image image = new Image(myGame.slot);
+                Image image = new Image((Texture) myGame.assetManager.get("slot.png"));
                 //image.setName("Image");
                 image.setTouchable(Touchable.disabled);
                 Stack overlay = new Stack(image);

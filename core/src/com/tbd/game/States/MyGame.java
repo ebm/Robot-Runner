@@ -4,10 +4,15 @@ import com.badlogic.gdx.Gdx;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
@@ -40,35 +45,10 @@ public class MyGame implements Screen {
 	double accumulator;
 	public double timePassed;
 	public Player player;
-	public TextureAtlas atlas;
 	Map map;
-	Texture shadow;
 	public Listener listener;
 	public ArrayList<Monster> activeMonsters;
 	public ArrayList<Laser> activeLasers;
-	public Texture golem;
-	public Texture gun;
-	public Texture bullet;
-	public Texture laserTexture;
-	public Texture laserBeam;
-	public Texture bat;
-	public Texture bat1;
-	public Texture bat2;
-	public Texture bat3;
-	public Texture spaceship;
-	public TextureAtlas healthbarAtlas;
-	public Texture slot;
-	public Texture rockArmor;
-	public Texture fastBoots;
-	public Texture heartSmall;
-	public Texture dashAbility;
-	public Texture armorIcon;
-	public Texture abilityIcon;
-	public Texture bootsIcon;
-	public Texture attributeIcon;
-	public Texture textBackground;
-	public Sound playerFireNoise;
-	public Sound playerHitmarkerNoise;
 	boolean canEscape;
 	public Stage stage;
 	public Table table;
@@ -78,76 +58,91 @@ public class MyGame implements Screen {
 	public Random rand;
 	public Label fpsLabel;
 	public boolean cameraLocked;
+	public AssetManager assetManager;
+	public boolean firstLaunch;
+	public void initializeTextures() {
+		System.out.println("initialize textures");
+		assetManager = new AssetManager();
+		assetManager.load("robot_player/robot_character.atlas", TextureAtlas.class);
+		assetManager.load("healthbar/healthbar.atlas", TextureAtlas.class);
+		assetManager.load("player/shadow.png", Texture.class);
+		assetManager.load("golem.png", Texture.class);
+		assetManager.load("gun.png", Texture.class);
+		assetManager.load("laser.png", Texture.class);
+		assetManager.load("laserBeam.png", Texture.class);
+		assetManager.load("bullet.png", Texture.class);
+		assetManager.load("bat.png", Texture.class);
+		assetManager.load("bat1.png", Texture.class);
+		assetManager.load("bat2.png", Texture.class);
+		assetManager.load("bat3.png", Texture.class);
+		assetManager.load("slot.png", Texture.class);
+		assetManager.load("spaceship.png", Texture.class);
+		assetManager.load("rock_armor.png", Texture.class);
+		assetManager.load("boots_fast.png", Texture.class);
+		assetManager.load("heart_small.png", Texture.class);
+		assetManager.load("dash.png", Texture.class);
+		assetManager.load("armorIcon.png", Texture.class);
+		assetManager.load("attributeIcon.png", Texture.class);
+		assetManager.load("bootsIcon.png", Texture.class);
+		assetManager.load("abilityIcon.png", Texture.class);
+		assetManager.load("textBorder.png", Texture.class);
+		assetManager.load("fire.mp3", Sound.class);
+		assetManager.load("hitmarker.mp3", Sound.class);
+		assetManager.setLoader(TiledMap.class, new TmxMapLoader());
+		assetManager.load("map2/tilemap.tmx", TiledMap.class);
+	}
 	public MyGame(GameStateManager gsm) {
 		this.gsm = gsm;
+		firstLaunch = true;
+		initializeTextures();
+
+	}
+	public void init(OrthogonalTiledMapRenderer orthogonalTiledMapRenderer) {
 		batch = gsm.batch;
 		rand = new Random();
 
 		mapEntity = new MapEntity(this);
-		stage = new Stage(new ScreenViewport());
-		table = new Table();
-		table.setFillParent(true);
-		//table.setDebug(true);
-		stage.addActor(table);
+
 		labelStyle = new Label.LabelStyle();
 		labelStyle.font = gsm.font;
-		table.bottom();
-		table.right();
 
 		Box2D.init();
-		atlas = new TextureAtlas("game_atlas.atlas");
-		healthbarAtlas = new TextureAtlas("healthbar/healthbar.atlas");
-
-		world = new World(new Vector2(0, GRAVITY), true);
-
-		debugRenderer = new Box2DDebugRenderer();
-
-		shadow = new Texture("player/shadow.png");
-		golem = new Texture("golem.png");
-		gun = new Texture("gun.png");
-		laserTexture = new Texture("laser.png");
-		laserBeam = new Texture("laserBeam.png");
-		bullet = new Texture("bullet.png");
-		bat = new Texture("bat.png");
-		bat1 = new Texture("bat1.png");
-		bat2 = new Texture("bat2.png");
-		bat3 = new Texture("bat3.png");
-		slot = new Texture("slot.png");
-		spaceship = new Texture("spaceship.png");
-		rockArmor = new Texture("rock_armor.png");
-		fastBoots = new Texture("boots_fast.png");
-		heartSmall = new Texture("heart_small.png");
-		dashAbility = new Texture("dash.png");
-		armorIcon = new Texture("armorIcon.png");
-		attributeIcon = new Texture("attributeIcon.png");
-		bootsIcon = new Texture("bootsIcon.png");
-		abilityIcon = new Texture("abilityIcon.png");
-		textBackground = new Texture("textBorder.png");
-		playerFireNoise = Gdx.audio.newSound(Gdx.files.internal("fire.mp3"));
-		playerHitmarkerNoise = Gdx.audio.newSound(Gdx.files.internal("hitmarker.mp3"));
-		fpsLabel = new Label("FPS: " + Gdx.graphics.getFramesPerSecond(), labelStyle);
-		fpsLabel.setPosition(0, Gdx.graphics.getHeight() - 25);
-		stage.addActor(fpsLabel);
-
 		itemMapManager = new ItemMapManager(this);
 		activeMonsters = new ArrayList<>();
 		activeLasers = new ArrayList<>();
-		//activeMonsters.add(new Golem(this));
-		//activeMonsters.add(new Bat(this));
-		//activeMonsters.add(new Bat(this, BAT_INITIAL_X_POSITION + 1, BAT_INITIAL_Y_POSITION + 1));
-		//activeMonsters.add(new Bat(this, BAT_INITIAL_X_POSITION + 2, BAT_INITIAL_Y_POSITION + 2));
 
-		listener = new Listener(this);
-		world.setContactListener(listener);
-		map = new Map(this);
+		stage = null;
 
-		if (player == null) player = new Player(this, PLAYER_INITIAL_X_POSITION, PLAYER_INITIAL_Y_POSITION);
-		canEscape = false;
-		cameraLocked = true;
+		world = new World(new Vector2(0, GRAVITY), true);
+		map = new Map(this, orthogonalTiledMapRenderer);
 	}
 	@Override
 	public void show() {
+		if (firstLaunch) {
+			debugRenderer = new Box2DDebugRenderer();
+
+			listener = new Listener(this);
+			world.setContactListener(listener);
+
+			canEscape = false;
+			cameraLocked = true;
+
+			stage = new Stage(new ScreenViewport());
+			table = new Table();
+			table.setFillParent(true);
+			//table.setDebug(true);
+			stage.addActor(table);
+			table.bottom();
+			table.right();
+			System.out.println(labelStyle);
+			fpsLabel = new Label("FPS: " + Gdx.graphics.getFramesPerSecond(), labelStyle);
+			fpsLabel.setPosition(0, Gdx.graphics.getHeight() - 25);
+			stage.addActor(fpsLabel);
+
+			player.initializeOnScreenPlayerStats();
+		}
 		Gdx.input.setInputProcessor(stage);
+
 		canEscape = false;
 	}
 	public Vector3 getMousePosition() {
@@ -252,9 +247,7 @@ public class MyGame implements Screen {
 	}
 
 	public void dispose () {
-		atlas.dispose();
+		assetManager.dispose();
 		map.dispose();
-		golem.dispose();
-		bullet.dispose();
 	}
 }

@@ -1,5 +1,6 @@
 package com.tbd.game.Weapons;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.tbd.game.World.Listener;
@@ -75,7 +76,7 @@ public class BulletClass extends Weapon{
 
     @Override
     public void render() {
-        myGame.batch.draw(myGame.bullet, body.getPosition().x - bulletRadius, body.getPosition().y - bulletRadius, 2 * bulletRadius, 2 * bulletRadius);
+        myGame.batch.draw((Texture) myGame.assetManager.get("bullet.png"), body.getPosition().x - bulletRadius, body.getPosition().y - bulletRadius, 2 * bulletRadius, 2 * bulletRadius);
     }
     public static void handleContact(Fixture fixtureA, Fixture fixtureB, boolean beginContact, MyGame myGame) {
         if (!beginContact) return;
