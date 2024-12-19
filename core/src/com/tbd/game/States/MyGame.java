@@ -146,6 +146,7 @@ public class MyGame implements Screen {
 			stage.addActor(fpsLabel);
 
 			player.initializeOnScreenPlayerStats();
+			firstLaunch = false;
 		}
 		Gdx.input.setInputProcessor(stage);
 
