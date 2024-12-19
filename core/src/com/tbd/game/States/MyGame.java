@@ -6,7 +6,9 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
+import com.badlogic.gdx.assets.loaders.resolvers.LocalFileHandleResolver;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -26,6 +28,7 @@ import com.tbd.game.Entities.MapEntity;
 import com.tbd.game.Entities.MonsterPackage.Monster;
 import com.tbd.game.Entities.PlayerPackage.Player;
 import com.tbd.game.Items.ItemMapManager;
+import com.tbd.game.World.Keybinds;
 import com.tbd.game.World.Listener;
 import com.tbd.game.World.Map;
 import com.tbd.game.Weapons.Laser;
@@ -60,9 +63,10 @@ public class MyGame implements Screen {
 	public boolean cameraLocked;
 	public AssetManager assetManager;
 	public boolean firstLaunch;
+	public Keybinds keybinds;
 	public void initializeTextures() {
 		System.out.println("initialize textures");
-		assetManager = new AssetManager();
+		assetManager = new AssetManager(new LocalFileHandleResolver());
 		assetManager.load("robot_player/robot_character.atlas", TextureAtlas.class);
 		assetManager.load("healthbar/healthbar.atlas", TextureAtlas.class);
 		assetManager.load("player/shadow.png", Texture.class);
@@ -90,6 +94,7 @@ public class MyGame implements Screen {
 		assetManager.load("hitmarker.mp3", Sound.class);
 		assetManager.setLoader(TiledMap.class, new TmxMapLoader());
 		assetManager.load("map2/tilemap.tmx", TiledMap.class);
+		//assetManager.load("keybinds.txt", FileHandle.class);
 	}
 	public MyGame(GameStateManager gsm) {
 		this.gsm = gsm;
@@ -98,6 +103,7 @@ public class MyGame implements Screen {
 
 	}
 	public void init(OrthogonalTiledMapRenderer orthogonalTiledMapRenderer) {
+		keybinds = new Keybinds(this);
 		batch = gsm.batch;
 		rand = new Random();
 
@@ -148,7 +154,15 @@ public class MyGame implements Screen {
 	public Vector3 getMousePosition() {
 		return gsm.camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
 	}
-
+	public boolean checkKeybind(String s) {
+		if (keybinds.keybinds.get(s).keycode == -99) return false;
+		if (keybinds.keybinds.get(s).type == 'b') {
+			return Gdx.input.isButtonPressed(keybinds.keybinds.get(s).keycode);
+		} else if (keybinds.keybinds.get(s).type == 'k') {
+			return Gdx.input.isKeyPressed(keybinds.keybinds.get(s).keycode);
+		}
+		return false;
+	}
 	private void step(float delta) {
 		accumulator += delta;
 		timePassed += delta;

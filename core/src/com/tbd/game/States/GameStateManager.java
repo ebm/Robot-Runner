@@ -20,6 +20,7 @@ public class GameStateManager extends Game {
     public MyGame myGame;
     public Menu menu;
     public Pause pause;
+    public Options options;
     public boolean initialized;
     public boolean ready;
     @Override
@@ -33,7 +34,6 @@ public class GameStateManager extends Game {
         font = new BitmapFont(Gdx.files.internal("default.fnt"));
 
         myGame = new MyGame(this);
-        pause = new Pause(this);
         menu = new Menu(this);
 
         setScreen(menu);
@@ -56,6 +56,8 @@ public class GameStateManager extends Game {
                             public void run() {
                                 // process the result, e.g. add it to an Array<Result> field of the ApplicationListener.
                                 ready = true;
+                                pause = new Pause(GameStateManager.this);
+                                options = new Options(GameStateManager.this);
                             }
                         });
                     }

@@ -248,10 +248,10 @@ public class Inventory {
         itemInfo.toFront();
     }
     public void render() {
-        if (!Gdx.input.isKeyPressed(Input.Keys.E)) {
+        if (!myGame.checkKeybind("Inventory")) {
             canEscape = true;
         }
-        if (canEscape && Gdx.input.isKeyPressed(Input.Keys.E)) {
+        if (canEscape && myGame.checkKeybind("Inventory")) {
             if (currentSelection != null) {
                 addItem(currentSelection, selectionNumber);
                 currentSelection = null;

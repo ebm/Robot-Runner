@@ -18,13 +18,14 @@ public class Dash extends Ability{
 
     @Override
     public void apply() {
-        if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) && (myGame.timePassed - lastUse) > cooldown) {
+        if (myGame.checkKeybind("Ability") && (myGame.timePassed - lastUse) > cooldown) {
+            System.out.println("ability");
             float dashXVelocity = myGame.player.body.getLinearVelocity().x;
             float dashYVelocity = PLAYER_DASH_VERTICAL_VELOCITY;
-            if (myGame.player.currentState == PlayerState.WalkingLeft) {
+            if (myGame.player.currentState == PlayerState.WalkingLeft /*|| myGame.player.currentState == PlayerState.StillLeft*/) {
                 dashXVelocity = -PLAYER_DASH_HORIZONTAL_VELOCITY * myGame.player.speedMultiplier;
                 state = PlayerState.DashingLeft;
-            } else if (myGame.player.currentState == PlayerState.WalkingRight) {
+            } else if (myGame.player.currentState == PlayerState.WalkingRight /*|| myGame.player.currentState == PlayerState.StillRight*/) {
                 dashXVelocity = PLAYER_DASH_HORIZONTAL_VELOCITY * myGame.player.speedMultiplier;
                 state = PlayerState.DashingRight;
             }

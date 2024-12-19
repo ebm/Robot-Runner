@@ -36,14 +36,25 @@ public class Pause implements Screen {
         textButtonStyle.pressedOffsetX = -1;
         textButtonStyle.pressedOffsetY = -1;
         textButtonStyle.font = gsm.font;
-        TextButton textButton = new TextButton("Resume", textButtonStyle);
-        textButton.addListener(new ChangeListener() {
+
+        TextButton resumeButton = new TextButton("Resume", textButtonStyle);
+        resumeButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
                 gsm.setScreen(gsm.myGame);
             }
         });
-        table.add(textButton);
+
+        TextButton optionsButton = new TextButton("Options", textButtonStyle);
+        optionsButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent changeEvent, Actor actor) {
+                gsm.setScreen(gsm.options);
+            }
+        });
+        table.add(resumeButton);
+        table.row().pad(30);
+        table.add(optionsButton);
         canEscape = false;
     }
 

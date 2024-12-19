@@ -205,14 +205,14 @@ public class Player extends Entity {
         }
         if (inventory.open) {
             return;
-        } else if (canOpenInventory && Gdx.input.isKeyPressed(Input.Keys.E)) {
+        } else if (canOpenInventory && myGame.checkKeybind("Inventory")) {
             inventory.setOpen(true);
             canOpenInventory = false;
             return;
         }
-        if (!Gdx.input.isKeyPressed(Input.Keys.E)) canOpenInventory = true;
+        if (!myGame.checkKeybind("Inventory")) canOpenInventory = true;
         // LEFT
-        if (Gdx.input.isKeyPressed(Input.Keys.A) && !Gdx.input.isKeyPressed(Input.Keys.D)) {
+        if (myGame.checkKeybind("Move Left") && !myGame.checkKeybind("Move Right")) {
             if (contactFeet >= 1) {
                 body.setLinearVelocity(-PLAYER_HORIZONTAL_VELOCITY * speedMultiplier, body.getLinearVelocity().y);
             } else {
@@ -223,7 +223,7 @@ public class Player extends Entity {
             currentState = PlayerState.WalkingLeft;
         }
         // RIGHT
-        if (Gdx.input.isKeyPressed(Input.Keys.D) && !Gdx.input.isKeyPressed(Input.Keys.A)) {
+        if (myGame.checkKeybind("Move Right") && !myGame.checkKeybind("Move Left")) {
             if (contactFeet >= 1) {
                 body.setLinearVelocity(PLAYER_HORIZONTAL_VELOCITY * speedMultiplier, body.getLinearVelocity().y);
             } else {
@@ -234,7 +234,7 @@ public class Player extends Entity {
             currentState = PlayerState.WalkingRight;
         }
         // JUMP
-        if (Gdx.input.isKeyPressed(Input.Keys.SPACE) && remainingJumps >= 1 && canJump && (wallClimbTime == 0 || wallClimbFinished)) {
+        if (myGame.checkKeybind("Jump") && remainingJumps >= 1 && canJump && (wallClimbTime == 0 || wallClimbFinished)) {
             body.setTransform(body.getPosition().x, body.getPosition().y + 2 * UNIT_SCALE, 0);
             body.setLinearVelocity(body.getLinearVelocity().x, PLAYER_JUMP_VELOCITY);
             if (currentState == PlayerState.WalkingLeft) {
@@ -249,7 +249,7 @@ public class Player extends Entity {
             lastJump = myGame.timePassed;
             remainingJumps--;
             canJump = false;
-        } else if (!Gdx.input.isKeyPressed(Input.Keys.SPACE)){
+        } else if (!myGame.checkKeybind("Jump")){
             canJump = true;
         }
         // WALLCLIMB
@@ -276,7 +276,7 @@ public class Player extends Entity {
         //}
         inventory.applyMultipliers();
         // Fire
-        if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+        if (myGame.checkKeybind("Fire")) {
             weapon.attack(new Vector2(myGame.getMousePosition().x, myGame.getMousePosition().y));
             combatTimer = myGame.timePassed;
             if (myGame.getMousePosition().x > getBodyCenter().x) {
