@@ -3,4 +3,4 @@ Move Right: k, 32, k, 32
 Jump: k, 62, k, 62
 Fire: b, 0, b, 0
 Ability: k, 59, k, 59
-Inventory: b, 1, k, 33
+Inventory: k, 33, k, 33

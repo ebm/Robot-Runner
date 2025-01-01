@@ -30,8 +30,6 @@ public class Player extends Entity {
     boolean wallClimbFinished;
     double lastDash;
     double combatTimer;
-    //float dashXVelocity;
-    //float dashYVelocity;
     public PlayerState currentState;
     Animation<TextureRegion> walkingLeft;
     Animation<TextureRegion> walkingRight;
@@ -59,6 +57,13 @@ public class Player extends Entity {
     public double lastJump;
     public PlayerState jumpState;
     boolean flip;
+
+    /**
+     * Initializes Player at location initialX, initialY
+     * @param myGame game class (manages game panel, resizing, fps)
+     * @param initialX x coordinate
+     * @param initialY y coordinate
+     */
     public Player(MyGame myGame, float initialX, float initialY) {
         super(myGame, PLAYER_HEALTH, Player.class, Monster.class, CATEGORY_BITS_PLAYER);
         this.myGame = myGame;
@@ -69,17 +74,15 @@ public class Player extends Entity {
         combatTimer = 0;
         lastJump = 0;
 
+        // Default state
         currentState = PlayerState.StillRight;
-//        weapon = new RangedWeapon(myGame, this, 20, 3, 8, 0.2f * METERS_PER_PIXEL, myGame.playerFireNoise);
+        // Weapon creation
         weapon = new RangedWeapon(myGame, this, 50, 3, 8, 0.2f * METERS_PER_PIXEL, myGame.assetManager.get("fire.mp3"));
 
         // Create Body
         createPlayer(initialX, initialY);
-
         createAnimations();
-
         healthbar = new Healthbar(myGame, this, health);
-
         canOpenInventory = false;
 
         speedMultiplier = 1;
@@ -87,8 +90,13 @@ public class Player extends Entity {
         additionalHealth  = 0;
         gunTextureRegion = new TextureRegion((Texture) myGame.assetManager.get("gun.png"));
         flip = false;
-
     }
+
+    /**
+     * Initializes player statistics. This cannot be done in the Player() initializer because the initializer is called
+     * in a separate thread. OpenGL needs graphics changes to be done in the same thread as the main render thread. This
+     * function is called when the myGame panel is set visible for the first time.
+     */
     public void initializeOnScreenPlayerStats() {
         healthLabel = new Label("Health: " + (int) health + " / " + (int) PLAYER_HEALTH, myGame.labelStyle);
         abilityCooldownLabel = new Label("Cooldown: 0", myGame.labelStyle);
@@ -101,21 +109,34 @@ public class Player extends Entity {
         myGame.table.add(healthLabel);
         myGame.table.pad(5);
 
+        // Creates player inventory. Initializer calls the graphics library, so it needs to be done in the main render thread
         inventory = new Inventory(myGame);
     }
+
+    /**
+     * Creates player body at (initialX, initialY) map coordinates.
+     * @param initialX x coordinate
+     * @param initialY y coordinate
+     */
     private void createPlayer(float initialX, float initialY) {
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.density = 1f;
         fixtureDef.friction = 0f;
         fixtureDef.restitution = 0f;
+
+        // Filters set collisions. Lower number = more handling
         Filter filter = new Filter();
-        filter.categoryBits = 0x0004;
+        //filter.categoryBits = 0x0004;
+        filter.categoryBits = CATEGORY_BITS_PLAYER;
 
         createBody(PLAYER_HITBOX_WIDTH, PLAYER_HITBOX_HEIGHT, fixtureDef);
         body.getFixtureList().get(0).setFilterData(filter);
         body.setTransform(initialX, initialY, 0);
     }
 
+    /**
+     * Creates player animations from the texture atlas
+     */
     private void createAnimations() {
         // walking
         Array<TextureAtlas.AtlasRegion> normalWalkTextures = ((TextureAtlas) myGame.assetManager.get("robot_player/robot_character.atlas")).findRegions(("ebmarantz-walk"));
@@ -129,19 +150,19 @@ public class Player extends Entity {
         walkingLeft = new Animation<>(0.02f, flippedWalkTextures);
 
         // jumping
-        jumpRight = walkingRight;
-        jumpLeft = walkingLeft;
-//        Array<TextureAtlas.AtlasRegion> normalJumpTextures = myGame.atlas.findRegions(("ebmarantz-jump-double"));
-//        jumpRight = new Animation<>(0.02f, normalJumpTextures);
-//        Array<TextureRegion> flippedJumpTextures = new Array<>();
-//        for (TextureRegion tr : normalJumpTextures) {
-//            TextureRegion curr = new TextureRegion(tr);
-//            curr.flip(true, false);
-//            flippedJumpTextures.add(curr);
-//        }
-//        jumpLeft = new Animation<>(0.02f, flippedJumpTextures);
-//        jumpRight.setPlayMode(Animation.PlayMode.NORMAL);
-//        jumpLeft.setPlayMode(Animation.PlayMode.NORMAL);
+        //jumpRight = walkingRight;
+        //jumpLeft = walkingLeft;
+        Array<TextureAtlas.AtlasRegion> normalJumpTextures = ((TextureAtlas) myGame.assetManager.get("robot_player/robot_character.atlas")).findRegions("ebmarantz-jump");
+        jumpRight = new Animation<>(0.02f, normalJumpTextures);
+        Array<TextureRegion> flippedJumpTextures = new Array<>();
+        for (TextureRegion tr : normalJumpTextures) {
+            TextureRegion curr = new TextureRegion(tr);
+            curr.flip(true, false);
+            flippedJumpTextures.add(curr);
+        }
+        jumpLeft = new Animation<>(0.02f, flippedJumpTextures);
+        jumpRight.setPlayMode(Animation.PlayMode.NORMAL);
+        jumpLeft.setPlayMode(Animation.PlayMode.NORMAL);
 
         // climbing
         Array<TextureAtlas.AtlasRegion> normalClimbTextures = ((TextureAtlas) myGame.assetManager.get("robot_player/robot_character.atlas")).findRegions(("ebmarantz-climb"));
@@ -154,7 +175,7 @@ public class Player extends Entity {
         }
         climbLeft = new Animation<>(0.02f, flippedClimbTextures);
 
-        // dash
+        // dashing
         Array<TextureAtlas.AtlasRegion> normalDashTextures = ((TextureAtlas) myGame.assetManager.get("robot_player/robot_character.atlas")).findRegions(("ebmarantz-dash"));
         dashRight = new Animation<>(0.05f, normalDashTextures);
         Array<TextureRegion> flippedDashTextures = new Array<>();
@@ -179,15 +200,28 @@ public class Player extends Entity {
 
         timePassed = 0;
     }
+
+    /**
+     * Coordinates are set in the bottom left of rectangular shapes.
+     * @return the coordinates for the center of the body
+     */
     @Override
     public Vector2 getBodyCenter() {
         return new Vector2(body.getPosition().x + PLAYER_HITBOX_WIDTH / 2, body.getPosition().y + PLAYER_HITBOX_HEIGHT / 2);
     }
+
+    /**
+     * Multipliers are changed through items. This function sets the player multipliers to the defaults (no items)
+     */
     public void resetMultipliers() {
         speedMultiplier = 1;
         dmgTakenMultiplier = 1;
         additionalHealth  = 0;
     }
+
+    /**
+     * Handles user input. Adjusts player velocity accordingly. Also checks if the player is out of bounds.
+     */
     public void update() {
         if (getBodyCenter().y < 0) death();
         if (currentState == PlayerState.ClimbingRight || currentState == PlayerState.JumpingRight || currentState == PlayerState.WalkingRight || currentState == PlayerState.StillRight) {
@@ -247,6 +281,7 @@ public class Player extends Entity {
                 jumpState = currentState;
             }
             lastJump = myGame.timePassed;
+            timePassed = 2.5f;
             remainingJumps--;
             canJump = false;
         } else if (!myGame.checkKeybind("Jump")){
@@ -291,6 +326,11 @@ public class Player extends Entity {
             angle = (float) Math.atan((getBodyCenter().y - myGame.getMousePosition().y) / (getBodyCenter().x - myGame.getMousePosition().x));
         }
     }
+
+    /**
+     * Gets called in myGame. Renders player animation frame, weapon, healthbar, and statistics. Checks playerState to
+     * ensure the right animation is played.
+     */
     @Override
     public void render() {
         //System.out.println(currentState);
@@ -310,10 +350,6 @@ public class Player extends Entity {
             currentFrame = walkingLeft.getKeyFrame(timePassed, true);
         } else if (currentState == PlayerState.WalkingRight) {
             currentFrame = walkingRight.getKeyFrame(timePassed, true);
-        } else if (currentState == PlayerState.JumpingLeft) {
-            currentFrame = jumpLeft.getKeyFrame(timePassed, true);
-        } else if (currentState == PlayerState.JumpingRight) {
-            currentFrame = jumpRight.getKeyFrame(timePassed, true);
         } else if (currentState == PlayerState.ClimbingLeft) {
             currentFrame = climbLeft.getKeyFrame(timePassed, true);
         } else if (currentState == PlayerState.ClimbingRight) {
@@ -338,17 +374,29 @@ public class Player extends Entity {
             myGame.batch.draw(gunTextureRegion, getBodyCenter().x - 0.5f - 0.25f, getBodyCenter().y - 0.25f, 0.5f, 0.25f, 1, 0.5f, 1, 1, (float) Math.toDegrees(angle));
         }
     }
+
+    /**
+     * Adjusts health and combatTimer when damage is taken.
+     * TODO: add sound effect for when player gets damaged.
+     * @param damage amount to subtract from health
+     */
     @Override
     public void takeDamage(float damage) {
         super.takeDamage(damage * dmgTakenMultiplier);
         combatTimer = myGame.timePassed;
     }
+
+    /**
+     * Handles the death and respawn of player.
+     */
     @Override
     public void death() {
         super.death();
+        // Resets contacts
         myGame.listener.resetContacts();
         myGame.table.clear();
         weapon.destroy();
         myGame.player = new Player(myGame, PLAYER_INITIAL_X_POSITION, PLAYER_INITIAL_Y_POSITION);
+        myGame.player.initializeOnScreenPlayerStats();
     }
 }

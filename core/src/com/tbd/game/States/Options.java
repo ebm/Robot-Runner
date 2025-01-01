@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -37,6 +38,8 @@ public class Options extends InputAdapter implements Screen, InputProcessor {
     InputMultiplexer multiplexer;
     String currString;
     HashMap<String, TextButton> keybindMap;
+    ScrollPane sp;
+    Table outsideTable;
     void updateVisual() {
         keybindMap.get(currString).setText(gsm.myGame.keybinds.keybinds.get(currString).getKeycodeString());
     }
@@ -111,8 +114,8 @@ public class Options extends InputAdapter implements Screen, InputProcessor {
 
         controlTable = new Table();
         controlTable.setFillParent(true);
-        stage.addActor(controlTable);
-        controlTable.setVisible(false);
+        //stage.addActor(controlTable);
+        //controlTable.setVisible(false);
 
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = gsm.font;
@@ -176,6 +179,17 @@ public class Options extends InputAdapter implements Screen, InputProcessor {
                 return true;
             }
         });
+        sp = new ScrollPane(controlTable);
+        sp.setBounds(0, 0, 500, 800);
+        outsideTable = new Table();
+        outsideTable.add(sp);//.height(1000);
+        outsideTable.setFillParent(true);
+        stage.addActor(outsideTable);
+        outsideTable.setVisible(false);
+        outsideTable.left();
+        outsideTable.top();
+        outsideTable.setDebug(true);
+        //sp.setVisible(false);
     }
 
     @Override
@@ -195,13 +209,17 @@ public class Options extends InputAdapter implements Screen, InputProcessor {
         if (changed) {
             changed = false;
             if (currentState == ControlState.Controls) {
-                controlTable.setVisible(true);
+                //controlTable.setVisible(true);
                 mainTable.setVisible(false);
+                //sp.setVisible(true);
+                outsideTable.setVisible(true);
             } else if (currentState == ControlState.VideoSettings) {
 
             } else if (currentState == ControlState.Main) {
-                controlTable.setVisible(false);
+                //controlTable.setVisible(false);
                 mainTable.setVisible(true);
+                //sp.setVisible(false);
+                outsideTable.setVisible(false);
             }
         }
         if (!Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
