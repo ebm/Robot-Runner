@@ -22,6 +22,9 @@ import com.tbd.game.Weapons.Weapon;
 
 import static com.tbd.game.World.Constants.*;
 
+/**
+ * There can only be one player at a time. All time measurements in this class are measured in seconds.
+ */
 public class Player extends Entity {
     Healthbar healthbar;
     int remainingJumps;
@@ -135,68 +138,56 @@ public class Player extends Entity {
     }
 
     /**
+     * Creates two animations. A right and left version of the same animation.
+     * @param name of animation
+     * @param frameDuration speed of animation
+     * @return an array of size 2 with left and right versions of the animation
+     */
+    private Animation<TextureRegion>[] createIndividualAnimation(String name, float frameDuration) {
+        Animation<TextureRegion>[] res = new Animation[2];
+        Array<TextureAtlas.AtlasRegion> normalTextures = ((TextureAtlas) myGame.assetManager.get("robot_player/robot_character.atlas")).findRegions((name));
+        res[0] = new Animation<>(frameDuration, normalTextures);
+        Array<TextureRegion> flippedTextures = new Array<>();
+        for (TextureRegion tr : normalTextures) {
+            TextureRegion curr = new TextureRegion(tr);
+            curr.flip(true, false);
+            flippedTextures.add(curr);
+        }
+        res[1] = new Animation<>(frameDuration, flippedTextures);
+        return res;
+    }
+    /**
      * Creates player animations from the texture atlas
      */
     private void createAnimations() {
         // walking
-        Array<TextureAtlas.AtlasRegion> normalWalkTextures = ((TextureAtlas) myGame.assetManager.get("robot_player/robot_character.atlas")).findRegions(("ebmarantz-walk"));
-        walkingRight = new Animation<>(0.02f, normalWalkTextures);
-        Array<TextureRegion> flippedWalkTextures = new Array<>();
-        for (TextureRegion tr : normalWalkTextures) {
-            TextureRegion curr = new TextureRegion(tr);
-            curr.flip(true, false);
-            flippedWalkTextures.add(curr);
-        }
-        walkingLeft = new Animation<>(0.02f, flippedWalkTextures);
+        Animation<TextureRegion>[] res = createIndividualAnimation("ebmarantz-walk", 0.02f);
+        walkingRight = res[0];
+        walkingLeft = res[1];
 
         // jumping
         //jumpRight = walkingRight;
         //jumpLeft = walkingLeft;
-        Array<TextureAtlas.AtlasRegion> normalJumpTextures = ((TextureAtlas) myGame.assetManager.get("robot_player/robot_character.atlas")).findRegions("ebmarantz-jump");
-        jumpRight = new Animation<>(0.02f, normalJumpTextures);
-        Array<TextureRegion> flippedJumpTextures = new Array<>();
-        for (TextureRegion tr : normalJumpTextures) {
-            TextureRegion curr = new TextureRegion(tr);
-            curr.flip(true, false);
-            flippedJumpTextures.add(curr);
-        }
-        jumpLeft = new Animation<>(0.02f, flippedJumpTextures);
+        res = createIndividualAnimation("ebmarantz-jump", 0.02f);
+        jumpRight = res[0];
+        jumpLeft = res[1];
         jumpRight.setPlayMode(Animation.PlayMode.NORMAL);
         jumpLeft.setPlayMode(Animation.PlayMode.NORMAL);
 
         // climbing
-        Array<TextureAtlas.AtlasRegion> normalClimbTextures = ((TextureAtlas) myGame.assetManager.get("robot_player/robot_character.atlas")).findRegions(("ebmarantz-climb"));
-        climbRight = new Animation<>(0.02f, normalClimbTextures);
-        Array<TextureRegion> flippedClimbTextures = new Array<>();
-        for (TextureRegion tr : normalClimbTextures) {
-            TextureRegion curr = new TextureRegion(tr);
-            curr.flip(true, false);
-            flippedClimbTextures.add(curr);
-        }
-        climbLeft = new Animation<>(0.02f, flippedClimbTextures);
+        res = createIndividualAnimation("ebmarantz-climb", 0.02f);
+        climbRight = res[0];
+        climbLeft = res[1];
 
         // dashing
-        Array<TextureAtlas.AtlasRegion> normalDashTextures = ((TextureAtlas) myGame.assetManager.get("robot_player/robot_character.atlas")).findRegions(("ebmarantz-dash"));
-        dashRight = new Animation<>(0.05f, normalDashTextures);
-        Array<TextureRegion> flippedDashTextures = new Array<>();
-        for (TextureRegion tr : normalDashTextures) {
-            TextureRegion curr = new TextureRegion(tr);
-            curr.flip(true, false);
-            flippedDashTextures.add(curr);
-        }
-        dashLeft = new Animation<>(0.05f, flippedDashTextures);
+        res = createIndividualAnimation("ebmarantz-dash", 0.05f);
+        dashRight = res[0];
+        dashLeft = res[1];
 
         // still
-        Array<TextureAtlas.AtlasRegion> normalStillTextures = ((TextureAtlas) myGame.assetManager.get("robot_player/robot_character.atlas")).findRegions(("ebmarantz-idle"));
-        stillRight = new Animation<>(0.05f, normalStillTextures);
-        Array<TextureRegion> flippedStillTextures = new Array<>();
-        for (TextureRegion tr : normalStillTextures) {
-            TextureRegion curr = new TextureRegion(tr);
-            curr.flip(true, false);
-            flippedStillTextures.add(curr);
-        }
-        stillLeft = new Animation<>(0.05f, flippedStillTextures);
-
+        res = createIndividualAnimation("ebmarantz-idle", 0.05f);
+        stillRight = res[0];
+        stillLeft = res[1];
 
         timePassed = 0;
     }
@@ -220,16 +211,20 @@ public class Player extends Entity {
     }
 
     /**
-     * Handles user input. Adjusts player velocity accordingly. Also checks if the player is out of bounds.
+     * Resets the player state to default.
      */
-    public void update() {
-        if (getBodyCenter().y < 0) death();
+    public void resetPlayerState() {
         if (currentState == PlayerState.ClimbingRight || currentState == PlayerState.JumpingRight || currentState == PlayerState.WalkingRight || currentState == PlayerState.StillRight) {
             currentState = PlayerState.StillRight;
         } else {
             currentState = PlayerState.StillLeft;
         }
-        // ON GROUND
+    }
+
+    /**
+     * Checks if the player is on the ground. Sets the x velocity of the player to 0 if true.
+     */
+    public void onGround() {
         if (contactFeet >= 1) {
             body.setLinearVelocity(0, body.getLinearVelocity().y);
             remainingJumps = PLAYER_MAXIMUM_JUMPS;
@@ -237,6 +232,13 @@ public class Player extends Entity {
             wallClimbTime = 0;
             //canJump = true; // enable this to allow user to hold spacebar to continuously jump
         }
+    }
+
+    /**
+     * Check if the inventory can be opened, and handles when the keybind is pressed. Function is necessary so that
+     * the inventory can use the same key to open and close it.
+     */
+    public void inventoryCheck() {
         if (inventory.open) {
             return;
         } else if (canOpenInventory && myGame.checkKeybind("Inventory")) {
@@ -245,7 +247,12 @@ public class Player extends Entity {
             return;
         }
         if (!myGame.checkKeybind("Inventory")) canOpenInventory = true;
-        // LEFT
+    }
+
+    /**
+     * Checks if the character should move left.
+     */
+    public void leftCheck() {
         if (myGame.checkKeybind("Move Left") && !myGame.checkKeybind("Move Right")) {
             if (contactFeet >= 1) {
                 body.setLinearVelocity(-PLAYER_HORIZONTAL_VELOCITY * speedMultiplier, body.getLinearVelocity().y);
@@ -256,7 +263,11 @@ public class Player extends Entity {
             }
             currentState = PlayerState.WalkingLeft;
         }
-        // RIGHT
+    }
+    /**
+     * Checks if the character should move right.
+     */
+    public void rightCheck() {
         if (myGame.checkKeybind("Move Right") && !myGame.checkKeybind("Move Left")) {
             if (contactFeet >= 1) {
                 body.setLinearVelocity(PLAYER_HORIZONTAL_VELOCITY * speedMultiplier, body.getLinearVelocity().y);
@@ -267,7 +278,12 @@ public class Player extends Entity {
             }
             currentState = PlayerState.WalkingRight;
         }
-        // JUMP
+    }
+
+    /**
+     * Checks if the player has jumps left, and is pressing the jump keybind.
+     */
+    public void jumpCheck() {
         if (myGame.checkKeybind("Jump") && remainingJumps >= 1 && canJump && (wallClimbTime == 0 || wallClimbFinished)) {
             body.setTransform(body.getPosition().x, body.getPosition().y + 2 * UNIT_SCALE, 0);
             body.setLinearVelocity(body.getLinearVelocity().x, PLAYER_JUMP_VELOCITY);
@@ -287,7 +303,13 @@ public class Player extends Entity {
         } else if (!myGame.checkKeybind("Jump")){
             canJump = true;
         }
-        // WALLCLIMB
+    }
+
+    /**
+     * Checks if the player can wall climb. Must be moving into a wall to wallclimb. Also ensures player can only wallclimb
+     * once.
+     */
+    public void wallClimbCheck() {
         if (/*Gdx.input.isKeyPressed(Input.Keys.W) && */!wallClimbFinished) {
             // Ensure player is walking into wall
             if ((currentState == PlayerState.WalkingLeft && contactLeftArm >= 1 || currentState == PlayerState.WalkingRight && contactRightArm >= 1) &&
@@ -306,11 +328,13 @@ public class Player extends Entity {
         } else if (!wallClimbFinished) {
             if (wallClimbTime != 0) wallClimbFinished = true;
         }
-        //if (myGame.timePassed - lastJump < 0.5f) {
-        //    currentState = jumpState;
-        //}
-        inventory.applyMultipliers();
-        // Fire
+    }
+
+    /**
+     * Checks if the player is holding down the fire button. Also determines where the mouse is to show where to aim
+     * the shot.
+     */
+    public void fireCheck() {
         if (myGame.checkKeybind("Fire")) {
             weapon.attack(new Vector2(myGame.getMousePosition().x, myGame.getMousePosition().y));
             combatTimer = myGame.timePassed;
@@ -326,25 +350,44 @@ public class Player extends Entity {
             angle = (float) Math.atan((getBodyCenter().y - myGame.getMousePosition().y) / (getBodyCenter().x - myGame.getMousePosition().x));
         }
     }
+    /**
+     * Handles user input. Adjusts player velocity accordingly. Also checks if the player is out of bounds. Called
+     * 240 times per second, regardless of computer speed.
+     */
+    public void update() {
+        if (getBodyCenter().y < 0) death();
+        resetPlayerState();
+        onGround();
+        inventoryCheck();
+        leftCheck();
+        rightCheck();
+        jumpCheck();
+        wallClimbCheck();
+
+        // Jump animation needs to be fixed for this code to be uncommented
+        //if (myGame.timePassed - lastJump < 0.5f) {
+        //    currentState = jumpState;
+        //}
+        // multipliers should be applied after so player state is correct
+        inventory.applyMultipliers();
+        fireCheck();
+    }
 
     /**
-     * Gets called in myGame. Renders player animation frame, weapon, healthbar, and statistics. Checks playerState to
-     * ensure the right animation is played.
+     * Renders all active player statistics.
      */
-    @Override
-    public void render() {
-        //System.out.println(currentState);
-        weapon.render();
-        if (inventory.open) inventory.render();
-        if (health < PLAYER_HEALTH + additionalHealth && (myGame.timePassed - combatTimer) > PLAYER_COMBAT_TIMER) {
-            health += Gdx.graphics.getDeltaTime() * PLAYER_HEALTH_REGEN_PER_SEC;
-            if (health >= PLAYER_HEALTH + additionalHealth) health = PLAYER_HEALTH + additionalHealth;
-        }
+    public void renderStatistics() {
         healthLabel.setText("Health: " + (int) health + " / " + (int) (PLAYER_HEALTH + additionalHealth));
         if (inventory.getAbility() != null) abilityCooldownLabel.setText("Cooldown: " + Math.max((int) Math.ceil((((Ability) inventory.getAbility()).cooldown - (myGame.timePassed - ((Ability) inventory.getAbility()).lastUse))), 0));
         combatLabel.setText("Combat Timer: " + Math.max((int) Math.ceil((PLAYER_COMBAT_TIMER - (myGame.timePassed - combatTimer))), 0));
         stateLabel.setText("Current State: " + currentState);
         timePassed += Gdx.graphics.getDeltaTime();
+    }
+    /**
+     * Gets the current player animation.
+     * @return a textureRegion with the current frame.
+     */
+    public TextureRegion getCurrentFrame() {
         TextureRegion currentFrame;
         if (currentState == PlayerState.WalkingLeft) {
             currentFrame = walkingLeft.getKeyFrame(timePassed, true);
@@ -363,16 +406,39 @@ public class Player extends Entity {
         } else {
             currentFrame = stillRight.getKeyFrame(timePassed, true);
         }
-        //if (touchingFloor) myGame.batch.draw(myGame.shadow, body.getPosition().x - HORIZONTAL_OFFSET, body.getPosition().y - VERTICAL_OFFSET - 5 * UNIT_SCALE, 32 * UNIT_SCALE, 12 * UNIT_SCALE);
-        myGame.batch.draw(currentFrame, body.getPosition().x - PLAYER_HORIZONTAL_OFFSET, body.getPosition().y - PLAYER_VERTICAL_OFFSET, PLAYER_SPRITE_WIDTH, PLAYER_SPRITE_HEIGHT);
-        healthbar.maxHealth = PLAYER_HEALTH + additionalHealth;
-        if (PLAYER_HEALTH + additionalHealth < health) health = PLAYER_HEALTH + additionalHealth;
-        myGame.batch.draw(healthbar.getHealthBar(), body.getPosition().x - PLAYER_HORIZONTAL_OFFSET, body.getPosition().y + PLAYER_HITBOX_HEIGHT + HEALTHBAR_OFFSET, PLAYER_SPRITE_WIDTH, HEALTHBAR_HEIGHT);
+        return currentFrame;
+    }
+
+    /**
+     * Render the gun animation.
+     */
+    public void renderGun() {
         if (currentState == PlayerState.ShootingRight) {
             myGame.batch.draw(gunTextureRegion, getBodyCenter().x - 0.5f + 0.25f, getBodyCenter().y - 0.25f, 0.5f, 0.25f, 1, 0.5f, 1, 1, (float) Math.toDegrees(angle));
         } else if (currentState == PlayerState.ShootingLeft) {
             myGame.batch.draw(gunTextureRegion, getBodyCenter().x - 0.5f - 0.25f, getBodyCenter().y - 0.25f, 0.5f, 0.25f, 1, 0.5f, 1, 1, (float) Math.toDegrees(angle));
         }
+    }
+    /**
+     * Gets called in myGame. Renders player animation frame, weapon, healthbar, and statistics. Checks playerState to
+     * ensure the right animation is played.
+     */
+    @Override
+    public void render() {
+        weapon.render();
+        if (inventory.open) inventory.render();
+        if (health < PLAYER_HEALTH + additionalHealth && (myGame.timePassed - combatTimer) > PLAYER_COMBAT_TIMER) {
+            health += Gdx.graphics.getDeltaTime() * PLAYER_HEALTH_REGEN_PER_SEC;
+            if (health >= PLAYER_HEALTH + additionalHealth) health = PLAYER_HEALTH + additionalHealth;
+        }
+        renderStatistics();
+        // Uncomment this to draw a shadow beneath player.
+        //if (touchingFloor) myGame.batch.draw(myGame.shadow, body.getPosition().x - HORIZONTAL_OFFSET, body.getPosition().y - VERTICAL_OFFSET - 5 * UNIT_SCALE, 32 * UNIT_SCALE, 12 * UNIT_SCALE);
+        myGame.batch.draw(getCurrentFrame(), body.getPosition().x - PLAYER_HORIZONTAL_OFFSET, body.getPosition().y - PLAYER_VERTICAL_OFFSET, PLAYER_SPRITE_WIDTH, PLAYER_SPRITE_HEIGHT);
+        healthbar.maxHealth = PLAYER_HEALTH + additionalHealth;
+        if (PLAYER_HEALTH + additionalHealth < health) health = PLAYER_HEALTH + additionalHealth;
+        myGame.batch.draw(healthbar.getHealthBar(), body.getPosition().x - PLAYER_HORIZONTAL_OFFSET, body.getPosition().y + PLAYER_HITBOX_HEIGHT + HEALTHBAR_OFFSET, PLAYER_SPRITE_WIDTH, HEALTHBAR_HEIGHT);
+        renderGun();
     }
 
     /**
@@ -392,7 +458,6 @@ public class Player extends Entity {
     @Override
     public void death() {
         super.death();
-        // Resets contacts
         myGame.listener.resetContacts();
         myGame.table.clear();
         weapon.destroy();
