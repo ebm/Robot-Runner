@@ -41,8 +41,8 @@ public class GameStateManager extends Game {
     public void render() {
         if (!ready && myGame.assetManager.update()) {
             myGame.init();
-            pause = new Pause(GameStateManager.this);
-            options = new Options(GameStateManager.this);
+            pause = new Pause(this);
+            options = new Options(this);
             ready = true;
         }
         super.render();

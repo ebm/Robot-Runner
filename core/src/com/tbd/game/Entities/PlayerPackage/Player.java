@@ -533,11 +533,24 @@ public class Player extends Entity {
                 }
                 break;
             case StillLeft:
-                currentFrame = stillLeft.getKeyFrame(timePassed, true);
+                if (shootingState == PlayerState.ShootingLeft) {
+                    currentFrame = shootingLeftWalkingLeft.getKeyFrame(0, true);
+                } else if (shootingState == PlayerState.ShootingRight) {
+                    currentFrame = shootingRightWalkingLeft.getKeyFrame(0, true);
+                } else {
+                    currentFrame = stillLeft.getKeyFrame(timePassed, true);
+                }
                 break;
             default:
-                currentFrame = stillRight.getKeyFrame(timePassed, true);
+                if (shootingState == PlayerState.ShootingLeft) {
+                    currentFrame = shootingLeftWalkingRight.getKeyFrame(0, true);
+                } else if (shootingState == PlayerState.ShootingRight) {
+                    currentFrame = shootingRightWalkingRight.getKeyFrame(0, true);
+                } else {
+                    currentFrame = stillRight.getKeyFrame(timePassed, true);
+                }
                 break;
+
         }
         return currentFrame;
     }
@@ -550,6 +563,7 @@ public class Player extends Entity {
         float scale = PLAYER_SPRITE_WIDTH / 855;
         if (shootingState == PlayerState.ShootingLeft) {
             switch(currentState) {
+                case StillLeft:
                 case DashingLeft:
                 case JumpingLeft:
                 case WalkingLeft:
@@ -557,6 +571,7 @@ public class Player extends Entity {
                             body.getPosition().y - PLAYER_VERTICAL_OFFSET + 385 / 855f * PLAYER_SPRITE_HEIGHT - 160 * scale, 1208 * scale, 160 * scale,
                             1233 * scale, 295 * scale, 1, 1, (float) Math.toDegrees(angle));
                     break;
+                case StillRight:
                 case DashingRight:
                 case JumpingRight:
                 case WalkingRight:
@@ -567,6 +582,7 @@ public class Player extends Entity {
             }
         } else if (shootingState == PlayerState.ShootingRight) {
             switch(currentState) {
+                case StillLeft:
                 case DashingLeft:
                 case JumpingLeft:
                 case WalkingLeft:
@@ -574,6 +590,7 @@ public class Player extends Entity {
                             body.getPosition().y - PLAYER_VERTICAL_OFFSET + 411 / 855f * PLAYER_SPRITE_HEIGHT - 71 * scale, 20 * scale, 71 * scale,
                             1292 * scale, 286 * scale, 1, 1, (float) Math.toDegrees(angle));
                     break;
+                case StillRight:
                 case DashingRight:
                 case JumpingRight:
                 case WalkingRight:
