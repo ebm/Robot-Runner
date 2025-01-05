@@ -10,7 +10,7 @@ public class Constants {
     public static float VISIBLE_VERTICAL_TILES = 18 * METERS_PER_PIXEL;
     public static float TIME_STEP = 1/240f;
     public static float GRAVITY = -20 * METERS_PER_PIXEL;
-    public static float CAMERA_Y_OFFSET = 3 * METERS_PER_PIXEL;
+    public static float CAMERA_Y_OFFSET = 0;//3 * METERS_PER_PIXEL;
     public static float HEALTHBAR_OFFSET = 0.25f * METERS_PER_PIXEL;
     public static float HEALTHBAR_HEIGHT = 0.25f * METERS_PER_PIXEL;
 
@@ -34,8 +34,8 @@ public class Constants {
     public static float PLAYER_WALLCLIMB_LENGTH_SECONDS = 1f;
     public static float PLAYER_DASH_HORIZONTAL_VELOCITY = 10f * METERS_PER_PIXEL;
     public static float PLAYER_DASH_VERTICAL_VELOCITY = 5f * METERS_PER_PIXEL;
-    public static float PLAYER_SPRITE_WIDTH = 5 / 6f * 1.2f;
-    public static float PLAYER_SPRITE_HEIGHT = 1 * 1.2f;
+    public static float PLAYER_SPRITE_WIDTH = 1.2f;
+    public static float PLAYER_SPRITE_HEIGHT = 1.2f;
     public static float PLAYER_HITBOX_WIDTH = PLAYER_SPRITE_WIDTH / 1.5f;
     public static float PLAYER_HITBOX_HEIGHT = PLAYER_SPRITE_HEIGHT;
     public static int PLAYER_MAXIMUM_JUMPS = 2;

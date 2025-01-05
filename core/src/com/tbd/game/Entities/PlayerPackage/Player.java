@@ -2,8 +2,10 @@ package com.tbd.game.Entities.PlayerPackage;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -34,6 +36,7 @@ public class Player extends Entity {
     double lastDash;
     double combatTimer;
     public PlayerState currentState;
+    public PlayerState shootingState;
     Animation<TextureRegion> walkingLeft;
     Animation<TextureRegion> walkingRight;
     Animation<TextureRegion> jumpRight;
@@ -42,6 +45,21 @@ public class Player extends Entity {
     Animation<TextureRegion> climbRight;
     Animation<TextureRegion> dashLeft;
     Animation<TextureRegion> dashRight;
+    Animation<TextureRegion> shootingLeftWalkingRight;
+    Animation<TextureRegion> shootingLeftWalkingLeft;
+    Animation<TextureRegion> shootingRightWalkingRight;
+    Animation<TextureRegion> shootingRightWalkingLeft;
+
+    Animation<TextureRegion> shootingRightJumpRight;
+    Animation<TextureRegion> shootingLeftJumpLeft;
+    Animation<TextureRegion> shootingLeftJumpRight;
+    Animation<TextureRegion> shootingRightJumpLeft;
+
+    Animation<TextureRegion> shootingRightDashRight;
+    Animation<TextureRegion> shootingLeftDashLeft;
+    Animation<TextureRegion> shootingLeftDashRight;
+    Animation<TextureRegion> shootingRightDashLeft;
+
     Animation<TextureRegion> stillRight;
     Animation<TextureRegion> stillLeft;
     float timePassed;
@@ -55,7 +73,13 @@ public class Player extends Entity {
     public float dmgTakenMultiplier;
     public float speedMultiplier;
     public float additionalHealth;
-    TextureRegion gunTextureRegion;
+    //TextureRegion gunTextureRegion;
+    TextureRegion gunTextureL1;
+    TextureRegion gunTextureR1;
+    TextureRegion gunTextureL2;
+    TextureRegion gunTextureR2;
+    //Sprite gunTextureL;
+    //Sprite gunTextureR;
     public float angle;
     public double lastJump;
     public PlayerState jumpState;
@@ -91,7 +115,7 @@ public class Player extends Entity {
         speedMultiplier = 1;
         dmgTakenMultiplier = 1;
         additionalHealth  = 0;
-        gunTextureRegion = new TextureRegion((Texture) myGame.assetManager.get("gun.png"));
+        //gunTextureRegion = new TextureRegion((Texture) myGame.assetManager.get("gun.png"));
         flip = false;
     }
 
@@ -174,6 +198,19 @@ public class Player extends Entity {
         jumpRight.setPlayMode(Animation.PlayMode.NORMAL);
         jumpLeft.setPlayMode(Animation.PlayMode.NORMAL);
 
+        res = createIndividualAnimation("ebmarantz-jump-shoot-L", 0.02f);
+        shootingRightJumpRight = res[0];
+        shootingLeftJumpLeft = res[1];
+
+        res = createIndividualAnimation("ebmarantz-jump-shoot-R1", 0.02f);
+        shootingLeftJumpRight = res[0];
+        shootingRightJumpLeft = res[1];
+
+        shootingRightJumpRight.setPlayMode(Animation.PlayMode.NORMAL);
+        shootingLeftJumpLeft.setPlayMode(Animation.PlayMode.NORMAL);
+        shootingLeftJumpRight.setPlayMode(Animation.PlayMode.NORMAL);
+        shootingRightJumpLeft.setPlayMode(Animation.PlayMode.NORMAL);
+
         // climbing
         res = createIndividualAnimation("ebmarantz-climb", 0.02f);
         climbRight = res[0];
@@ -183,6 +220,32 @@ public class Player extends Entity {
         res = createIndividualAnimation("ebmarantz-dash", 0.05f);
         dashRight = res[0];
         dashLeft = res[1];
+
+        res = createIndividualAnimation("ebmarantz-dash-shoot-L", 0.02f);
+        shootingRightDashRight = res[0];
+        shootingLeftDashLeft = res[1];
+
+        res = createIndividualAnimation("ebmarantz-dash-shoot-R1", 0.02f);
+        shootingLeftDashRight = res[0];
+        shootingRightDashLeft = res[1];
+
+        // shooting
+        res = createIndividualAnimation("ebmarantz-walk-shoot-L", 0.02f);
+        shootingRightWalkingRight = res[0];
+        shootingLeftWalkingLeft = res[1];
+
+        res = createIndividualAnimation("ebmarantz-walk-shoot-R1", 0.02f);
+        shootingLeftWalkingRight = res[0];
+        shootingRightWalkingLeft = res[1];
+
+        gunTextureR1 = new TextureRegion(((TextureAtlas) myGame.assetManager.get("robot_player/robot_character.atlas")).findRegion("ebmarantz-shoot-L"));
+        gunTextureL1 = new TextureRegion(((TextureAtlas) myGame.assetManager.get("robot_player/robot_character.atlas")).findRegion("ebmarantz-shoot-R1"));
+
+        gunTextureR2 = new TextureRegion(((TextureAtlas) myGame.assetManager.get("robot_player/robot_character.atlas")).findRegion("ebmarantz-shoot-L"));
+        gunTextureL2 = new TextureRegion(((TextureAtlas) myGame.assetManager.get("robot_player/robot_character.atlas")).findRegion("ebmarantz-shoot-R1"));
+        gunTextureR2.flip(true, false);
+        gunTextureL2.flip(true, false);
+
 
         // still
         res = createIndividualAnimation("ebmarantz-idle", 0.05f);
@@ -338,16 +401,34 @@ public class Player extends Entity {
         if (myGame.checkKeybind("Fire")) {
             weapon.attack(new Vector2(myGame.getMousePosition().x, myGame.getMousePosition().y));
             combatTimer = myGame.timePassed;
+            //boolean aimingRight;
             if (myGame.getMousePosition().x > getBodyCenter().x) {
-                currentState = PlayerState.ShootingRight;
-                if (flip) gunTextureRegion.flip(true, false);
+                //aimingRight = true;
+                shootingState = PlayerState.ShootingRight;
+                //if (flip) gunTextureRegion.flip(true, false);
                 flip = false;
             } else {
-                currentState = PlayerState.ShootingLeft;
-                if (!flip) gunTextureRegion.flip(true, false);
+                //aimingRight = false;
+                shootingState = PlayerState.ShootingLeft;
+                //if (!flip) gunTextureRegion.flip(true, false);
                 flip = true;
             }
+            /*if (aimingRight) {
+                if (currentState == PlayerState.WalkingRight) {
+                    currentState = PlayerState.ShootingRightWalkingRight;
+                } else if (currentState == PlayerState.WalkingLeft) {
+                    currentState = PlayerState.ShootingRightWalkingLeft;
+                }
+            } else {
+                if (currentState == PlayerState.WalkingRight) {
+                    currentState = PlayerState.ShootingLeftWalkingRight;
+                } else if (currentState == PlayerState.WalkingLeft) {
+                    currentState = PlayerState.ShootingLeftWalkingLeft;
+                }
+            }*/
             angle = (float) Math.atan((getBodyCenter().y - myGame.getMousePosition().y) / (getBodyCenter().x - myGame.getMousePosition().x));
+        } else {
+            shootingState = PlayerState.NotShooting;
         }
     }
     /**
@@ -365,9 +446,9 @@ public class Player extends Entity {
         wallClimbCheck();
 
         // Jump animation needs to be fixed for this code to be uncommented
-        //if (myGame.timePassed - lastJump < 0.5f) {
-        //    currentState = jumpState;
-        //}
+        if (myGame.timePassed - lastJump < 0.4f) {
+            currentState = jumpState;
+        }
         // multipliers should be applied after so player state is correct
         inventory.applyMultipliers();
         fireCheck();
@@ -389,22 +470,74 @@ public class Player extends Entity {
      */
     public TextureRegion getCurrentFrame() {
         TextureRegion currentFrame;
-        if (currentState == PlayerState.WalkingLeft) {
-            currentFrame = walkingLeft.getKeyFrame(timePassed, true);
-        } else if (currentState == PlayerState.WalkingRight) {
-            currentFrame = walkingRight.getKeyFrame(timePassed, true);
-        } else if (currentState == PlayerState.ClimbingLeft) {
-            currentFrame = climbLeft.getKeyFrame(timePassed, true);
-        } else if (currentState == PlayerState.ClimbingRight) {
-            currentFrame = climbRight.getKeyFrame(timePassed, true);
-        } else if (currentState == PlayerState.DashingLeft) {
-            currentFrame = dashLeft.getKeyFrame(timePassed, true);
-        } else if (currentState == PlayerState.DashingRight) {
-            currentFrame = dashRight.getKeyFrame(timePassed, true);
-        } else if (currentState == PlayerState.StillLeft){
-            currentFrame = stillLeft.getKeyFrame(timePassed, true);
-        } else {
-            currentFrame = stillRight.getKeyFrame(timePassed, true);
+        if (currentState == null) return stillRight.getKeyFrame(timePassed, true);
+        switch(currentState) {
+            case WalkingLeft:
+                if (shootingState == PlayerState.ShootingLeft) {
+                    currentFrame = shootingLeftWalkingLeft.getKeyFrame(timePassed, true);
+                } else if (shootingState == PlayerState.ShootingRight) {
+                    currentFrame = shootingRightWalkingLeft.getKeyFrame(timePassed, true);
+                } else {
+                    currentFrame = walkingLeft.getKeyFrame(timePassed, true);
+                }
+                break;
+            case WalkingRight:
+                if (shootingState == PlayerState.ShootingLeft) {
+                    currentFrame = shootingLeftWalkingRight.getKeyFrame(timePassed, true);
+                } else if (shootingState == PlayerState.ShootingRight) {
+                    currentFrame = shootingRightWalkingRight.getKeyFrame(timePassed, true);
+                } else {
+                    currentFrame = walkingRight.getKeyFrame(timePassed, true);
+                }
+                break;
+            case JumpingRight:
+                if (shootingState == PlayerState.ShootingLeft) {
+                    currentFrame = shootingLeftJumpRight.getKeyFrame(timePassed, true);
+                } else if (shootingState == PlayerState.ShootingRight) {
+                    currentFrame = shootingRightJumpRight.getKeyFrame(timePassed, true);
+                } else {
+                    currentFrame = jumpRight.getKeyFrame(timePassed, true);
+                }
+                break;
+            case JumpingLeft:
+                if (shootingState == PlayerState.ShootingLeft) {
+                    currentFrame = shootingLeftJumpLeft.getKeyFrame(timePassed, true);
+                } else if (shootingState == PlayerState.ShootingRight) {
+                    currentFrame = shootingRightJumpLeft.getKeyFrame(timePassed, true);
+                } else {
+                    currentFrame = jumpLeft.getKeyFrame(timePassed, true);
+                }
+                break;
+            case ClimbingRight:
+                currentFrame = climbRight.getKeyFrame(timePassed, true);
+                break;
+            case ClimbingLeft:
+                currentFrame = climbLeft.getKeyFrame(timePassed, true);
+                break;
+            case DashingLeft:
+                if (shootingState == PlayerState.ShootingLeft) {
+                    currentFrame = shootingLeftDashLeft.getKeyFrame(timePassed, true);
+                } else if (shootingState == PlayerState.ShootingRight) {
+                    currentFrame = shootingRightDashLeft.getKeyFrame(timePassed, true);
+                } else {
+                    currentFrame = dashLeft.getKeyFrame(timePassed, true);
+                }
+                break;
+            case DashingRight:
+                if (shootingState == PlayerState.ShootingLeft) {
+                    currentFrame = shootingLeftDashRight.getKeyFrame(timePassed, true);
+                } else if (shootingState == PlayerState.ShootingRight) {
+                    currentFrame = shootingRightDashRight.getKeyFrame(timePassed, true);
+                } else {
+                    currentFrame = dashRight.getKeyFrame(timePassed, true);
+                }
+                break;
+            case StillLeft:
+                currentFrame = stillLeft.getKeyFrame(timePassed, true);
+                break;
+            default:
+                currentFrame = stillRight.getKeyFrame(timePassed, true);
+                break;
         }
         return currentFrame;
     }
@@ -413,11 +546,51 @@ public class Player extends Entity {
      * Render the gun animation.
      */
     public void renderGun() {
-        if (currentState == PlayerState.ShootingRight) {
-            myGame.batch.draw(gunTextureRegion, getBodyCenter().x - 0.5f + 0.25f, getBodyCenter().y - 0.25f, 0.5f, 0.25f, 1, 0.5f, 1, 1, (float) Math.toDegrees(angle));
-        } else if (currentState == PlayerState.ShootingLeft) {
-            myGame.batch.draw(gunTextureRegion, getBodyCenter().x - 0.5f - 0.25f, getBodyCenter().y - 0.25f, 0.5f, 0.25f, 1, 0.5f, 1, 1, (float) Math.toDegrees(angle));
+        if (currentState == null) return;
+        float scale = PLAYER_SPRITE_WIDTH / 855;
+        if (shootingState == PlayerState.ShootingLeft) {
+            switch(currentState) {
+                case DashingLeft:
+                case JumpingLeft:
+                case WalkingLeft:
+                    myGame.batch.draw(gunTextureR2, body.getPosition().x - PLAYER_HORIZONTAL_OFFSET + 505 / 855f * PLAYER_SPRITE_WIDTH - 1208 * scale,
+                            body.getPosition().y - PLAYER_VERTICAL_OFFSET + 385 / 855f * PLAYER_SPRITE_HEIGHT - 160 * scale, 1208 * scale, 160 * scale,
+                            1233 * scale, 295 * scale, 1, 1, (float) Math.toDegrees(angle));
+                    break;
+                case DashingRight:
+                case JumpingRight:
+                case WalkingRight:
+                    myGame.batch.draw(gunTextureL1, body.getPosition().x - PLAYER_HORIZONTAL_OFFSET + 230 / 855f * PLAYER_SPRITE_WIDTH - 1272 * scale,
+                            body.getPosition().y - PLAYER_VERTICAL_OFFSET + 411 / 855f * PLAYER_SPRITE_HEIGHT - 71 * scale, 1272 * scale, 71 * scale,
+                            1292 * scale, 286 * scale, 1, 1, (float) Math.toDegrees(angle));
+                    break;
+            }
+        } else if (shootingState == PlayerState.ShootingRight) {
+            switch(currentState) {
+                case DashingLeft:
+                case JumpingLeft:
+                case WalkingLeft:
+                    myGame.batch.draw(gunTextureL2, body.getPosition().x - PLAYER_HORIZONTAL_OFFSET + 625 / 855f * PLAYER_SPRITE_WIDTH - 20 * scale,
+                            body.getPosition().y - PLAYER_VERTICAL_OFFSET + 411 / 855f * PLAYER_SPRITE_HEIGHT - 71 * scale, 20 * scale, 71 * scale,
+                            1292 * scale, 286 * scale, 1, 1, (float) Math.toDegrees(angle));
+                    break;
+                case DashingRight:
+                case JumpingRight:
+                case WalkingRight:
+                    myGame.batch.draw(gunTextureR1, body.getPosition().x - PLAYER_HORIZONTAL_OFFSET + 350 / 855f * PLAYER_SPRITE_WIDTH - 25 * scale,
+                            body.getPosition().y - PLAYER_VERTICAL_OFFSET + 385 / 855f * PLAYER_SPRITE_HEIGHT - 160 * scale, 25 * scale, 160 * scale,
+                            1233 * scale, 295 * scale, 1, 1, (float) Math.toDegrees(angle));
+                    break;
+            }
         }
+    }
+
+    /**
+     * Render the character animation
+     */
+    public void renderCharacter() {
+        myGame.batch.draw(getCurrentFrame(), body.getPosition().x - PLAYER_HORIZONTAL_OFFSET, body.getPosition().y - PLAYER_VERTICAL_OFFSET, PLAYER_SPRITE_WIDTH, PLAYER_SPRITE_HEIGHT);
+        renderGun();
     }
     /**
      * Gets called in myGame. Renders player animation frame, weapon, healthbar, and statistics. Checks playerState to
@@ -432,13 +605,12 @@ public class Player extends Entity {
             if (health >= PLAYER_HEALTH + additionalHealth) health = PLAYER_HEALTH + additionalHealth;
         }
         renderStatistics();
+        renderCharacter();
         // Uncomment this to draw a shadow beneath player.
         //if (touchingFloor) myGame.batch.draw(myGame.shadow, body.getPosition().x - HORIZONTAL_OFFSET, body.getPosition().y - VERTICAL_OFFSET - 5 * UNIT_SCALE, 32 * UNIT_SCALE, 12 * UNIT_SCALE);
-        myGame.batch.draw(getCurrentFrame(), body.getPosition().x - PLAYER_HORIZONTAL_OFFSET, body.getPosition().y - PLAYER_VERTICAL_OFFSET, PLAYER_SPRITE_WIDTH, PLAYER_SPRITE_HEIGHT);
         healthbar.maxHealth = PLAYER_HEALTH + additionalHealth;
         if (PLAYER_HEALTH + additionalHealth < health) health = PLAYER_HEALTH + additionalHealth;
         myGame.batch.draw(healthbar.getHealthBar(), body.getPosition().x - PLAYER_HORIZONTAL_OFFSET, body.getPosition().y + PLAYER_HITBOX_HEIGHT + HEALTHBAR_OFFSET, PLAYER_SPRITE_WIDTH, HEALTHBAR_HEIGHT);
-        renderGun();
     }
 
     /**
