@@ -68,6 +68,7 @@ public class Player extends Entity {
     public Label abilityCooldownLabel;
     public Label combatLabel;
     public Label stateLabel;
+    public Label speedLabel;
     public Inventory inventory;
     public boolean canOpenInventory;
     public float dmgTakenMultiplier;
@@ -129,7 +130,9 @@ public class Player extends Entity {
         abilityCooldownLabel = new Label("Cooldown: 0", myGame.labelStyle);
         combatLabel = new Label("Combat Timer: " + Math.max((int) Math.ceil((PLAYER_COMBAT_TIMER - (myGame.timePassed - combatTimer))), 0), myGame.labelStyle);
         stateLabel = new Label("Current State: " + currentState, myGame.labelStyle);
+        speedLabel = new Label("Speed: " + (int) Math.abs(body.getLinearVelocity().x), myGame.labelStyle);
 
+        myGame.table.add(speedLabel);
         myGame.table.add(stateLabel).pad(5);
         myGame.table.add(combatLabel);
         myGame.table.add(abilityCooldownLabel).pad(5);
@@ -462,6 +465,7 @@ public class Player extends Entity {
         if (inventory.getAbility() != null) abilityCooldownLabel.setText("Cooldown: " + Math.max((int) Math.ceil((((Ability) inventory.getAbility()).cooldown - (myGame.timePassed - ((Ability) inventory.getAbility()).lastUse))), 0));
         combatLabel.setText("Combat Timer: " + Math.max((int) Math.ceil((PLAYER_COMBAT_TIMER - (myGame.timePassed - combatTimer))), 0));
         stateLabel.setText("Current State: " + currentState);
+        speedLabel.setText("Speed: " + (int) Math.abs(body.getLinearVelocity().x));
         timePassed += Gdx.graphics.getDeltaTime();
     }
     /**

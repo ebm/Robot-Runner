@@ -22,10 +22,10 @@ public class Dash extends Ability{
             System.out.println("ability");
             float dashXVelocity = myGame.player.body.getLinearVelocity().x;
             float dashYVelocity = PLAYER_DASH_VERTICAL_VELOCITY;
-            if (myGame.player.currentState == PlayerState.WalkingLeft /*|| myGame.player.currentState == PlayerState.StillLeft*/) {
+            if (myGame.checkKeybind("Move Left") && !myGame.checkKeybind("Move Right")) {
                 dashXVelocity = -PLAYER_DASH_HORIZONTAL_VELOCITY * myGame.player.speedMultiplier;
                 state = PlayerState.DashingLeft;
-            } else if (myGame.player.currentState == PlayerState.WalkingRight /*|| myGame.player.currentState == PlayerState.StillRight*/) {
+            } else if (myGame.checkKeybind("Move Right") && !myGame.checkKeybind("Move Left")) {
                 dashXVelocity = PLAYER_DASH_HORIZONTAL_VELOCITY * myGame.player.speedMultiplier;
                 state = PlayerState.DashingRight;
             }
