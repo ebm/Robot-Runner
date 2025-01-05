@@ -96,14 +96,13 @@ public class MyGame implements Screen {
 		assetManager.load("map2/tilemap.tmx", TiledMap.class);
 		//assetManager.load("keybinds.txt", FileHandle.class);
 	}
+
+	/**
+	 * Initializes before assets are loaded. Unsafe to use the asset manager in this function.
+	 * @param gsm Game State Manager
+	 */
 	public MyGame(GameStateManager gsm) {
 		this.gsm = gsm;
-		firstLaunch = true;
-		initializeTextures();
-
-	}
-	public void init(OrthogonalTiledMapRenderer orthogonalTiledMapRenderer) {
-		keybinds = new Keybinds(this);
 		batch = gsm.batch;
 		rand = new Random();
 
@@ -120,7 +119,17 @@ public class MyGame implements Screen {
 		stage = null;
 
 		world = new World(new Vector2(0, GRAVITY), true);
-		map = new Map(this, orthogonalTiledMapRenderer);
+
+		firstLaunch = true;
+		initializeTextures();
+	}
+
+	/**
+	 * Initializes uninitialized variables. Safe to use asset manager here.
+	 */
+	public void init() {
+		keybinds = new Keybinds(this);
+		map = new Map(this);
 	}
 	@Override
 	public void show() {

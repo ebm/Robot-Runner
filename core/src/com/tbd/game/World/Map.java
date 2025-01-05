@@ -59,10 +59,10 @@ public class Map {
     }
     MyGame myGame;
     public OrthogonalTiledMapRenderer orthogonalTiledMapRenderer;
-    public Map(MyGame myGame, OrthogonalTiledMapRenderer orthogonalTiledMapRenderer) {
+    public Map(MyGame myGame) {
         this.myGame = myGame;
 
-        this.orthogonalTiledMapRenderer = orthogonalTiledMapRenderer;
+        this.orthogonalTiledMapRenderer = new OrthogonalTiledMapRenderer(myGame.assetManager.get("map2/tilemap.tmx"), UNIT_SCALE);
         orthogonalTiledMapRenderer.setView(myGame.gsm.camera);
 
         setupMap(((TiledMap) myGame.assetManager.get("map2/tilemap.tmx")).getLayers().get("objects").getObjects());
