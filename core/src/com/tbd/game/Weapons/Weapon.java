@@ -12,9 +12,11 @@ public abstract class Weapon {
     public float attackDamage;
     public float attacksPerSecond;
     public Sound attackSound;
+    public double lastUse;
     public Weapon(MyGame myGame, Entity user) {
         this.myGame = myGame;
         this.user = user;
+        this.lastUse = 0;
     }
     public abstract void attack(Vector2 target);
     public abstract void render();

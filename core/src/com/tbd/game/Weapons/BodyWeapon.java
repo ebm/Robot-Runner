@@ -11,7 +11,6 @@ public class BodyWeapon extends Weapon {
     public Body body;
     Entity contactEntity;
     float cooldown;
-    double lastUse;
     public BodyWeapon(MyGame myGame, Entity user, float attackDamage, Shape shape, float cooldown) {
         super(myGame, user);
         this.attackDamage = attackDamage;

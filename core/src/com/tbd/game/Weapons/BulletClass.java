@@ -22,14 +22,26 @@ public class BulletClass extends Weapon{
         this.attacksPerSecond = rangedWeapon.attacksPerSecond;
         this.rangedWeapon = rangedWeapon;
 
-        createBody();
+        createBody(user.getBodyCenter());
         createDespawnBody();
     }
-    private void createBody() {
+    public BulletClass(MyGame myGame, RangedWeapon rangedWeapon, Vector2 start) {
+        super(myGame, rangedWeapon.user);
+
+        this.bulletSpeed = rangedWeapon.bulletSpeed;
+        this.attackDamage = rangedWeapon.attackDamage;
+        this.bulletRadius = rangedWeapon.bulletRadius;
+        this.attacksPerSecond = rangedWeapon.attacksPerSecond;
+        this.rangedWeapon = rangedWeapon;
+
+        createBody(start);
+        createDespawnBody();
+    }
+    private void createBody(Vector2 pos) {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.gravityScale = 0;
-        bodyDef.position.set(user.getBodyCenter());
+        bodyDef.position.set(pos);
 
         body = myGame.world.createBody(bodyDef);
         body.setUserData(this);

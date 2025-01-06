@@ -3,6 +3,7 @@ package com.tbd.game.Items;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
+import com.tbd.game.Entities.PlayerPackage.Player;
 import com.tbd.game.Entities.PlayerPackage.PlayerState;
 import com.tbd.game.States.MyGame;
 
@@ -13,6 +14,7 @@ public class Dash extends Ability{
     public Dash(int id, float x, float y, Texture itemTexture, MyGame myGame) {
         super(id, ItemType.Ability, x, y, itemTexture, myGame);
         lastUse = 0;
+        state = myGame.player.currentState;
         cooldown = PLAYER_DASH_COOLDOWN;
     }
 

@@ -235,7 +235,8 @@ public class MyGame implements Screen {
 		fpsLabel.setText("FPS: " + Gdx.graphics.getFramesPerSecond());
 		gsm.batch.end();
 
-		//debugRenderer.render(world, gsm.camera.combined);
+		//debugRenderer.render(world, gsm.camera.combined);\
+		player.debug();
 
 		stage.act();
 		stage.draw();

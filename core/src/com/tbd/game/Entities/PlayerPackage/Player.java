@@ -8,6 +8,8 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -21,6 +23,8 @@ import com.tbd.game.World.Listener;
 import com.tbd.game.States.MyGame;
 import com.tbd.game.Weapons.RangedWeapon;
 import com.tbd.game.Weapons.Weapon;
+
+import java.util.ArrayList;
 
 import static com.tbd.game.World.Constants.*;
 
@@ -75,6 +79,10 @@ public class Player extends Entity {
     public float speedMultiplier;
     public float additionalHealth;
     //TextureRegion gunTextureRegion;
+    Animation<TextureRegion> gunAnimationL1;
+    Animation<TextureRegion> gunAnimationL2;
+    Animation<TextureRegion> gunAnimationR1;
+    Animation<TextureRegion> gunAnimationR2;
     TextureRegion gunTextureL1;
     TextureRegion gunTextureR1;
     TextureRegion gunTextureL2;
@@ -84,7 +92,9 @@ public class Player extends Entity {
     public float angle;
     public double lastJump;
     public PlayerState jumpState;
-    boolean flip;
+    ShapeRenderer shapeRenderer = new ShapeRenderer();
+    Color[] shapeRendererColors = {Color.BLUE, Color.BROWN, Color.GREEN, Color.GRAY, Color.GRAY};
+    ArrayList<Vector2> pointsToRender = new ArrayList<>();
 
     /**
      * Initializes Player at location initialX, initialY
@@ -105,7 +115,7 @@ public class Player extends Entity {
         // Default state
         currentState = PlayerState.StillRight;
         // Weapon creation
-        weapon = new RangedWeapon(myGame, this, 50, 3, 8, 0.2f * METERS_PER_PIXEL, myGame.assetManager.get("fire.mp3"));
+        weapon = new RangedWeapon(myGame, this, 5, 3, 1, 0.1f * METERS_PER_PIXEL, myGame.assetManager.get("fire.mp3"));
 
         // Create Body
         createPlayer(initialX, initialY);
@@ -117,7 +127,6 @@ public class Player extends Entity {
         dmgTakenMultiplier = 1;
         additionalHealth  = 0;
         //gunTextureRegion = new TextureRegion((Texture) myGame.assetManager.get("gun.png"));
-        flip = false;
     }
 
     /**
@@ -241,14 +250,13 @@ public class Player extends Entity {
         shootingLeftWalkingRight = res[0];
         shootingRightWalkingLeft = res[1];
 
-        gunTextureR1 = new TextureRegion(((TextureAtlas) myGame.assetManager.get("robot_player/robot_character.atlas")).findRegion("ebmarantz-shoot-L"));
-        gunTextureL1 = new TextureRegion(((TextureAtlas) myGame.assetManager.get("robot_player/robot_character.atlas")).findRegion("ebmarantz-shoot-R1"));
+        res = createIndividualAnimation("ebmarantz-shoot-L", 0.01f);
+        gunAnimationR1 = res[0];
+        gunAnimationR2 = res[1];
 
-        gunTextureR2 = new TextureRegion(((TextureAtlas) myGame.assetManager.get("robot_player/robot_character.atlas")).findRegion("ebmarantz-shoot-L"));
-        gunTextureL2 = new TextureRegion(((TextureAtlas) myGame.assetManager.get("robot_player/robot_character.atlas")).findRegion("ebmarantz-shoot-R1"));
-        gunTextureR2.flip(true, false);
-        gunTextureL2.flip(true, false);
-
+        res = createIndividualAnimation("ebmarantz-shoot-R1", 0.01f);
+        gunAnimationL1 = res[0];
+        gunAnimationL2 = res[1];
 
         // still
         res = createIndividualAnimation("ebmarantz-idle", 0.05f);
@@ -395,44 +403,159 @@ public class Player extends Entity {
             if (wallClimbTime != 0) wallClimbFinished = true;
         }
     }
+    public Vector2 rotateAroundPoint(Vector2 rotationPoint, Vector2 pointToRotate, double angle) {
+        double x = rotationPoint.x + (pointToRotate.x - rotationPoint.x) * Math.cos(angle) - (pointToRotate.y - rotationPoint.y) * Math.sin(angle);
+        double y = rotationPoint.y + (pointToRotate.x - rotationPoint.x) * Math.sin(angle) + (pointToRotate.y - rotationPoint.y) * Math.cos(angle);
+        return new Vector2((float) x, (float) y);
+    }
+    public double slope(Vector2 a, Vector2 b) {
+        return (b.y - a.y) / (b.x - a.x);
+    }
+    public double equation(Vector2 center, Vector2 startingPoint, Vector2 spawnPoint, Vector2 mousePos, double angle) {
+        Vector2 rotatedStart = rotateAroundPoint(center, startingPoint, angle);
+        Vector2 rotatedSpawn = rotateAroundPoint(center, spawnPoint, angle);
+        //double res = rotatedStart.x * (rotatedSpawn.y - mousePos.y) + rotatedSpawn.x * (mousePos.y - rotatedStart.y) + mousePos.x * (rotatedStart.y - rotatedStart.x);
+        //return rotatedStart.x * (rotatedSpawn.y - mousePos.y) + rotatedSpawn.x * (mousePos.y - rotatedStart.y) + mousePos.x * (rotatedStart.y - rotatedStart.x);
+        double res = slope(rotatedStart, rotatedSpawn) - slope(rotatedSpawn, mousePos);
+        return res;
+    }
+    public double secantMethod(double x0, double x1, Vector2 center, Vector2 startingPoint, Vector2 spawnPoint, Vector2 mousePos) {
+        double prevGuess = Math.toRadians(x0);
+        double currGuess = Math.toRadians(x1);
+        double nextGuess = Math.toRadians(45);
 
+        double resultPrevGuess = equation(center, startingPoint, spawnPoint, mousePos, prevGuess);
+        double resultCurrGuess;
+        int i;
+        for (i = 0; i < 1000; i++) {
+            resultCurrGuess = equation(center, startingPoint, spawnPoint, mousePos, currGuess);
+            if ((resultPrevGuess - resultCurrGuess) == 0) {
+                System.out.println("test prev: " + resultPrevGuess + ", curr: " + resultCurrGuess);
+                return currGuess;
+            }
+            nextGuess = currGuess - (resultCurrGuess * (prevGuess - currGuess)) / (resultPrevGuess - resultCurrGuess);
+            if (Math.abs(nextGuess - currGuess) < Math.pow(10, -6)) {
+                System.out.println("Iterations: " + i + ", difference = " + Math.abs(nextGuess - currGuess));
+                System.out.println(x0 + ", " + x1 + ", " + center + ", " + startingPoint + ", " + spawnPoint + ", " + mousePos);
+                return nextGuess;
+            }
+            prevGuess = currGuess;
+            currGuess = nextGuess;
+            resultPrevGuess = resultCurrGuess;
+        }
+        System.out.println("Iterations: " + i);
+        return nextGuess;
+    }
+    public double bisectionMethod(double x0, double x1, Vector2 center, Vector2 startingPoint, Vector2 spawnPoint, Vector2 mousePos) {
+        double lowerGuess = Math.toRadians(x0);
+        double upperGuess = Math.toRadians(x1);
+        double mid = 0;
+
+        while (Math.abs(upperGuess - lowerGuess) >= Math.pow(10, -6)) {
+            mid = (upperGuess + lowerGuess) / 2;
+            double midResult = equation(center, startingPoint, spawnPoint, mousePos, mid);
+            if (midResult == 0) {
+                return mid;
+            } else if (equation(center, startingPoint, spawnPoint, mousePos, lowerGuess) * midResult < 0) {
+                upperGuess = mid;
+            } else {
+                lowerGuess = mid;
+            }
+        }
+        return mid;
+    }
     /**
      * Checks if the player is holding down the fire button. Also determines where the mouse is to show where to aim
      * the shot.
      */
     public void fireCheck() {
         if (myGame.checkKeybind("Fire")) {
-            weapon.attack(new Vector2(myGame.getMousePosition().x, myGame.getMousePosition().y));
-            combatTimer = myGame.timePassed;
-            //boolean aimingRight;
-            if (myGame.getMousePosition().x > getBodyCenter().x) {
-                //aimingRight = true;
-                shootingState = PlayerState.ShootingRight;
-                //if (flip) gunTextureRegion.flip(true, false);
-                flip = false;
-            } else {
-                //aimingRight = false;
+            float scale = PLAYER_SPRITE_WIDTH / 855;
+            float changeX = 0;
+            float changeY = 0;
+            Vector2 start = null;
+            if (myGame.getMousePosition().x < getBodyCenter().x) {
                 shootingState = PlayerState.ShootingLeft;
-                //if (!flip) gunTextureRegion.flip(true, false);
-                flip = true;
-            }
-            /*if (aimingRight) {
-                if (currentState == PlayerState.WalkingRight) {
-                    currentState = PlayerState.ShootingRightWalkingRight;
-                } else if (currentState == PlayerState.WalkingLeft) {
-                    currentState = PlayerState.ShootingRightWalkingLeft;
+                switch(currentState) {
+                    case StillLeft:
+                    case DashingLeft:
+                    case JumpingLeft:
+                    case WalkingLeft:
+                        start = new Vector2(body.getPosition().x - PLAYER_HORIZONTAL_OFFSET + 505 / 855f * PLAYER_SPRITE_WIDTH,
+                                body.getPosition().y - PLAYER_VERTICAL_OFFSET + 385 / 855f * PLAYER_SPRITE_HEIGHT);
+                        changeX = -485 * scale;
+                        changeY = 25 * scale;
+                        break;
+                    case StillRight:
+                    case DashingRight:
+                    case JumpingRight:
+                    case WalkingRight:
+                        start = new Vector2(body.getPosition().x - PLAYER_HORIZONTAL_OFFSET + 230 / 855f * PLAYER_SPRITE_WIDTH,
+                                body.getPosition().y - PLAYER_VERTICAL_OFFSET + 411 / 855f * PLAYER_SPRITE_HEIGHT);
+                        changeX = -547 * scale;
+                        changeY = 100 * scale;
+                        break;
+                    default:
+                        start = getBodyCenter();
+                        break;
                 }
             } else {
-                if (currentState == PlayerState.WalkingRight) {
-                    currentState = PlayerState.ShootingLeftWalkingRight;
-                } else if (currentState == PlayerState.WalkingLeft) {
-                    currentState = PlayerState.ShootingLeftWalkingLeft;
+                shootingState = PlayerState.ShootingRight;
+                switch(currentState) {
+                    case StillLeft:
+                    case DashingLeft:
+                    case JumpingLeft:
+                    case WalkingLeft:
+                        start = new Vector2(body.getPosition().x - PLAYER_HORIZONTAL_OFFSET + 625 / 855f * PLAYER_SPRITE_WIDTH,
+                                body.getPosition().y - PLAYER_VERTICAL_OFFSET + 411 / 855f * PLAYER_SPRITE_HEIGHT);
+                        changeX = 547 * scale;
+                        changeY = 100 * scale;
+                        break;
+                    case StillRight:
+                    case DashingRight:
+                    case JumpingRight:
+                    case WalkingRight:
+                        start = new Vector2(body.getPosition().x - PLAYER_HORIZONTAL_OFFSET + 350 / 855f * PLAYER_SPRITE_WIDTH,
+                                body.getPosition().y - PLAYER_VERTICAL_OFFSET + 385 / 855f * PLAYER_SPRITE_HEIGHT);
+                        changeX = 485 * scale;
+                        changeY = 25 * scale;
+                        break;
+                    default:
+                        start = getBodyCenter();
+                        break;
                 }
-            }*/
-            angle = (float) Math.atan((getBodyCenter().y - myGame.getMousePosition().y) / (getBodyCenter().x - myGame.getMousePosition().x));
+            }
+            angle = (float) Math.atan((start.y + changeY - myGame.getMousePosition().y) / (start.x - myGame.getMousePosition().x));
+            if (shootingState == PlayerState.ShootingLeft && start.x <= myGame.getMousePosition().x) {
+                angle = (float) Math.toRadians(180) - angle;
+                angle *= -1;
+            } else if (shootingState == PlayerState.ShootingRight && start.x >= myGame.getMousePosition().x) {
+                angle = (float) Math.toRadians(180) + angle;
+            }
+            System.out.println(Math.toDegrees(angle));
+            Vector2 startingPoint = rotateAroundPoint(start, new Vector2(start.x, start.y + changeY), angle);
+            Vector2 spawnPoint = rotateAroundPoint(start, new Vector2(start.x + changeX, start.y + changeY), angle);
+            ((RangedWeapon) weapon).attack(spawnPoint, startingPoint, new Vector2(myGame.getMousePosition().x, myGame.getMousePosition().y));
+            pointsToRender.add(startingPoint);
+            pointsToRender.add(spawnPoint);
+            pointsToRender.add(start);
+
+
+            combatTimer = myGame.timePassed;
         } else {
             shootingState = PlayerState.NotShooting;
         }
+    }
+    public void debug() {
+        shapeRenderer.setProjectionMatrix(myGame.gsm.camera.combined);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        for (int i = 0; i < pointsToRender.size(); i++) {
+            shapeRenderer.setColor(shapeRendererColors[i % shapeRendererColors.length]);
+            float length = 0.05f;
+            shapeRenderer.rect(pointsToRender.get(0).x - length / 2, pointsToRender.get(0).y - length / 2, length, length);
+            pointsToRender.remove(0);
+        }
+        shapeRenderer.end();
     }
     /**
      * Handles user input. Adjusts player velocity accordingly. Also checks if the player is out of bounds. Called
@@ -558,20 +681,20 @@ public class Player extends Entity {
         }
         return currentFrame;
     }
-
     /**
      * Render the gun animation.
      */
     public void renderGun() {
         if (currentState == null) return;
         float scale = PLAYER_SPRITE_WIDTH / 855;
+        // Gun animation: (float) (myGame.timePassed - weapon.lastUse)
         if (shootingState == PlayerState.ShootingLeft) {
             switch(currentState) {
                 case StillLeft:
                 case DashingLeft:
                 case JumpingLeft:
                 case WalkingLeft:
-                    myGame.batch.draw(gunTextureR2, body.getPosition().x - PLAYER_HORIZONTAL_OFFSET + 505 / 855f * PLAYER_SPRITE_WIDTH - 1208 * scale,
+                    myGame.batch.draw(gunAnimationR2.getKeyFrame(0), body.getPosition().x - PLAYER_HORIZONTAL_OFFSET + 505 / 855f * PLAYER_SPRITE_WIDTH - 1208 * scale,
                             body.getPosition().y - PLAYER_VERTICAL_OFFSET + 385 / 855f * PLAYER_SPRITE_HEIGHT - 160 * scale, 1208 * scale, 160 * scale,
                             1233 * scale, 295 * scale, 1, 1, (float) Math.toDegrees(angle));
                     break;
@@ -579,7 +702,7 @@ public class Player extends Entity {
                 case DashingRight:
                 case JumpingRight:
                 case WalkingRight:
-                    myGame.batch.draw(gunTextureL1, body.getPosition().x - PLAYER_HORIZONTAL_OFFSET + 230 / 855f * PLAYER_SPRITE_WIDTH - 1272 * scale,
+                    myGame.batch.draw(gunAnimationL1.getKeyFrame(0), body.getPosition().x - PLAYER_HORIZONTAL_OFFSET + 230 / 855f * PLAYER_SPRITE_WIDTH - 1272 * scale,
                             body.getPosition().y - PLAYER_VERTICAL_OFFSET + 411 / 855f * PLAYER_SPRITE_HEIGHT - 71 * scale, 1272 * scale, 71 * scale,
                             1292 * scale, 286 * scale, 1, 1, (float) Math.toDegrees(angle));
                     break;
@@ -590,7 +713,7 @@ public class Player extends Entity {
                 case DashingLeft:
                 case JumpingLeft:
                 case WalkingLeft:
-                    myGame.batch.draw(gunTextureL2, body.getPosition().x - PLAYER_HORIZONTAL_OFFSET + 625 / 855f * PLAYER_SPRITE_WIDTH - 20 * scale,
+                    myGame.batch.draw(gunAnimationL2.getKeyFrame(0), body.getPosition().x - PLAYER_HORIZONTAL_OFFSET + 625 / 855f * PLAYER_SPRITE_WIDTH - 20 * scale,
                             body.getPosition().y - PLAYER_VERTICAL_OFFSET + 411 / 855f * PLAYER_SPRITE_HEIGHT - 71 * scale, 20 * scale, 71 * scale,
                             1292 * scale, 286 * scale, 1, 1, (float) Math.toDegrees(angle));
                     break;
@@ -598,7 +721,7 @@ public class Player extends Entity {
                 case DashingRight:
                 case JumpingRight:
                 case WalkingRight:
-                    myGame.batch.draw(gunTextureR1, body.getPosition().x - PLAYER_HORIZONTAL_OFFSET + 350 / 855f * PLAYER_SPRITE_WIDTH - 25 * scale,
+                    myGame.batch.draw(gunAnimationR1.getKeyFrame(0), body.getPosition().x - PLAYER_HORIZONTAL_OFFSET + 350 / 855f * PLAYER_SPRITE_WIDTH - 25 * scale,
                             body.getPosition().y - PLAYER_VERTICAL_OFFSET + 385 / 855f * PLAYER_SPRITE_HEIGHT - 160 * scale, 25 * scale, 160 * scale,
                             1233 * scale, 295 * scale, 1, 1, (float) Math.toDegrees(angle));
                     break;

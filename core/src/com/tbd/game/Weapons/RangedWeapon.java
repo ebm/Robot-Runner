@@ -17,7 +17,6 @@ public class RangedWeapon extends Weapon {
     public float bulletSpeed;
     public float bulletRadius;
     ArrayList<BulletClass> totalBullets;
-    double lastFired;
     /*public RangedWeapon(MyGame myGame, float bulletSpeed, float attackDamage, float bulletRadius, float attacksPerSecond) {
         this.myGame = myGame;
 
@@ -37,7 +36,6 @@ public class RangedWeapon extends Weapon {
         this.bulletRadius = 0.2f * METERS_PER_PIXEL;
 
         totalBullets = new ArrayList<>();
-        lastFired = 0;
     }
     public RangedWeapon(MyGame myGame, Entity user, float bulletSpeed, float attackDamage, float attacksPerSecond, float bulletRadius, Sound fireSound) {
         super(myGame, user);
@@ -49,7 +47,6 @@ public class RangedWeapon extends Weapon {
         this.attackSound = fireSound;
 
         totalBullets = new ArrayList<>();
-        lastFired = 0;
     }
     public float[] unitsOnScreen() {
         float idealRatio = VISIBLE_HORIZONTAL_TILES / VISIBLE_VERTICAL_TILES;
@@ -62,7 +59,7 @@ public class RangedWeapon extends Weapon {
     }
     @Override
     public void attack(Vector2 target) {
-        if (attacksPerSecond == 0 || (myGame.timePassed - lastFired) > 1 / attacksPerSecond) {
+        if (attacksPerSecond == 0 || (myGame.timePassed - lastUse) > 1 / attacksPerSecond) {
             BulletClass newBullet = new BulletClass(myGame, this);
 
             float diffX = target.x - newBullet.body.getPosition().x;
@@ -71,8 +68,23 @@ public class RangedWeapon extends Weapon {
 
             newBullet.body.setLinearVelocity(bulletSpeed / hypotenuse * diffX,bulletSpeed / hypotenuse * diffY);
             totalBullets.add(newBullet);
-            lastFired = myGame.timePassed;
-            if (attackSound != null) attackSound.play();
+            lastUse = myGame.timePassed;
+            if (attackSound != null) attackSound.play(0.2f);
+        }
+    }
+    public void attack(Vector2 spawn, Vector2 start, Vector2 target) {
+        if (attacksPerSecond == 0 || (myGame.timePassed - lastUse) > 1 / attacksPerSecond) {
+            BulletClass newBullet;
+            newBullet = new BulletClass(myGame, this, spawn);
+
+            float diffX = target.x - start.x;
+            float diffY = target.y - start.y;
+            float hypotenuse = (float) Math.sqrt(diffX * diffX + diffY * diffY);
+
+            newBullet.body.setLinearVelocity(bulletSpeed / hypotenuse * diffX,bulletSpeed / hypotenuse * diffY);
+            totalBullets.add(newBullet);
+            lastUse = myGame.timePassed;
+            if (attackSound != null) attackSound.play(0.2f);
         }
     }
     /*public Vector2 calculatePrediction(Entity e) {
@@ -98,7 +110,7 @@ public class RangedWeapon extends Weapon {
         return new Vector2(intersectX2, intersectY2);
     }*/
     public void attackWithAimbot(Entity e) {
-        if (attacksPerSecond == 0 || (myGame.timePassed - lastFired) > 1 / attacksPerSecond) {
+        if (attacksPerSecond == 0 || (myGame.timePassed - lastUse) > 1 / attacksPerSecond) {
             BulletClass newBullet = new BulletClass(myGame, this);
 
             float time = (float) (Math.sqrt((e.getBodyCenter().x * e.getBodyCenter().x - 2 * newBullet.body.getPosition().x
@@ -124,7 +136,7 @@ public class RangedWeapon extends Weapon {
 
             newBullet.body.setLinearVelocity(horizontalBulletVelocity, verticalBulletVelocity);
             totalBullets.add(newBullet);
-            lastFired = myGame.timePassed;
+            lastUse = myGame.timePassed;
         }
         //attack(new Vector2(e.getBodyCenter().x, e.getBodyCenter().y + 0.2f));
     }
