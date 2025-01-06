@@ -414,15 +414,20 @@ public class Player extends Entity {
     public double equation(Vector2 center, Vector2 startingPoint, Vector2 spawnPoint, Vector2 mousePos, double angle) {
         Vector2 rotatedStart = rotateAroundPoint(center, startingPoint, angle);
         Vector2 rotatedSpawn = rotateAroundPoint(center, spawnPoint, angle);
-        //double res = rotatedStart.x * (rotatedSpawn.y - mousePos.y) + rotatedSpawn.x * (mousePos.y - rotatedStart.y) + mousePos.x * (rotatedStart.y - rotatedStart.x);
+        //double res2 = rotatedStart.x * (rotatedSpawn.y - mousePos.y) + rotatedSpawn.x * (mousePos.y - rotatedStart.y) + mousePos.x * (rotatedStart.y - rotatedStart.x);
+        double res2 = rotatedStart.x * (rotatedSpawn.y - mousePos.y) + rotatedSpawn.x * (mousePos.y - rotatedStart.y) + mousePos.x * (rotatedStart.y - rotatedSpawn.y);
         //return rotatedStart.x * (rotatedSpawn.y - mousePos.y) + rotatedSpawn.x * (mousePos.y - rotatedStart.y) + mousePos.x * (rotatedStart.y - rotatedStart.x);
+        //System.out.println(res2);
         double res = slope(rotatedStart, rotatedSpawn) - slope(rotatedSpawn, mousePos);
-        return res;
+        double slope1 = slope(rotatedStart, rotatedSpawn);
+        double slope2 = slope(rotatedSpawn, mousePos);
+        double slope3 = slope(rotatedStart, mousePos);
+        return res2;
     }
     public double secantMethod(double x0, double x1, Vector2 center, Vector2 startingPoint, Vector2 spawnPoint, Vector2 mousePos) {
         double prevGuess = Math.toRadians(x0);
         double currGuess = Math.toRadians(x1);
-        double nextGuess = Math.toRadians(45);
+        double nextGuess = 0;
 
         double resultPrevGuess = equation(center, startingPoint, spawnPoint, mousePos, prevGuess);
         double resultCurrGuess;
@@ -430,38 +435,45 @@ public class Player extends Entity {
         for (i = 0; i < 1000; i++) {
             resultCurrGuess = equation(center, startingPoint, spawnPoint, mousePos, currGuess);
             if ((resultPrevGuess - resultCurrGuess) == 0) {
-                System.out.println("test prev: " + resultPrevGuess + ", curr: " + resultCurrGuess);
+                double accuracy = equation(center, startingPoint, spawnPoint, mousePos, currGuess);
+                System.out.println("Iterations: " + i + ", accuracy: " + accuracy + ", Initial Guesses: (" + x0 + ", " + x1 + ")");
                 return currGuess;
             }
             nextGuess = currGuess - (resultCurrGuess * (prevGuess - currGuess)) / (resultPrevGuess - resultCurrGuess);
-            if (Math.abs(nextGuess - currGuess) < Math.pow(10, -6)) {
-                System.out.println("Iterations: " + i + ", difference = " + Math.abs(nextGuess - currGuess));
-                System.out.println(x0 + ", " + x1 + ", " + center + ", " + startingPoint + ", " + spawnPoint + ", " + mousePos);
+            if (Math.abs(nextGuess - currGuess) < Math.pow(10, -3)) {
+                double accuracy = equation(center, startingPoint, spawnPoint, mousePos, nextGuess);
+                System.out.println("Iterations: " + i + ", accuracy: " + accuracy + ", Initial Guesses: (" + x0 + ", " + x1 + ")");
                 return nextGuess;
             }
             prevGuess = currGuess;
             currGuess = nextGuess;
             resultPrevGuess = resultCurrGuess;
         }
-        System.out.println("Iterations: " + i);
+        double accuracy = equation(center, startingPoint, spawnPoint, mousePos, nextGuess);
+        System.out.println("Iterations: " + i + ", accuracy: " + accuracy + ", Initial Guesses: (" + x0 + ", " + x1 + ")");
         return nextGuess;
     }
     public double bisectionMethod(double x0, double x1, Vector2 center, Vector2 startingPoint, Vector2 spawnPoint, Vector2 mousePos) {
         double lowerGuess = Math.toRadians(x0);
         double upperGuess = Math.toRadians(x1);
         double mid = 0;
-
-        while (Math.abs(upperGuess - lowerGuess) >= Math.pow(10, -6)) {
+        int iterations = 0;
+        while (Math.abs(upperGuess - lowerGuess) >= Math.pow(10, -3) && iterations < 1000) {
             mid = (upperGuess + lowerGuess) / 2;
             double midResult = equation(center, startingPoint, spawnPoint, mousePos, mid);
             if (midResult == 0) {
+                double accuracy = equation(center, startingPoint, spawnPoint, mousePos, mid);
+                System.out.println("Iterations: " + iterations + ", accuracy: " + accuracy + ", Initial Guesses: (" + x0 + ", " + x1 + ")");
                 return mid;
             } else if (equation(center, startingPoint, spawnPoint, mousePos, lowerGuess) * midResult < 0) {
                 upperGuess = mid;
-            } else {
+            } else if (equation(center, startingPoint, spawnPoint, mousePos, upperGuess) * midResult < 0) {
                 lowerGuess = mid;
             }
+            iterations++;
         }
+        double accuracy = equation(center, startingPoint, spawnPoint, mousePos, mid);
+        System.out.println("Iterations: " + iterations + ", accuracy: " + accuracy + ", Initial Guesses: (" + x0 + ", " + x1 + ")");
         return mid;
     }
     /**
@@ -525,21 +537,25 @@ public class Player extends Entity {
                         break;
                 }
             }
-            angle = (float) Math.atan((start.y + changeY - myGame.getMousePosition().y) / (start.x - myGame.getMousePosition().x));
+            double estimation = (float) Math.atan((start.y + changeY - myGame.getMousePosition().y) / (start.x - myGame.getMousePosition().x));
             if (shootingState == PlayerState.ShootingLeft && start.x <= myGame.getMousePosition().x) {
-                angle = (float) Math.toRadians(180) - angle;
-                angle *= -1;
+                estimation = (float) Math.toRadians(180) - estimation;
+                estimation *= -1;
             } else if (shootingState == PlayerState.ShootingRight && start.x >= myGame.getMousePosition().x) {
-                angle = (float) Math.toRadians(180) + angle;
+                estimation = (float) Math.toRadians(180) + estimation;
             }
-            System.out.println(Math.toDegrees(angle));
+            // Bisection method converges much slower than the secant method. However, there is a bug when the cursor is too
+            // close to the player and the fire keybind is pressed. This results in an angle of -infinity. Bug is fixable. 20 degrees
+            // is the minimum for guaranteed stable accuracy of 10^-3 results.
+            angle = (float) bisectionMethod(Math.toDegrees(estimation) - 20, Math.toDegrees(estimation) + 20, start, new Vector2(start.x, start.y + changeY), new Vector2(start.x + changeX, start.y + changeY), new Vector2(myGame.getMousePosition().x, myGame.getMousePosition().y));
+
             Vector2 startingPoint = rotateAroundPoint(start, new Vector2(start.x, start.y + changeY), angle);
             Vector2 spawnPoint = rotateAroundPoint(start, new Vector2(start.x + changeX, start.y + changeY), angle);
             ((RangedWeapon) weapon).attack(spawnPoint, startingPoint, new Vector2(myGame.getMousePosition().x, myGame.getMousePosition().y));
+            // debug
             pointsToRender.add(startingPoint);
             pointsToRender.add(spawnPoint);
             pointsToRender.add(start);
-
 
             combatTimer = myGame.timePassed;
         } else {
