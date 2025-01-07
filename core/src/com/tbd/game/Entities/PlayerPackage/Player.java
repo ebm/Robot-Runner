@@ -553,13 +553,35 @@ public class Player extends Entity {
         }
         return new Vector2[] {joint, change};
     }
-
     /**
      * Calculate angle with formula
      * @param fireLoc a Vector2 array with {joint, change}
      * @return angle of rotation
      */
     public double getAngle(Vector2[] fireLoc) {
+        double x = myGame.getMousePosition().x - fireLoc[0].x;
+        double y = myGame.getMousePosition().y - fireLoc[0].y;
+        double r = fireLoc[1].y;
+        double angle1 = Math.acos((y * Math.sqrt(y * y + x * x - r * r) + r * x) / (y * y + x * x)) - Math.toRadians(90);
+        double angle2 = Math.acos((-y * Math.sqrt(y * y + x * x - r * r) + r * x) / (y * y + x * x)) - Math.toRadians(90);
+        double angle;
+        if (shootingState == PlayerState.ShootingLeft) {
+            angle = (float) angle1;
+            //System.out.println(1);
+        } else {
+            angle = (float) angle2;
+            //System.out.println(2);
+        }
+        //System.out.println("Angle getter3 test: (" + Math.toDegrees(angle1) + ", " + Math.toDegrees(angle2));
+        return angle;
+    }
+
+    /**
+     * Calculate angle with different formula
+     * @param fireLoc a Vector2 array with {joint, change}
+     * @return angle of rotation
+     */
+    public double getAngle2(Vector2[] fireLoc) {
         double a = myGame.getMousePosition().x - fireLoc[0].x;
         double b = myGame.getMousePosition().y - fireLoc[0].y;
         double r = fireLoc[1].y;
@@ -573,6 +595,7 @@ public class Player extends Entity {
             angle = angle2;
             //System.out.println(2);
         }
+        //System.out.println("Angle getter test: (" + Math.toDegrees(angle1) + ", " + Math.toDegrees(angle2));
         //System.out.println("Accuracy og: " + equation2(fireLoc[0], fireLoc[1].y, new Vector2(myGame.getMousePosition().x, myGame.getMousePosition().y), angle));
         return angle;
     }
@@ -581,7 +604,7 @@ public class Player extends Entity {
      * @param fireLoc a Vector2 array with {joint, change}
      * @return angle of rotation
      */
-    public double getAngle2(Vector2[] fireLoc) {
+    public double getAngle3(Vector2[] fireLoc) {
         double estimation = (float) Math.atan((fireLoc[0].y + fireLoc[1].y - myGame.getMousePosition().y) / (fireLoc[0].x - myGame.getMousePosition().x));
         Vector2 center = fireLoc[0];
         Vector2 startingPoint = new Vector2(fireLoc[0].x, fireLoc[0].y + fireLoc[1].y);
@@ -622,7 +645,7 @@ public class Player extends Entity {
 
             Vector2 startingPoint = rotateAroundPoint(fireLoc[0], new Vector2(fireLoc[0].x, fireLoc[0].y + fireLoc[1].y), angle);
             Vector2 spawnPoint = rotateAroundPoint(fireLoc[0], new Vector2(fireLoc[0].x + fireLoc[1].x, fireLoc[0].y + fireLoc[1].y), angle);
-            //System.out.println("angle: " + Math.toDegrees(angle) + ", accuracy: " + calculateAccuracy(fireLoc, angle));
+            System.out.println("angle: " + Math.toDegrees(angle) + ", accuracy: " + calculateAccuracy(fireLoc, angle));
             ((RangedWeapon) weapon).attack(spawnPoint, startingPoint, new Vector2(myGame.getMousePosition().x, myGame.getMousePosition().y));
             // debug
             pointsToRender.add(startingPoint);
