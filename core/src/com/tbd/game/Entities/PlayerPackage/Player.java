@@ -566,11 +566,17 @@ public class Player extends Entity {
         double angle2 = Math.acos((-y * Math.sqrt(y * y + x * x - r * r) + r * x) / (y * y + x * x)) - Math.toRadians(90);
         double angle;
         if (shootingState == PlayerState.ShootingLeft) {
+            Vector2 startingPoint = rotateAroundPoint(fireLoc[0], new Vector2(fireLoc[0].x, fireLoc[0].y + fireLoc[1].y), angle1);
+            if (startingPoint.x <= myGame.getMousePosition().x) {
+                angle1 = (angle1 + Math.toRadians(180)) * -1;
+            }
             angle = (float) angle1;
-            //System.out.println(1);
         } else {
+            Vector2 startingPoint = rotateAroundPoint(fireLoc[0], new Vector2(fireLoc[0].x, fireLoc[0].y + fireLoc[1].y), angle2);
+            if (startingPoint.x >= myGame.getMousePosition().x) {
+                angle2 = (Math.toRadians(180) - angle2);
+            }
             angle = (float) angle2;
-            //System.out.println(2);
         }
         //System.out.println("Angle getter3 test: (" + Math.toDegrees(angle1) + ", " + Math.toDegrees(angle2));
         return angle;
