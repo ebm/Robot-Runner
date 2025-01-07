@@ -414,15 +414,11 @@ public class Player extends Entity {
     public double equation(Vector2 center, Vector2 startingPoint, Vector2 spawnPoint, Vector2 mousePos, double angle) {
         Vector2 rotatedStart = rotateAroundPoint(center, startingPoint, angle);
         Vector2 rotatedSpawn = rotateAroundPoint(center, spawnPoint, angle);
-        //double res2 = rotatedStart.x * (rotatedSpawn.y - mousePos.y) + rotatedSpawn.x * (mousePos.y - rotatedStart.y) + mousePos.x * (rotatedStart.y - rotatedStart.x);
-        double res2 = rotatedStart.x * (rotatedSpawn.y - mousePos.y) + rotatedSpawn.x * (mousePos.y - rotatedStart.y) + mousePos.x * (rotatedStart.y - rotatedSpawn.y);
-        //return rotatedStart.x * (rotatedSpawn.y - mousePos.y) + rotatedSpawn.x * (mousePos.y - rotatedStart.y) + mousePos.x * (rotatedStart.y - rotatedStart.x);
-        //System.out.println(res2);
-        double res = slope(rotatedStart, rotatedSpawn) - slope(rotatedSpawn, mousePos);
-        double slope1 = slope(rotatedStart, rotatedSpawn);
-        double slope2 = slope(rotatedSpawn, mousePos);
-        double slope3 = slope(rotatedStart, mousePos);
-        return res2;
+        return rotatedStart.x * (rotatedSpawn.y - mousePos.y) + rotatedSpawn.x * (mousePos.y - rotatedStart.y) + mousePos.x * (rotatedStart.y - rotatedSpawn.y);
+    }
+    public double equation2(Vector2 start, float changeY, Vector2 mousePos, double angle) {
+        return Math.pow((mousePos.x - start.x), 2) + Math.pow((mousePos.y - start.y), 2) * Math.pow(Math.cos(angle), 2) - 2 * changeY * (mousePos.x - start.x) * Math.cos(angle) + Math.pow(changeY, 2) - Math.pow((mousePos.y - start.y), 2);
+        //return Math.pow(Math.sin(angle), 2) / Math.cos(angle) * changeY - (mousePos.y - start.y) * Math.tan(angle) - ((mousePos.x - start.x) - changeY * Math.cos(angle));
     }
     public double secantMethod(double x0, double x1, Vector2 center, Vector2 startingPoint, Vector2 spawnPoint, Vector2 mousePos) {
         double prevGuess = Math.toRadians(x0);
@@ -463,7 +459,7 @@ public class Player extends Entity {
             double midResult = equation(center, startingPoint, spawnPoint, mousePos, mid);
             if (midResult == 0) {
                 double accuracy = equation(center, startingPoint, spawnPoint, mousePos, mid);
-                System.out.println("Iterations: " + iterations + ", accuracy: " + accuracy + ", Initial Guesses: (" + x0 + ", " + x1 + ")");
+                //System.out.println("Iterations: " + iterations + ", accuracy: " + accuracy + ", Initial Guesses: (" + x0 + ", " + x1 + "). Angle: " + Math.toDegrees(mid));
                 return mid;
             } else if (equation(center, startingPoint, spawnPoint, mousePos, lowerGuess) * midResult < 0) {
                 upperGuess = mid;
@@ -473,8 +469,139 @@ public class Player extends Entity {
             iterations++;
         }
         double accuracy = equation(center, startingPoint, spawnPoint, mousePos, mid);
-        System.out.println("Iterations: " + iterations + ", accuracy: " + accuracy + ", Initial Guesses: (" + x0 + ", " + x1 + ")");
+        //System.out.println("Iterations: " + iterations + ", accuracy: " + accuracy + ", Initial Guesses: (" + x0 + ", " + x1 + "). Angle: " + Math.toDegrees(mid));
         return mid;
+    }
+    public double bisectionMethod2(double x0, double x1, Vector2 start, float changeY, Vector2 mousePos) {
+        double lowerGuess = Math.toRadians(x0);
+        double upperGuess = Math.toRadians(x1);
+        double mid = 0;
+        int iterations = 0;
+        while (Math.abs(upperGuess - lowerGuess) >= Math.pow(10, -3) && iterations < 1000) {
+            mid = (upperGuess + lowerGuess) / 2;
+            double midResult = equation2(start, changeY, mousePos, mid);
+            if (midResult == 0) {
+                double accuracy = equation2(start, changeY, mousePos, mid);
+                System.out.println("Iterations2: " + iterations + ", accuracy: " + accuracy + ", Initial Guesses: (" + x0 + ", " + x1 + "). Angle: " + Math.toDegrees(mid));
+                return mid;
+            } else if (equation2(start, changeY, mousePos, lowerGuess) * midResult < 0) {
+                upperGuess = mid;
+            } else if (equation2(start, changeY, mousePos, upperGuess) * midResult < 0) {
+                lowerGuess = mid;
+            }
+            iterations++;
+        }
+        double accuracy = equation2(start, changeY, mousePos, mid);
+        System.out.println("Iterations2: " + iterations + ", accuracy: " + accuracy + ", Initial Guesses: (" + x0 + ", " + x1 + "). Angle: " + Math.toDegrees(mid));
+        return mid;
+    }
+
+    /**
+     * Gets the location of the joint, and spawn point relative to the joint if the angle is 0
+     * @return a Vector2 array with {joint, change}
+     */
+    public Vector2[] getFireLocation() {
+        float scale = PLAYER_SPRITE_WIDTH / 855;
+        Vector2 joint = null;
+        Vector2 change = null;
+        if (shootingState == PlayerState.ShootingLeft) {
+            switch(currentState) {
+                case StillLeft:
+                case DashingLeft:
+                case JumpingLeft:
+                case WalkingLeft:
+                    joint = new Vector2(body.getPosition().x - PLAYER_HORIZONTAL_OFFSET + 505 / 855f * PLAYER_SPRITE_WIDTH,
+                            body.getPosition().y - PLAYER_VERTICAL_OFFSET + 385 / 855f * PLAYER_SPRITE_HEIGHT);
+                    change = new Vector2(-485 * scale, 25 * scale);
+                    break;
+                case StillRight:
+                case DashingRight:
+                case JumpingRight:
+                case WalkingRight:
+                    joint = new Vector2(body.getPosition().x - PLAYER_HORIZONTAL_OFFSET + 230 / 855f * PLAYER_SPRITE_WIDTH,
+                            body.getPosition().y - PLAYER_VERTICAL_OFFSET + 411 / 855f * PLAYER_SPRITE_HEIGHT);
+                    change = new Vector2(-547 * scale, 100 * scale);
+                    break;
+                default:
+                    joint = getBodyCenter();
+                    change = new Vector2(0, 0);
+                    break;
+            }
+        } else if (shootingState == PlayerState.ShootingRight) {
+            switch(currentState) {
+                case StillLeft:
+                case DashingLeft:
+                case JumpingLeft:
+                case WalkingLeft:
+                    joint = new Vector2(body.getPosition().x - PLAYER_HORIZONTAL_OFFSET + 625 / 855f * PLAYER_SPRITE_WIDTH,
+                            body.getPosition().y - PLAYER_VERTICAL_OFFSET + 411 / 855f * PLAYER_SPRITE_HEIGHT);
+                    change = new Vector2(547 * scale, 100 * scale);
+                    break;
+                case StillRight:
+                case DashingRight:
+                case JumpingRight:
+                case WalkingRight:
+                    joint = new Vector2(body.getPosition().x - PLAYER_HORIZONTAL_OFFSET + 350 / 855f * PLAYER_SPRITE_WIDTH,
+                            body.getPosition().y - PLAYER_VERTICAL_OFFSET + 385 / 855f * PLAYER_SPRITE_HEIGHT);
+                    change = new Vector2(485 * scale, 25 * scale);
+                    break;
+                default:
+                    joint = getBodyCenter();
+                    change = new Vector2(0, 0);
+                    break;
+            }
+        }
+        return new Vector2[] {joint, change};
+    }
+
+    /**
+     * Calculate angle with formula
+     * @param fireLoc a Vector2 array with {joint, change}
+     * @return angle of rotation
+     */
+    public double getAngle(Vector2[] fireLoc) {
+        double a = myGame.getMousePosition().x - fireLoc[0].x;
+        double b = myGame.getMousePosition().y - fireLoc[0].y;
+        double r = fireLoc[1].y;
+
+        float angle1 = (float) (Math.acos((2*r*a + Math.sqrt(4*r*r*a*a-4*(a*a+b*b)*(r*r-b*b)))/(2*(a*a+b*b))) - Math.toRadians(90));
+        float angle2 = (float) (Math.acos((2*r*a - Math.sqrt(4*r*r*a*a-4*(a*a+b*b)*(r*r-b*b)))/(2*(a*a+b*b))) - Math.toRadians(90));
+        if (myGame.getMousePosition().y < fireLoc[0].y && shootingState == PlayerState.ShootingRight || myGame.getMousePosition().y > fireLoc[0].y && shootingState == PlayerState.ShootingLeft) {
+            angle = angle1;
+            //System.out.println(1);
+        } else {
+            angle = angle2;
+            //System.out.println(2);
+        }
+        //System.out.println("Accuracy og: " + equation2(fireLoc[0], fireLoc[1].y, new Vector2(myGame.getMousePosition().x, myGame.getMousePosition().y), angle));
+        return angle;
+    }
+    /**
+     * Calculate angle with approximation method
+     * @param fireLoc a Vector2 array with {joint, change}
+     * @return angle of rotation
+     */
+    public double getAngle2(Vector2[] fireLoc) {
+        double estimation = (float) Math.atan((fireLoc[0].y + fireLoc[1].y - myGame.getMousePosition().y) / (fireLoc[0].x - myGame.getMousePosition().x));
+        Vector2 center = fireLoc[0];
+        Vector2 startingPoint = new Vector2(fireLoc[0].x, fireLoc[0].y + fireLoc[1].y);
+        Vector2 spawnPoint = new Vector2(fireLoc[0].x + fireLoc[1].x, fireLoc[0].y + fireLoc[1].y);
+        Vector2 mousePos = new Vector2( myGame.getMousePosition().x,  myGame.getMousePosition().y);
+        return bisectionMethod(Math.toDegrees(estimation) - 20, Math.toDegrees(estimation) + 20, center, startingPoint, spawnPoint, mousePos);
+    }
+
+    /**
+     * Calculate the accuracy of the angle
+     * @param fireLoc a Vector2 array with {joint, change}
+     * @param angle of rotation
+     * @return accuracy (number closer to 0 means more accurate)
+     */
+    public double calculateAccuracy(Vector2[] fireLoc, double angle) {
+        Vector2 center = fireLoc[0];
+        Vector2 startingPoint = new Vector2(fireLoc[0].x, fireLoc[0].y + fireLoc[1].y);
+        Vector2 spawnPoint = new Vector2(fireLoc[0].x + fireLoc[1].x, fireLoc[0].y + fireLoc[1].y);
+        Vector2 mousePos = new Vector2( myGame.getMousePosition().x,  myGame.getMousePosition().y);
+        return equation(center, startingPoint, spawnPoint, mousePos, angle);
     }
     /**
      * Checks if the player is holding down the fire button. Also determines where the mouse is to show where to aim
@@ -482,80 +609,25 @@ public class Player extends Entity {
      */
     public void fireCheck() {
         if (myGame.checkKeybind("Fire")) {
-            float scale = PLAYER_SPRITE_WIDTH / 855;
-            float changeX = 0;
-            float changeY = 0;
-            Vector2 start = null;
+
             if (myGame.getMousePosition().x < getBodyCenter().x) {
                 shootingState = PlayerState.ShootingLeft;
-                switch(currentState) {
-                    case StillLeft:
-                    case DashingLeft:
-                    case JumpingLeft:
-                    case WalkingLeft:
-                        start = new Vector2(body.getPosition().x - PLAYER_HORIZONTAL_OFFSET + 505 / 855f * PLAYER_SPRITE_WIDTH,
-                                body.getPosition().y - PLAYER_VERTICAL_OFFSET + 385 / 855f * PLAYER_SPRITE_HEIGHT);
-                        changeX = -485 * scale;
-                        changeY = 25 * scale;
-                        break;
-                    case StillRight:
-                    case DashingRight:
-                    case JumpingRight:
-                    case WalkingRight:
-                        start = new Vector2(body.getPosition().x - PLAYER_HORIZONTAL_OFFSET + 230 / 855f * PLAYER_SPRITE_WIDTH,
-                                body.getPosition().y - PLAYER_VERTICAL_OFFSET + 411 / 855f * PLAYER_SPRITE_HEIGHT);
-                        changeX = -547 * scale;
-                        changeY = 100 * scale;
-                        break;
-                    default:
-                        start = getBodyCenter();
-                        break;
-                }
             } else {
                 shootingState = PlayerState.ShootingRight;
-                switch(currentState) {
-                    case StillLeft:
-                    case DashingLeft:
-                    case JumpingLeft:
-                    case WalkingLeft:
-                        start = new Vector2(body.getPosition().x - PLAYER_HORIZONTAL_OFFSET + 625 / 855f * PLAYER_SPRITE_WIDTH,
-                                body.getPosition().y - PLAYER_VERTICAL_OFFSET + 411 / 855f * PLAYER_SPRITE_HEIGHT);
-                        changeX = 547 * scale;
-                        changeY = 100 * scale;
-                        break;
-                    case StillRight:
-                    case DashingRight:
-                    case JumpingRight:
-                    case WalkingRight:
-                        start = new Vector2(body.getPosition().x - PLAYER_HORIZONTAL_OFFSET + 350 / 855f * PLAYER_SPRITE_WIDTH,
-                                body.getPosition().y - PLAYER_VERTICAL_OFFSET + 385 / 855f * PLAYER_SPRITE_HEIGHT);
-                        changeX = 485 * scale;
-                        changeY = 25 * scale;
-                        break;
-                    default:
-                        start = getBodyCenter();
-                        break;
-                }
             }
-            double estimation = (float) Math.atan((start.y + changeY - myGame.getMousePosition().y) / (start.x - myGame.getMousePosition().x));
-            if (shootingState == PlayerState.ShootingLeft && start.x <= myGame.getMousePosition().x) {
-                estimation = (float) Math.toRadians(180) - estimation;
-                estimation *= -1;
-            } else if (shootingState == PlayerState.ShootingRight && start.x >= myGame.getMousePosition().x) {
-                estimation = (float) Math.toRadians(180) + estimation;
-            }
-            // Bisection method converges much slower than the secant method. However, there is a bug when the cursor is too
-            // close to the player and the fire keybind is pressed. This results in an angle of -infinity. Bug is fixable. 20 degrees
-            // is the minimum for guaranteed stable accuracy of 10^-3 results.
-            angle = (float) bisectionMethod(Math.toDegrees(estimation) - 20, Math.toDegrees(estimation) + 20, start, new Vector2(start.x, start.y + changeY), new Vector2(start.x + changeX, start.y + changeY), new Vector2(myGame.getMousePosition().x, myGame.getMousePosition().y));
+            Vector2[] fireLoc = getFireLocation();
+            angle = (float) getAngle(fireLoc);
 
-            Vector2 startingPoint = rotateAroundPoint(start, new Vector2(start.x, start.y + changeY), angle);
-            Vector2 spawnPoint = rotateAroundPoint(start, new Vector2(start.x + changeX, start.y + changeY), angle);
+            //System.out.println("difference: " + Math.abs(Math.toDegrees(getAngle(fireLoc)) - Math.toDegrees(getAngle2(fireLoc))));
+
+            Vector2 startingPoint = rotateAroundPoint(fireLoc[0], new Vector2(fireLoc[0].x, fireLoc[0].y + fireLoc[1].y), angle);
+            Vector2 spawnPoint = rotateAroundPoint(fireLoc[0], new Vector2(fireLoc[0].x + fireLoc[1].x, fireLoc[0].y + fireLoc[1].y), angle);
+            //System.out.println("angle: " + Math.toDegrees(angle) + ", accuracy: " + calculateAccuracy(fireLoc, angle));
             ((RangedWeapon) weapon).attack(spawnPoint, startingPoint, new Vector2(myGame.getMousePosition().x, myGame.getMousePosition().y));
             // debug
             pointsToRender.add(startingPoint);
             pointsToRender.add(spawnPoint);
-            pointsToRender.add(start);
+            pointsToRender.add(fireLoc[0]);
 
             combatTimer = myGame.timePassed;
         } else {
