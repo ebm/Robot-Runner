@@ -236,7 +236,7 @@ public class MyGame implements Screen {
 		gsm.batch.end();
 
 		//debugRenderer.render(world, gsm.camera.combined);\
-		player.debug();
+		//player.debug();
 
 		stage.act();
 		stage.draw();
