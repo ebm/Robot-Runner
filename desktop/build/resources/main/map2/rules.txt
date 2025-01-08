@@ -1,2 +1,0 @@
-rule.tmx
-ruleSpawns.tmx
