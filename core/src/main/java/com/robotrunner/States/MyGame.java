@@ -36,6 +36,7 @@ import com.robotrunner.Weapons.Laser;
 import static com.robotrunner.World.Constants.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 
 public class MyGame implements Screen {
@@ -64,9 +65,11 @@ public class MyGame implements Screen {
 	public AssetManager assetManager;
 	public boolean firstLaunch;
 	public Keybinds keybinds;
+
 	public void initializeTextures() {
 		System.out.println("initialize textures");
 		assetManager = new AssetManager(new InternalFileHandleResolver());
+        assetManager.setLoader(TiledMap.class, new TmxMapLoader());
 		assetManager.load("robot_player/robot_character.atlas", TextureAtlas.class);
 		assetManager.load("healthbar/healthbar.atlas", TextureAtlas.class);
 		assetManager.load("player/shadow.png", Texture.class);
@@ -92,9 +95,8 @@ public class MyGame implements Screen {
 		assetManager.load("textBorder.png", Texture.class);
 		assetManager.load("fire.mp3", Sound.class);
 		assetManager.load("hitmarker.mp3", Sound.class);
-		assetManager.setLoader(TiledMap.class, new TmxMapLoader());
 		assetManager.load("map2/tilemap.tmx", TiledMap.class);
-		//assetManager.load("keybinds.txt", FileHandle.class);
+		//assetManager.load("keybinds.txt", String.class);
 	}
 
 	/**

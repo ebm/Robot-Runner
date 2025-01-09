@@ -17,6 +17,7 @@ public class Constants {
     // Entity Constants
     public static float ENTITY_APPENDAGE_DISTANCE_FROM_EDGE = UNIT_SCALE;
     public static float ENTITY_APPENDAGE_THICKNESS = UNIT_SCALE / 3f;
+    public static float ENTITY_APPENDAGE_OFFSET = UNIT_SCALE * 3;
     public static short CATEGORY_BITS_PLAYER = 0x0002;
     public static short CATEGORY_BITS_MONSTER = 0x0004;
     public static short CATEGORY_BITS_LASER_PROJECTILE = 0x0008;
