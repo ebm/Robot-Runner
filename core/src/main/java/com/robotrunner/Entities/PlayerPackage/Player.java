@@ -901,6 +901,7 @@ public class Player extends Entity {
         //myGame.table.clear();
         health = healthbar.maxHealth; //
         body.setTransform(PLAYER_INITIAL_X_POSITION, PLAYER_INITIAL_Y_POSITION, 0);
+        body.setLinearVelocity(0, 0);
         //weapon.destroy();
         //myGame.player = new Player(myGame, PLAYER_INITIAL_X_POSITION, PLAYER_INITIAL_Y_POSITION);
         //myGame.player.initializeOnScreenPlayerStats();
