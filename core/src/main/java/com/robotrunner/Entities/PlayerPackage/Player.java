@@ -182,7 +182,7 @@ public class Player extends Entity {
      */
     private Animation<TextureRegion>[] createIndividualAnimation(String name, float frameDuration) {
         Animation<TextureRegion>[] res = new Animation[2];
-        Array<TextureAtlas.AtlasRegion> normalTextures = ((TextureAtlas) myGame.assetManager.get("robot_player/robot_character.atlas")).findRegions((name));
+        Array<TextureAtlas.AtlasRegion> normalTextures = ((TextureAtlas) myGame.assetManager.get("robot_player_scaled/robot_character.atlas")).findRegions((name));
         res[0] = new Animation<>(frameDuration, normalTextures);
         Array<TextureRegion> flippedTextures = new Array<>();
         for (TextureRegion tr : normalTextures) {
@@ -503,7 +503,7 @@ public class Player extends Entity {
      * @return a Vector2 array with {joint, change}
      */
     public Vector2[] getFireLocation() {
-        float scale = PLAYER_SPRITE_WIDTH / 855;
+        float scale = PLAYER_SPRITE_WIDTH / 855f;
         Vector2 joint = null;
         Vector2 change = null;
         if (shootingState == PlayerState.ShootingLeft) {

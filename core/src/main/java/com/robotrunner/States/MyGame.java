@@ -70,7 +70,7 @@ public class MyGame implements Screen {
 		System.out.println("initialize textures");
 		assetManager = new AssetManager(new InternalFileHandleResolver());
         assetManager.setLoader(TiledMap.class, new TmxMapLoader());
-		assetManager.load("robot_player/robot_character.atlas", TextureAtlas.class);
+		assetManager.load("robot_player_scaled/robot_character.atlas", TextureAtlas.class);
 		assetManager.load("healthbar/healthbar.atlas", TextureAtlas.class);
 		assetManager.load("player/shadow.png", Texture.class);
 		assetManager.load("golem.png", Texture.class);

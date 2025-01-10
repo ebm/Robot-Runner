@@ -7,7 +7,7 @@ import com.robotrunner.Entities.PlayerPackage.Player;
 import com.robotrunner.World.Listener;
 import com.robotrunner.States.MyGame;
 
-import static com.robotrunner.World.Constants.METERS_PER_PIXEL;
+import static com.robotrunner.World.Constants.*;
 
 public abstract class Item {
     public MyGame myGame;
@@ -56,7 +56,7 @@ public abstract class Item {
     }
     public abstract void apply();
     public void render() {
-        if (myGame.timePassed - lastSwitch > 1) {
+        if (myGame.timePassed - lastSwitch > 1 && getDistance(myGame.player.getBodyCenter(), body.getPosition()) < 40) {
             body.setLinearVelocity(0, verticalVelocity * multiplier);
             multiplier *= -1;
             lastSwitch = myGame.timePassed;
