@@ -82,7 +82,7 @@ public abstract class Item {
 
         polygon.dispose();
 
-        worldBody.setTransform(x, y + 5/*0.25f*/, 0);
+        worldBody.setTransform(x, y 0.25f, 0);
     }
 
     public abstract void apply();
