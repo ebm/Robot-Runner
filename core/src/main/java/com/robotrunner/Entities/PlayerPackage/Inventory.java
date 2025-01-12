@@ -164,7 +164,7 @@ public class Inventory {
         image.setTouchable(Touchable.disabled);
         Container<Image> container = new Container<>(image);
         container.size(50,50);
-        item.body.setActive(false);
+        item.setActive(false);
         if (index < 4) {
             ((Container<Image>) ((Stack) table.getCells().get(index).getActor()).getChildren().peek()).getActor().setVisible(false);
         }
@@ -172,34 +172,12 @@ public class Inventory {
 
         return true;
     }
-    public boolean dropItem(Item item, int index) {
-        //if (item == Item.GolemArmor) {
-        //    if (attributes[ARMOR_POSITION] == null) {
-        //        attributes[ARMOR_POSITION] = item;
-        //    }
-        //}
-        if (index == -1) {
-            for (int i = 0; i < PLAYER_INVENTORY_SPACE; i++) {
-                if (inventoryItems[i].id == item.id) {
-                    index = i;
-                    break;
-                }
-            }
-        }
-        if (index == -1) return false;
-        inventoryItems[index].body.setActive(true);
-        inventoryItems[index].body.setTransform(myGame.player.body.getPosition().x - 1, myGame.player.body.getPosition().y, 0);
-        myGame.itemMapManager.addItem(inventoryItems[index]);
-        inventoryItems[index] = null;
-        ((Stack) table.getCells().get(index).getActor()).getChildren().pop();
-        return true;
-    }
     public boolean dropItem(Item item, Direction dir) {
-        item.body.setActive(true);
+        item.setActive(true);
         if (dir == Direction.Right) {
-            item.body.setTransform(myGame.player.body.getPosition().x + 1.5f, myGame.player.body.getPosition().y + 0.25f, 0);
+            item.setPosition(myGame.player.body.getPosition().x + 1.5f, myGame.player.body.getPosition().y + 0.25f);
         } else {
-            item.body.setTransform(myGame.player.body.getPosition().x - 1.5f, myGame.player.body.getPosition().y + 0.25f, 0);
+            item.setPosition(myGame.player.body.getPosition().x - 1.5f, myGame.player.body.getPosition().y + 0.25f);
         }
         myGame.itemMapManager.addItem(item);
         return true;
