@@ -41,6 +41,8 @@ public class Player extends Entity {
     double combatTimer;
     public PlayerState currentState;
     public PlayerState shootingState;
+    public PlayerState movingState; // has to be either MovingLeft or MovingRight
+    public PlayerState jumpState;
     Animation<TextureRegion> walkingLeft;
     Animation<TextureRegion> walkingRight;
     Animation<TextureRegion> jumpRight;
@@ -79,19 +81,13 @@ public class Player extends Entity {
     public float speedMultiplier;
     public float additionalHealth;
     //TextureRegion gunTextureRegion;
-    Animation<TextureRegion> gunAnimationL1;
-    Animation<TextureRegion> gunAnimationL2;
-    Animation<TextureRegion> gunAnimationR1;
-    Animation<TextureRegion> gunAnimationR2;
-    TextureRegion gunTextureL1;
-    TextureRegion gunTextureR1;
-    TextureRegion gunTextureL2;
-    TextureRegion gunTextureR2;
-    //Sprite gunTextureL;
-    //Sprite gunTextureR;
+    Animation<TextureRegion> gunAnimationSLMR;
+    Animation<TextureRegion> gunAnimationSRML;
+    Animation<TextureRegion> gunAnimationSRMR;
+    Animation<TextureRegion> gunAnimationSLML;
+    Animation<TextureRegion>[] gunAnimations;
     public float angle;
     public double lastJump;
-    public PlayerState jumpState;
     ShapeRenderer shapeRenderer = new ShapeRenderer();
     Color[] shapeRendererColors = {Color.BLUE, Color.BROWN, Color.GREEN, Color.GRAY, Color.GRAY};
     ArrayList<Vector2> pointsToRender = new ArrayList<>();
@@ -114,20 +110,16 @@ public class Player extends Entity {
 
         // Default state
         currentState = PlayerState.StillRight;
+        jumpState = PlayerState.JumpingRight;
+        movingState = PlayerState.MovingRight;
         // Weapon creation
         weapon = new RangedWeapon(myGame, this, 20, 3, 8, 0.1f * METERS_PER_PIXEL, myGame.assetManager.get("fire.mp3"));
-        //weapon = new RangedWeapon(myGame, this, 5, 3, 1, 0.1f * METERS_PER_PIXEL, myGame.assetManager.get("fire.mp3"));
 
         // Create Body
         createPlayer(initialX, initialY);
         createAnimations();
+        resetMultipliers();
         healthbar = new Healthbar(myGame, this, health);
-        canOpenInventory = false;
-
-        speedMultiplier = 1;
-        dmgTakenMultiplier = 1;
-        additionalHealth  = 0;
-        //gunTextureRegion = new TextureRegion((Texture) myGame.assetManager.get("gun.png"));
     }
 
     /**
@@ -180,7 +172,7 @@ public class Player extends Entity {
      * @param frameDuration speed of animation
      * @return an array of size 2 with left and right versions of the animation
      */
-    private Animation<TextureRegion>[] createIndividualAnimation(String name, float frameDuration) {
+    private Animation<TextureRegion>[] createMirroredAnimation(String name, float frameDuration) {
         Animation<TextureRegion>[] res = new Animation[2];
         Array<TextureAtlas.AtlasRegion> normalTextures = ((TextureAtlas) myGame.assetManager.get("robot_player_scaled/robot_character.atlas")).findRegions((name));
         res[0] = new Animation<>(frameDuration, normalTextures);
@@ -194,75 +186,76 @@ public class Player extends Entity {
         return res;
     }
     /**
-     * Creates player animations from the texture atlas
+     * Creates one animation.
+     * @param name of animation
+     * @param frameDuration speed of animation
+     * @return an animation of type TextureRegion
      */
-    private void createAnimations() {
-        // walking
-        Animation<TextureRegion>[] res = createIndividualAnimation("ebmarantz-walk", 0.02f);
-        walkingRight = res[0];
-        walkingLeft = res[1];
+    private Animation<TextureRegion> createIndividualAnimation(String name, float frameDuration) {
+        return new Animation<>(frameDuration, ((TextureAtlas) myGame.assetManager.get("robot_player_scaled/robot_character.atlas")).findRegions((name)));
+    }
+    public void createIdleAnimations() {
+        Animation<TextureRegion>[] res = createMirroredAnimation("ebmarantz-idle", 0.05f);
+        stillRight = res[0];
+        stillLeft = res[1];
+    }
+    public void createGunAnimations() {
+        gunAnimationSRMR = createIndividualAnimation("ebmarantz-shoot-L2", 0.01f);
+        gunAnimationSLML = createIndividualAnimation("ebmarantz-shoot-R2", 0.01f);
 
-        // jumping
-        //jumpRight = walkingRight;
-        //jumpLeft = walkingLeft;
-        res = createIndividualAnimation("ebmarantz-jump", 0.02f);
-        jumpRight = res[0];
-        jumpLeft = res[1];
-        jumpRight.setPlayMode(Animation.PlayMode.NORMAL);
-        jumpLeft.setPlayMode(Animation.PlayMode.NORMAL);
+        gunAnimationSLMR = createIndividualAnimation("ebmarantz-shoot-R1", 0.01f);
+        gunAnimationSRML = createIndividualAnimation("ebmarantz-shoot-L1", 0.01f);
 
-        res = createIndividualAnimation("ebmarantz-jump-shoot-L", 0.02f);
-        shootingRightJumpRight = res[0];
-        shootingLeftJumpLeft = res[1];
-
-        res = createIndividualAnimation("ebmarantz-jump-shoot-R1", 0.02f);
-        shootingLeftJumpRight = res[0];
-        shootingRightJumpLeft = res[1];
-
-        shootingRightJumpRight.setPlayMode(Animation.PlayMode.NORMAL);
-        shootingLeftJumpLeft.setPlayMode(Animation.PlayMode.NORMAL);
-        shootingLeftJumpRight.setPlayMode(Animation.PlayMode.NORMAL);
-        shootingRightJumpLeft.setPlayMode(Animation.PlayMode.NORMAL);
-
-        // climbing
-        res = createIndividualAnimation("ebmarantz-climb", 0.02f);
-        climbRight = res[0];
-        climbLeft = res[1];
-
-        // dashing
-        res = createIndividualAnimation("ebmarantz-dash", 0.05f);
+        gunAnimations = new Animation[]{gunAnimationSLML, gunAnimationSLMR, gunAnimationSRML, gunAnimationSRMR};
+    }
+    public void createDashingAnimations() {
+        Animation<TextureRegion>[] res = createMirroredAnimation("ebmarantz-dash", 0.05f);
         dashRight = res[0];
         dashLeft = res[1];
 
-        res = createIndividualAnimation("ebmarantz-dash-shoot-L", 0.02f);
-        shootingRightDashRight = res[0];
-        shootingLeftDashLeft = res[1];
+        shootingRightDashRight = createIndividualAnimation("ebmarantz-dash-shoot-L1", 0.02f);
+        shootingLeftDashLeft = createIndividualAnimation("ebmarantz-dash-shoot-R2", 0.02f);
 
-        res = createIndividualAnimation("ebmarantz-dash-shoot-R1", 0.02f);
-        shootingLeftDashRight = res[0];
-        shootingRightDashLeft = res[1];
+        shootingLeftDashRight = createIndividualAnimation("ebmarantz-dash-shoot-R1", 0.02f);
+        shootingRightDashLeft = createIndividualAnimation("ebmarantz-dash-shoot-L2", 0.02f);
+    }
+    public void createClimbingAnimations() {
+        Animation<TextureRegion>[] res = createMirroredAnimation("ebmarantz-climb", 0.02f);
+        climbRight = res[0];
+        climbLeft = res[1];
+    }
+    public void createJumpingAnimations() {
+        Animation<TextureRegion>[] res = createMirroredAnimation("ebmarantz-jump", 0.02f);
+        jumpRight = res[0];
+        jumpLeft = res[1];
 
-        // shooting
-        res = createIndividualAnimation("ebmarantz-walk-shoot-L", 0.02f);
-        shootingRightWalkingRight = res[0];
-        shootingLeftWalkingLeft = res[1];
+        shootingRightJumpRight = createIndividualAnimation("ebmarantz-jump-shoot-L1", 0.02f);
+        shootingLeftJumpLeft = createIndividualAnimation("ebmarantz-jump-shoot-R2", 0.02f);
 
-        res = createIndividualAnimation("ebmarantz-walk-shoot-R1", 0.02f);
-        shootingLeftWalkingRight = res[0];
-        shootingRightWalkingLeft = res[1];
+        shootingLeftJumpRight = createIndividualAnimation("ebmarantz-jump-shoot-R1", 0.02f);
+        shootingRightJumpLeft = createIndividualAnimation("ebmarantz-jump-shoot-L2", 0.02f);
+    }
+    public void createWalkingAnimations() {
+        Animation<TextureRegion>[] res = createMirroredAnimation("ebmarantz-walk", 0.02f);
+        walkingRight = res[0];
+        walkingLeft = res[1];
 
-        res = createIndividualAnimation("ebmarantz-shoot-L", 0.01f);
-        gunAnimationR1 = res[0];
-        gunAnimationR2 = res[1];
+        shootingRightWalkingRight = createIndividualAnimation("ebmarantz-walk-shoot-L1", 0.02f);
+        shootingLeftWalkingLeft = createIndividualAnimation("ebmarantz-walk-shoot-R2", 0.02f);
 
-        res = createIndividualAnimation("ebmarantz-shoot-R1", 0.01f);
-        gunAnimationL1 = res[0];
-        gunAnimationL2 = res[1];
-
-        // still
-        res = createIndividualAnimation("ebmarantz-idle", 0.05f);
-        stillRight = res[0];
-        stillLeft = res[1];
+        shootingLeftWalkingRight = createIndividualAnimation("ebmarantz-walk-shoot-R1", 0.02f);
+        shootingRightWalkingLeft =createIndividualAnimation("ebmarantz-walk-shoot-L2", 0.02f);
+    }
+    /**
+     * Creates player animations from the texture atlas
+     */
+    private void createAnimations() {
+        createIdleAnimations();
+        createWalkingAnimations();
+        createJumpingAnimations();
+        createClimbingAnimations();
+        createDashingAnimations();
+        createGunAnimations();
 
         timePassed = 0;
     }
@@ -291,8 +284,10 @@ public class Player extends Entity {
     public void resetPlayerState() {
         if (currentState == PlayerState.ClimbingRight || currentState == PlayerState.JumpingRight || currentState == PlayerState.WalkingRight || currentState == PlayerState.StillRight) {
             currentState = PlayerState.StillRight;
+            movingState = PlayerState.MovingRight;
         } else {
             currentState = PlayerState.StillLeft;
+            movingState = PlayerState.MovingLeft;
         }
     }
 
@@ -338,6 +333,7 @@ public class Player extends Entity {
                 }
             }
             currentState = PlayerState.WalkingLeft;
+            movingState = PlayerState.MovingLeft;
         }
     }
     /**
@@ -353,6 +349,7 @@ public class Player extends Entity {
                 }
             }
             currentState = PlayerState.WalkingRight;
+            movingState = PlayerState.MovingRight;
         }
     }
 
@@ -363,10 +360,10 @@ public class Player extends Entity {
         if (myGame.checkKeybind("Jump") && remainingJumps >= 1 && canJump && (wallClimbTime == 0 || wallClimbFinished)) {
             body.setTransform(body.getPosition().x, body.getPosition().y + 2 * UNIT_SCALE, 0);
             body.setLinearVelocity(body.getLinearVelocity().x, PLAYER_JUMP_VELOCITY);
-            if (currentState == PlayerState.WalkingLeft) {
+            if (movingState == PlayerState.MovingLeft) {
                 body.setLinearVelocity(-PLAYER_HORIZONTAL_VELOCITY * speedMultiplier, body.getLinearVelocity().y);
                 jumpState = PlayerState.JumpingLeft;
-            } else if (currentState == PlayerState.WalkingRight) {
+            } else if (movingState == PlayerState.MovingRight) {
                 body.setLinearVelocity(PLAYER_HORIZONTAL_VELOCITY * speedMultiplier, body.getLinearVelocity().y);
                 jumpState = PlayerState.JumpingRight;
             } else {
@@ -394,8 +391,10 @@ public class Player extends Entity {
                 if (wallClimbTime == 0) wallClimbTime = myGame.timePassed;
                 if (currentState == PlayerState.WalkingLeft) {
                     currentState = PlayerState.ClimbingLeft;
+                    movingState = PlayerState.MovingLeft;
                 } else {
                     currentState = PlayerState.ClimbingRight;
+                    movingState = PlayerState.MovingRight;
                 }
                 body.setLinearVelocity(body.getLinearVelocity().x, PLAYER_WALLCLIMB_VELOCITY);
             } else {
@@ -497,62 +496,32 @@ public class Player extends Entity {
         System.out.println("Iterations2: " + iterations + ", accuracy: " + accuracy + ", Initial Guesses: (" + x0 + ", " + x1 + "). Angle: " + Math.toDegrees(mid));
         return mid;
     }
-
+    public int getStatIndex() {
+        if (shootingState == PlayerState.ShootingLeft) {
+            if (movingState == PlayerState.MovingLeft) {
+                return 0;
+            } else {
+                return 1;
+            }
+        } else if (shootingState == PlayerState.ShootingRight) {
+            if (movingState == PlayerState.MovingLeft) {
+                return 2;
+            } else {
+                return 3;
+            }
+        }
+        return -1;
+    }
     /**
      * Gets the location of the joint, and spawn point relative to the joint if the angle is 0
      * @return a Vector2 array with {joint, change}
      */
     public Vector2[] getFireLocation() {
-        float scale = PLAYER_SPRITE_WIDTH / 855f;
-        Vector2 joint = null;
-        Vector2 change = null;
-        if (shootingState == PlayerState.ShootingLeft) {
-            switch(currentState) {
-                case StillLeft:
-                case DashingLeft:
-                case JumpingLeft:
-                case WalkingLeft:
-                    joint = new Vector2(body.getPosition().x - PLAYER_HORIZONTAL_OFFSET + 505 / 855f * PLAYER_SPRITE_WIDTH,
-                            body.getPosition().y - PLAYER_VERTICAL_OFFSET + 385 / 855f * PLAYER_SPRITE_HEIGHT);
-                    change = new Vector2(-485 * scale, 25 * scale);
-                    break;
-                case StillRight:
-                case DashingRight:
-                case JumpingRight:
-                case WalkingRight:
-                    joint = new Vector2(body.getPosition().x - PLAYER_HORIZONTAL_OFFSET + 230 / 855f * PLAYER_SPRITE_WIDTH,
-                            body.getPosition().y - PLAYER_VERTICAL_OFFSET + 411 / 855f * PLAYER_SPRITE_HEIGHT);
-                    change = new Vector2(-547 * scale, 100 * scale);
-                    break;
-                default:
-                    joint = getBodyCenter();
-                    change = new Vector2(0, 0);
-                    break;
-            }
-        } else if (shootingState == PlayerState.ShootingRight) {
-            switch(currentState) {
-                case StillLeft:
-                case DashingLeft:
-                case JumpingLeft:
-                case WalkingLeft:
-                    joint = new Vector2(body.getPosition().x - PLAYER_HORIZONTAL_OFFSET + 625 / 855f * PLAYER_SPRITE_WIDTH,
-                            body.getPosition().y - PLAYER_VERTICAL_OFFSET + 411 / 855f * PLAYER_SPRITE_HEIGHT);
-                    change = new Vector2(547 * scale, 100 * scale);
-                    break;
-                case StillRight:
-                case DashingRight:
-                case JumpingRight:
-                case WalkingRight:
-                    joint = new Vector2(body.getPosition().x - PLAYER_HORIZONTAL_OFFSET + 350 / 855f * PLAYER_SPRITE_WIDTH,
-                            body.getPosition().y - PLAYER_VERTICAL_OFFSET + 385 / 855f * PLAYER_SPRITE_HEIGHT);
-                    change = new Vector2(485 * scale, 25 * scale);
-                    break;
-                default:
-                    joint = getBodyCenter();
-                    change = new Vector2(0, 0);
-                    break;
-            }
-        }
+        int statIndex = getStatIndex();
+        // Gun animation: (float) (myGame.timePassed - weapon.lastUse)
+        Vector2 joint = new Vector2(body.getPosition().x - PLAYER_HORIZONTAL_OFFSET + PLAYER_GUN_STATS[statIndex][0] * PLAYER_SPRITE_WIDTH,
+            body.getPosition().y - PLAYER_VERTICAL_OFFSET + PLAYER_GUN_STATS[statIndex][1] * PLAYER_SPRITE_HEIGHT);
+        Vector2 change = new Vector2(PLAYER_GUN_STATS[statIndex][4] - PLAYER_GUN_STATS[statIndex][2], PLAYER_GUN_STATS[statIndex][5] - PLAYER_GUN_STATS[statIndex][3]);
         return new Vector2[] {joint, change};
     }
     /**
@@ -809,55 +778,28 @@ public class Player extends Entity {
      */
     public void renderGun() {
         if (currentState == null) return;
-        float scale = PLAYER_SPRITE_WIDTH / 855;
+        TextureRegion gunKeyFrame = null;
+        int statIndex = getStatIndex();
+        if (statIndex == -1) return;
         // Gun animation: (float) (myGame.timePassed - weapon.lastUse)
-        if (shootingState == PlayerState.ShootingLeft) {
-            switch(currentState) {
-                case StillLeft:
-                case DashingLeft:
-                case JumpingLeft:
-                case WalkingLeft:
-                    myGame.batch.draw(gunAnimationR2.getKeyFrame(0), body.getPosition().x - PLAYER_HORIZONTAL_OFFSET + 505 / 855f * PLAYER_SPRITE_WIDTH - 1208 * scale,
-                            body.getPosition().y - PLAYER_VERTICAL_OFFSET + 385 / 855f * PLAYER_SPRITE_HEIGHT - 160 * scale, 1208 * scale, 160 * scale,
-                            1233 * scale, 295 * scale, 1, 1, (float) Math.toDegrees(angle));
-                    break;
-                case StillRight:
-                case DashingRight:
-                case JumpingRight:
-                case WalkingRight:
-                    myGame.batch.draw(gunAnimationL1.getKeyFrame(0), body.getPosition().x - PLAYER_HORIZONTAL_OFFSET + 230 / 855f * PLAYER_SPRITE_WIDTH - 1272 * scale,
-                            body.getPosition().y - PLAYER_VERTICAL_OFFSET + 411 / 855f * PLAYER_SPRITE_HEIGHT - 71 * scale, 1272 * scale, 71 * scale,
-                            1292 * scale, 286 * scale, 1, 1, (float) Math.toDegrees(angle));
-                    break;
-            }
-        } else if (shootingState == PlayerState.ShootingRight) {
-            switch(currentState) {
-                case StillLeft:
-                case DashingLeft:
-                case JumpingLeft:
-                case WalkingLeft:
-                    myGame.batch.draw(gunAnimationL2.getKeyFrame(0), body.getPosition().x - PLAYER_HORIZONTAL_OFFSET + 625 / 855f * PLAYER_SPRITE_WIDTH - 20 * scale,
-                            body.getPosition().y - PLAYER_VERTICAL_OFFSET + 411 / 855f * PLAYER_SPRITE_HEIGHT - 71 * scale, 20 * scale, 71 * scale,
-                            1292 * scale, 286 * scale, 1, 1, (float) Math.toDegrees(angle));
-                    break;
-                case StillRight:
-                case DashingRight:
-                case JumpingRight:
-                case WalkingRight:
-                    myGame.batch.draw(gunAnimationR1.getKeyFrame(0), body.getPosition().x - PLAYER_HORIZONTAL_OFFSET + 350 / 855f * PLAYER_SPRITE_WIDTH - 25 * scale,
-                            body.getPosition().y - PLAYER_VERTICAL_OFFSET + 385 / 855f * PLAYER_SPRITE_HEIGHT - 160 * scale, 25 * scale, 160 * scale,
-                            1233 * scale, 295 * scale, 1, 1, (float) Math.toDegrees(angle));
-                    break;
-            }
-        }
+        myGame.batch.draw(gunAnimations[statIndex].getKeyFrame(0), body.getPosition().x - PLAYER_HORIZONTAL_OFFSET + PLAYER_GUN_STATS[statIndex][0] * PLAYER_SPRITE_WIDTH - PLAYER_GUN_STATS[statIndex][2],
+            body.getPosition().y - PLAYER_VERTICAL_OFFSET + PLAYER_GUN_STATS[statIndex][1] * PLAYER_SPRITE_HEIGHT - PLAYER_GUN_STATS[statIndex][3], PLAYER_GUN_STATS[statIndex][2],
+            PLAYER_GUN_STATS[statIndex][3], PLAYER_GUN_STATS[statIndex][6], PLAYER_GUN_STATS[statIndex][7], 1, 1, (float) Math.toDegrees(angle));
     }
 
     /**
      * Render the character animation
      */
     public void renderCharacter() {
-        myGame.batch.draw(getCurrentFrame(), body.getPosition().x - PLAYER_HORIZONTAL_OFFSET, body.getPosition().y - PLAYER_VERTICAL_OFFSET, PLAYER_SPRITE_WIDTH, PLAYER_SPRITE_HEIGHT);
-        renderGun();
+        if (shootingState == PlayerState.ShootingLeft && (currentState == PlayerState.StillLeft || currentState == PlayerState.DashingLeft
+            || currentState == PlayerState.JumpingLeft || currentState == PlayerState.WalkingLeft)) {
+            renderGun();
+            myGame.batch.draw(getCurrentFrame(), body.getPosition().x - PLAYER_HORIZONTAL_OFFSET, body.getPosition().y - PLAYER_VERTICAL_OFFSET, PLAYER_SPRITE_WIDTH, PLAYER_SPRITE_HEIGHT);
+        } else {
+            myGame.batch.draw(getCurrentFrame(), body.getPosition().x - PLAYER_HORIZONTAL_OFFSET, body.getPosition().y - PLAYER_VERTICAL_OFFSET, PLAYER_SPRITE_WIDTH, PLAYER_SPRITE_HEIGHT);
+            renderGun();
+        }
+
     }
     /**
      * Gets called in myGame. Renders player animation frame, weapon, healthbar, and statistics. Checks playerState to
