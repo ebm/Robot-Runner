@@ -294,7 +294,7 @@ public class Player extends Entity {
     /**
      * Checks if the player is on the ground. Sets the x velocity of the player to 0 if true.
      */
-    public void onGround() {
+    public void onGroundCheck() {
         if (contactFeet >= 1) {
             body.setLinearVelocity(0, body.getLinearVelocity().y);
             remainingJumps = PLAYER_MAXIMUM_JUMPS;
@@ -360,10 +360,10 @@ public class Player extends Entity {
         if (myGame.checkKeybind("Jump") && remainingJumps >= 1 && canJump && (wallClimbTime == 0 || wallClimbFinished)) {
             body.setTransform(body.getPosition().x, body.getPosition().y + 2 * UNIT_SCALE, 0);
             body.setLinearVelocity(body.getLinearVelocity().x, PLAYER_JUMP_VELOCITY);
-            if (movingState == PlayerState.MovingLeft) {
+            if (currentState == PlayerState.WalkingLeft) {
                 body.setLinearVelocity(-PLAYER_HORIZONTAL_VELOCITY * speedMultiplier, body.getLinearVelocity().y);
                 jumpState = PlayerState.JumpingLeft;
-            } else if (movingState == PlayerState.MovingRight) {
+            } else if (currentState == PlayerState.WalkingRight) {
                 body.setLinearVelocity(PLAYER_HORIZONTAL_VELOCITY * speedMultiplier, body.getLinearVelocity().y);
                 jumpState = PlayerState.JumpingRight;
             } else {
@@ -656,7 +656,7 @@ public class Player extends Entity {
     public void update() {
         if (getBodyCenter().y < 0) death();
         resetPlayerState();
-        onGround();
+        onGroundCheck();
         if (inventoryCheck()) return;
         leftCheck();
         rightCheck();

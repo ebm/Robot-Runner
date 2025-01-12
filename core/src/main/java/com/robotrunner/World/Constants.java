@@ -9,6 +9,7 @@ public class Constants {
     public static float VISIBLE_HORIZONTAL_TILES = 30 * METERS_PER_PIXEL;
     public static float VISIBLE_VERTICAL_TILES = 18 * METERS_PER_PIXEL;
     public static float TIME_STEP = 1/240f;
+    public static float MIN_TIME_STEP = 1/15f;
     public static float GRAVITY = -20 * METERS_PER_PIXEL;
     public static float CAMERA_Y_OFFSET = 0;//3 * METERS_PER_PIXEL;
     public static float HEALTHBAR_OFFSET = 0.25f * METERS_PER_PIXEL;

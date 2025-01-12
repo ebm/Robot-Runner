@@ -191,6 +191,7 @@ public class MyGame implements Screen {
 	}
 	@Override
 	public void render(float delta) {
+        delta = Math.min(delta, MIN_TIME_STEP);
 		ScreenUtils.clear(0, 0, 0, 1);
 		gsm.vp.apply();
 		gsm.batch.setProjectionMatrix(gsm.camera.combined);
