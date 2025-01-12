@@ -82,30 +82,30 @@ public class Constants {
     // Golem
     public static float GOLEM_INITIAL_X_POSITION = 50 * METERS_PER_PIXEL;
     public static float GOLEM_INITIAL_Y_POSITION = 72 * METERS_PER_PIXEL;
-    public static float GOLEM_HEALTH = 300;
+    public static float GOLEM_HEALTH = 100;
     public static float GOLEM_HORIZONTAL_VELOCITY = 2 * METERS_PER_PIXEL;
-    public static float GOLEM_JUMP_VELOCITY = 10 * METERS_PER_PIXEL;
+    public static float GOLEM_JUMP_VELOCITY = 15 * METERS_PER_PIXEL;
     public static float GOLEM_ATTACK_DAMAGE = 55;
     public static float GOLEM_ATTACK_COOLDOWN = 0.5f;
     public static float GOLEM_MAXIMUM_HORIZONTAL_JUMP_VELOCITY = 40 * METERS_PER_PIXEL;
-    public static float GOLEM_ACTIVATION_RANGE = 20 * METERS_PER_PIXEL;
+    public static float GOLEM_ACTIVATION_RANGE = 30 * METERS_PER_PIXEL;
     public static float GOLEM_JUMP_COOLDOWN = 3;
     public static float GOLEM_DIRECTION_DELAY = 0.5f;
     public static float GOLEM_HITBOX_WIDTH = 1.5f;//3 * METERS_PER_PIXEL;
     public static float GOLEM_HITBOX_HEIGHT = 1.5f;//3 * METERS_PER_PIXEL;
 
     // Bat
-    public static float BAT_HEALTH = 50;
-    public static float BAT_VELOCITY = 3 * METERS_PER_PIXEL;
+    public static float BAT_HEALTH = 15;
+    public static float BAT_VELOCITY = 8 * METERS_PER_PIXEL;
     public static float BAT_VERTICAL_VELOCITY = 1 * METERS_PER_PIXEL;
     public static float BAT_VERTICAL_DELAY = 0.2f;
-    public static float BAT_ATTACK_DAMAGE = 20;
+    public static float BAT_ATTACK_DAMAGE = 40;
     public static float BAT_ACTIVATION_RANGE = 20 * METERS_PER_PIXEL;
     public static float BAT_RADIUS = 0.5f * METERS_PER_PIXEL;
     public static float BAT_WEAPON_RADIUS = BAT_RADIUS + 0.1f * METERS_PER_PIXEL;
 
     // Spaceship
-    public static float SPACESHIP_HEALTH = 600;
+    public static float SPACESHIP_HEALTH = 200;
     public static float SPACESHIP_WIDTH = 3;
     public static float SPACESHIP_HEIGHT = 1;
     public static float SPACESHIP_VERTICAL_VELOCITY = 0.15f;

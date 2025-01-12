@@ -20,6 +20,7 @@ public class Golem extends Monster{
     double lastJump;
     double directionTime;
     Healthbar healthbar;
+    boolean activated;
     public Golem(MyGame myGame, float initialX, float initialY, String range) {
         super(myGame, GOLEM_HEALTH);
         healthbar = new Healthbar(myGame, this, GOLEM_HEALTH);
@@ -64,7 +65,7 @@ public class Golem extends Monster{
         return Math.min((finalX - monsterPosition.x) / time, GOLEM_MAXIMUM_HORIZONTAL_JUMP_VELOCITY);
     }
     public void update() {
-        if (getDistance(body.getPosition(), myGame.player.body.getPosition()) < GOLEM_ACTIVATION_RANGE) {
+        if (activated || getDistance(body.getPosition(), myGame.player.body.getPosition()) < GOLEM_ACTIVATION_RANGE || health < GOLEM_HEALTH) {
             weapon.attack(body.getPosition());
             if (contactFeet >= 1) {
                 if (getBodyCenter().x < myGame.player.getBodyCenter().x && body.getLinearVelocity().x <= 0 || getBodyCenter().x > myGame.player.getBodyCenter().x && body.getLinearVelocity().x >= 0) {

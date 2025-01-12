@@ -23,6 +23,10 @@ public class Spaceship extends Monster {
     int multiplier;
     boolean activated;
     boolean follow;
+    boolean dodge;
+    double lastDodge;
+    double dodgeDelay;
+    int dodgeDirection;
     Healthbar healthbar;
     TextureRegion spaceshipTextureRegion;
     public Spaceship(MyGame myGame, float initialX, float initialY) {
@@ -33,8 +37,12 @@ public class Spaceship extends Monster {
         createBody(initialX, initialY);
         lastSwitch = 0;
         multiplier = 1;
+        lastDodge = 0;
+        dodgeDelay = 0;
+        dodgeDirection = 1;
         activated = false;
         follow = true;
+        dodge = false;
         spaceshipTextureRegion = new TextureRegion((Texture) myGame.assetManager.get("spaceship.png"));
     }
     public void createBody(float initialX, float initialY) {
@@ -78,30 +86,52 @@ public class Spaceship extends Monster {
             if (follow || Math.abs(myGame.player.getBodyCenter().x - getBodyCenter().x) > 10) {
                 if (myGame.player.getBodyCenter().x > getBodyCenter().x) {
                     body.setLinearVelocity(SPACESHIP_VELOCITY, body.getLinearVelocity().y);
-                    float angle = -10 * (float) Math.PI / 180;
-                    if (body.getAngle() > angle) body.setAngularVelocity(-1);
+                    float angle = -15 * (float) Math.PI / 180;
+                    if (body.getAngle() > angle) body.setAngularVelocity(-2);
                     else body.setAngularVelocity(0);
                 } else {
                     body.setLinearVelocity(-SPACESHIP_VELOCITY, body.getLinearVelocity().y);
-                    float angle = 10 * (float) Math.PI / 180;
-                    if (body.getAngle() < angle) body.setAngularVelocity(1);
+                    float angle = 15 * (float) Math.PI / 180;
+                    if (body.getAngle() < angle) body.setAngularVelocity(2);
                     else body.setAngularVelocity(0);
                 }
                 if (Math.abs(myGame.player.getBodyCenter().x - getBodyCenter().x) < 2) {
                     follow = false;
                     body.setLinearVelocity(0, body.getLinearVelocity().y);
                     if (body.getAngle() > 0) {
-                        body.setAngularVelocity(-2);
+                        body.setAngularVelocity(-4);
                     } else {
-                        body.setAngularVelocity(2);
+                        body.setAngularVelocity(4);
                     }
-                } else follow = true;
+                } else {
+                    follow = true;
+                    dodge = false;
+                }
             }
-            if (!follow && ((body.getAngle() > 0 && body.getAngularVelocity() > 0) || (body.getAngle() < 0 && body.getAngularVelocity() < 0))) {
-                body.setAngularVelocity(0);
+            if (!follow) {
+                if (myGame.timePassed - lastDodge > dodgeDelay) {
+                    dodgeDelay = myGame.rand.nextDouble() % 1;
+                    if (myGame.rand.nextInt() % 2 == 0) dodgeDirection *= -1;
+                    body.setLinearVelocity(SPACESHIP_VELOCITY * dodgeDirection, body.getLinearVelocity().y);
+                    lastDodge = myGame.timePassed;
+                }
+                float angle = -dodgeDirection * 15 * (float) Math.PI / 180;
+                //System.out.println("Body angle: " + Math.toDegrees(body.getAngle()) + ", Desired angle: " + Math.toDegrees(angle));
+                //body.setAngularVelocity(angle);
+                if (angle < 0) {
+                    if (body.getAngle() > angle) body.setAngularVelocity(-4);
+                    else body.setAngularVelocity(0);
+                } else {
+                    if (body.getAngle() < angle) body.setAngularVelocity(4);
+                    else body.setAngularVelocity(0);
+                }
+                dodge = true;
             }
+            //if (!dodge && !follow && ((body.getAngle() > 0 && body.getAngularVelocity() > 0) || (body.getAngle() < 0 && body.getAngularVelocity() < 0))) {
+            //    body.setAngularVelocity(0);
+            //}
             //if (body.getAngle() == 0 && !follow) body.setAngularVelocity(0);
-            if (myGame.rand.nextInt() % 2 == 0) ((RangedWeapon) weapon).attackWithAimbot(myGame.player);
+            if (myGame.rand.nextInt() % 3 != 0) ((RangedWeapon) weapon).attackWithAimbot(myGame.player);
             else ((RangedWeapon) weapon).attack(myGame.player.getBodyCenter());
         } else if (getDistance(getBodyCenter(), myGame.player.getBodyCenter()) < SPACESHIP_ACTIVATION_RANGE) {
             activated = true;
