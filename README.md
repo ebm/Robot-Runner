@@ -3,14 +3,14 @@
 A 2D parkour shooter where a player controls a robot that jumps around and fights monsters. On their journey, a player kill monsters and collect items which grant the player abilities and stat increases.
 
 # Features
-A player can move around, jump, fires lasers, dash, wall climb, and more. The player has an inventory where they can store collected items, and equip the desired abilities.<br>
+A player can move around, jump, fires lasers, dash, wall climb, and more. The player has an inventory where they can store collected items, and equip the desired abilities.<br><br>
 There are lasers, monsters with various weapons, and cool parkour puzzles where the player attempts to avoid lasers and get to the top.
 
 # Installation
 The game was made to be a desktop application, but it can be ran from the browser from this link: https://ebm3.itch.io/robot-runner
 
 # How to Play
-The controls are adjustable. There is an options and controls menu accessible when pausing the game.<br>
+The controls are adjustable. There is an options and controls menu accessible when pausing the game.<br><br>
 Default controls:<br>
   A             -> LEFT<br>
   D             -> RIGHT<br>
