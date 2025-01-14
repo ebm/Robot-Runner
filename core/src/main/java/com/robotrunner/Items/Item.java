@@ -58,7 +58,7 @@ public abstract class Item {
 
         polygon.dispose();
 
-        body.setTransform(x, y + 0.25f, 0);
+        body.setTransform(x, y, 0);
     }
     public void createWorldBody(float x, float y) {
         BodyDef bodyDef = new BodyDef();
@@ -82,7 +82,7 @@ public abstract class Item {
 
         polygon.dispose();
 
-        worldBody.setTransform(x, y + 0.25f, 0);
+        worldBody.setTransform(x, y, 0);
     }
 
     public abstract void apply();
@@ -93,7 +93,7 @@ public abstract class Item {
             lastSwitch = myGame.timePassed;
         }*/
         body.setTransform(worldBody.getPosition(), 0);
-        myGame.batch.draw(itemTexture, body.getPosition().x, body.getPosition().y, 0.75f * METERS_PER_PIXEL, 0.75f * METERS_PER_PIXEL);
+        myGame.batch.draw(itemTexture, body.getPosition().x, body.getPosition().y + 0.25f, 0.75f * METERS_PER_PIXEL, 0.75f * METERS_PER_PIXEL);
     }
     public static void handleContact(Fixture fixtureA, Fixture fixtureB, boolean beginContact, MyGame myGame) {
         if (!beginContact) return;
