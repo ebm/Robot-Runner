@@ -1,36 +1,34 @@
 # Robot Runner
 
-A [libGDX](https://libgdx.com/) project generated with [gdx-liftoff](https://github.com/libgdx/gdx-liftoff).
+A 2D parkour shooter where a player controls a robot that jumps around and fights monsters. On their journey, a player can collect items which grant the player abilities and stat increases, or try to run from the monsters.
 
-This project was generated with a template including simple application launchers and an `ApplicationAdapter` extension that draws libGDX logo.
+# Features
+A player can moves around, jump, fires lasers, dash, wall climb, and more. The player has an inventory where they can store collected items, and equip the desired abilities.
+There are lasers, monsters with various weapons, and cool parkour puzzles where the player attempts to avoid lasers and get to the top.
 
-## Platforms
+# Installation
+The game was made to be a desktop application, but currently, it can be ran from the browser from this link: https://ebm3.itch.io/robot-runner
 
-- `core`: Main module with the application logic shared by all platforms.
-- `lwjgl3`: Primary desktop platform using LWJGL3; was called 'desktop' in older docs.
-- `html`: Web platform using GWT and WebGL. Supports only Java projects.
+# How to Play
+The controls are adjustable. There is an options and controls menu accessible when pausing the game.
+Default controls:
+  A             -> LEFT
+  D             -> RIGHT
+  SPACE         -> JUMP
+  MOUSE_LEFT    -> FIRE
+  LEFT_SHIFT    -> ABILITY
+  WALL_CLIMB    -> A/D (must be moving into a wall)
+  INVENTORY     -> E
+  PAUSE         -> ESCAPE
 
-## Gradle
+# Development
+Robot Runner was coded in Java and developed with LibGDX (a game development framework that handles cross-platform game development and graphics calculations), and Box2D (a physics engine that handles collisions).
+Code Outline:
+In core/src/main/java/com.robotrunner, there will be 5 important folders with functions vital to the game.
+States: Holds the classes that manage any currently displaying screen. For example, GameStateManager renders the current screen and houses the necessary logic for switching screens.
+World: Holds the classes that manage the game world. For example, Listener handles any collisions, and passes that information to Entity or Map to handle.
+Entities: Holds the classes for any entity in the game. For example, Player handles user input which controls the player's movement, renders the player, and adjusts the player depending on collisions (on the ground, or touching a wall, etc).
+Weapons: Holds the classes for the weapons entities will use. For example, RangedWeapon spawns bullets which have a speed, damage, fire rate, and more.
+Items: Holds classes for managing items on the map. For example, Dash is an item that appears on the map, and when a player picks it up and equips it, it gives the player a dash ability.
 
-This project uses [Gradle](https://gradle.org/) to manage dependencies.
-The Gradle wrapper was included, so you can run Gradle tasks using `gradlew.bat` or `./gradlew` commands.
-Useful Gradle tasks and flags:
 
-- `--continue`: when using this flag, errors will not stop the tasks from running.
-- `--daemon`: thanks to this flag, Gradle daemon will be used to run chosen tasks.
-- `--offline`: when using this flag, cached dependency archives will be used.
-- `--refresh-dependencies`: this flag forces validation of all dependencies. Useful for snapshot versions.
-- `build`: builds sources and archives of every project.
-- `cleanEclipse`: removes Eclipse project data.
-- `cleanIdea`: removes IntelliJ project data.
-- `clean`: removes `build` folders, which store compiled classes and built archives.
-- `eclipse`: generates Eclipse project data.
-- `html:dist`: compiles GWT sources. The compiled application can be found at `html/build/dist`: you can use any HTTP server to deploy it.
-- `html:superDev`: compiles GWT sources and runs the application in SuperDev mode. It will be available at [localhost:8080/html](http://localhost:8080/html). Use only during development.
-- `idea`: generates IntelliJ project data.
-- `lwjgl3:jar`: builds application's runnable jar, which can be found at `lwjgl3/build/libs`.
-- `lwjgl3:run`: starts the application.
-- `test`: runs unit tests (if any).
-
-Note that most tasks that are not specific to a single project can be run with `name:` prefix, where the `name` should be replaced with the ID of a specific project.
-For example, `core:clean` removes `build` folder only from the `core` project.
