@@ -404,98 +404,24 @@ public class Player extends Entity {
             if (wallClimbTime != 0) wallClimbFinished = true;
         }
     }
+
+    /**
+     * Rotates a point around another point by an angle
+     * @param rotationPoint center
+     * @param pointToRotate point to rotate around the center
+     * @param angle in radians
+     * @return the new position of the pointToRotate
+     */
     public Vector2 rotateAroundPoint(Vector2 rotationPoint, Vector2 pointToRotate, double angle) {
         double x = rotationPoint.x + (pointToRotate.x - rotationPoint.x) * Math.cos(angle) - (pointToRotate.y - rotationPoint.y) * Math.sin(angle);
         double y = rotationPoint.y + (pointToRotate.x - rotationPoint.x) * Math.sin(angle) + (pointToRotate.y - rotationPoint.y) * Math.cos(angle);
         return new Vector2((float) x, (float) y);
     }
-    public double slope(Vector2 a, Vector2 b) {
-        return (b.y - a.y) / (b.x - a.x);
-    }
-    public double equation(Vector2 center, Vector2 startingPoint, Vector2 spawnPoint, Vector2 mousePos, double angle) {
-        Vector2 rotatedStart = rotateAroundPoint(center, startingPoint, angle);
-        Vector2 rotatedSpawn = rotateAroundPoint(center, spawnPoint, angle);
-        return rotatedStart.x * (rotatedSpawn.y - mousePos.y) + rotatedSpawn.x * (mousePos.y - rotatedStart.y) + mousePos.x * (rotatedStart.y - rotatedSpawn.y);
-    }
-    public double equation2(Vector2 start, float changeY, Vector2 mousePos, double angle) {
-        return Math.pow((mousePos.x - start.x), 2) + Math.pow((mousePos.y - start.y), 2) * Math.pow(Math.cos(angle), 2) - 2 * changeY * (mousePos.x - start.x) * Math.cos(angle) + Math.pow(changeY, 2) - Math.pow((mousePos.y - start.y), 2);
-        //return Math.pow(Math.sin(angle), 2) / Math.cos(angle) * changeY - (mousePos.y - start.y) * Math.tan(angle) - ((mousePos.x - start.x) - changeY * Math.cos(angle));
-    }
-    public double secantMethod(double x0, double x1, Vector2 center, Vector2 startingPoint, Vector2 spawnPoint, Vector2 mousePos) {
-        double prevGuess = Math.toRadians(x0);
-        double currGuess = Math.toRadians(x1);
-        double nextGuess = 0;
 
-        double resultPrevGuess = equation(center, startingPoint, spawnPoint, mousePos, prevGuess);
-        double resultCurrGuess;
-        int i;
-        for (i = 0; i < 1000; i++) {
-            resultCurrGuess = equation(center, startingPoint, spawnPoint, mousePos, currGuess);
-            if ((resultPrevGuess - resultCurrGuess) == 0) {
-                double accuracy = equation(center, startingPoint, spawnPoint, mousePos, currGuess);
-                System.out.println("Iterations: " + i + ", accuracy: " + accuracy + ", Initial Guesses: (" + x0 + ", " + x1 + ")");
-                return currGuess;
-            }
-            nextGuess = currGuess - (resultCurrGuess * (prevGuess - currGuess)) / (resultPrevGuess - resultCurrGuess);
-            if (Math.abs(nextGuess - currGuess) < Math.pow(10, -3)) {
-                double accuracy = equation(center, startingPoint, spawnPoint, mousePos, nextGuess);
-                System.out.println("Iterations: " + i + ", accuracy: " + accuracy + ", Initial Guesses: (" + x0 + ", " + x1 + ")");
-                return nextGuess;
-            }
-            prevGuess = currGuess;
-            currGuess = nextGuess;
-            resultPrevGuess = resultCurrGuess;
-        }
-        double accuracy = equation(center, startingPoint, spawnPoint, mousePos, nextGuess);
-        System.out.println("Iterations: " + i + ", accuracy: " + accuracy + ", Initial Guesses: (" + x0 + ", " + x1 + ")");
-        return nextGuess;
-    }
-    public double bisectionMethod(double x0, double x1, Vector2 center, Vector2 startingPoint, Vector2 spawnPoint, Vector2 mousePos) {
-        double lowerGuess = Math.toRadians(x0);
-        double upperGuess = Math.toRadians(x1);
-        double mid = 0;
-        int iterations = 0;
-        while (Math.abs(upperGuess - lowerGuess) >= Math.pow(10, -3) && iterations < 1000) {
-            mid = (upperGuess + lowerGuess) / 2;
-            double midResult = equation(center, startingPoint, spawnPoint, mousePos, mid);
-            if (midResult == 0) {
-                double accuracy = equation(center, startingPoint, spawnPoint, mousePos, mid);
-                //System.out.println("Iterations: " + iterations + ", accuracy: " + accuracy + ", Initial Guesses: (" + x0 + ", " + x1 + "). Angle: " + Math.toDegrees(mid));
-                return mid;
-            } else if (equation(center, startingPoint, spawnPoint, mousePos, lowerGuess) * midResult < 0) {
-                upperGuess = mid;
-            } else if (equation(center, startingPoint, spawnPoint, mousePos, upperGuess) * midResult < 0) {
-                lowerGuess = mid;
-            }
-            iterations++;
-        }
-        double accuracy = equation(center, startingPoint, spawnPoint, mousePos, mid);
-        //System.out.println("Iterations: " + iterations + ", accuracy: " + accuracy + ", Initial Guesses: (" + x0 + ", " + x1 + "). Angle: " + Math.toDegrees(mid));
-        return mid;
-    }
-    public double bisectionMethod2(double x0, double x1, Vector2 start, float changeY, Vector2 mousePos) {
-        double lowerGuess = Math.toRadians(x0);
-        double upperGuess = Math.toRadians(x1);
-        double mid = 0;
-        int iterations = 0;
-        while (Math.abs(upperGuess - lowerGuess) >= Math.pow(10, -3) && iterations < 1000) {
-            mid = (upperGuess + lowerGuess) / 2;
-            double midResult = equation2(start, changeY, mousePos, mid);
-            if (midResult == 0) {
-                double accuracy = equation2(start, changeY, mousePos, mid);
-                System.out.println("Iterations2: " + iterations + ", accuracy: " + accuracy + ", Initial Guesses: (" + x0 + ", " + x1 + "). Angle: " + Math.toDegrees(mid));
-                return mid;
-            } else if (equation2(start, changeY, mousePos, lowerGuess) * midResult < 0) {
-                upperGuess = mid;
-            } else if (equation2(start, changeY, mousePos, upperGuess) * midResult < 0) {
-                lowerGuess = mid;
-            }
-            iterations++;
-        }
-        double accuracy = equation2(start, changeY, mousePos, mid);
-        System.out.println("Iterations2: " + iterations + ", accuracy: " + accuracy + ", Initial Guesses: (" + x0 + ", " + x1 + "). Angle: " + Math.toDegrees(mid));
-        return mid;
-    }
+    /**
+     * Gets an integer to describe player movement. Used when accessing PLAYER_GUN_STATS
+     * @return an integer index: PLAYER_GUN_STATS[index]
+     */
     public int getStatIndex() {
         if (shootingState == PlayerState.ShootingLeft) {
             if (movingState == PlayerState.MovingLeft) {
@@ -558,56 +484,6 @@ public class Player extends Entity {
     }
 
     /**
-     * Calculate angle with different formula
-     * @param fireLoc a Vector2 array with {joint, change}
-     * @return angle of rotation
-     */
-    public double getAngle2(Vector2[] fireLoc) {
-        double a = myGame.getMousePosition().x - fireLoc[0].x;
-        double b = myGame.getMousePosition().y - fireLoc[0].y;
-        double r = fireLoc[1].y;
-
-        float angle1 = (float) (Math.acos((2*r*a + Math.sqrt(4*r*r*a*a-4*(a*a+b*b)*(r*r-b*b)))/(2*(a*a+b*b))) - Math.toRadians(90));
-        float angle2 = (float) (Math.acos((2*r*a - Math.sqrt(4*r*r*a*a-4*(a*a+b*b)*(r*r-b*b)))/(2*(a*a+b*b))) - Math.toRadians(90));
-        if (myGame.getMousePosition().y < fireLoc[0].y && shootingState == PlayerState.ShootingRight || myGame.getMousePosition().y > fireLoc[0].y && shootingState == PlayerState.ShootingLeft) {
-            angle = angle1;
-            //System.out.println(1);
-        } else {
-            angle = angle2;
-            //System.out.println(2);
-        }
-        //System.out.println("Angle getter test: (" + Math.toDegrees(angle1) + ", " + Math.toDegrees(angle2));
-        //System.out.println("Accuracy og: " + equation2(fireLoc[0], fireLoc[1].y, new Vector2(myGame.getMousePosition().x, myGame.getMousePosition().y), angle));
-        return angle;
-    }
-    /**
-     * Calculate angle with approximation method
-     * @param fireLoc a Vector2 array with {joint, change}
-     * @return angle of rotation
-     */
-    public double getAngle3(Vector2[] fireLoc) {
-        double estimation = (float) Math.atan((fireLoc[0].y + fireLoc[1].y - myGame.getMousePosition().y) / (fireLoc[0].x - myGame.getMousePosition().x));
-        Vector2 center = fireLoc[0];
-        Vector2 startingPoint = new Vector2(fireLoc[0].x, fireLoc[0].y + fireLoc[1].y);
-        Vector2 spawnPoint = new Vector2(fireLoc[0].x + fireLoc[1].x, fireLoc[0].y + fireLoc[1].y);
-        Vector2 mousePos = new Vector2( myGame.getMousePosition().x,  myGame.getMousePosition().y);
-        return bisectionMethod(Math.toDegrees(estimation) - 20, Math.toDegrees(estimation) + 20, center, startingPoint, spawnPoint, mousePos);
-    }
-
-    /**
-     * Calculate the accuracy of the angle
-     * @param fireLoc a Vector2 array with {joint, change}
-     * @param angle of rotation
-     * @return accuracy (number closer to 0 means more accurate)
-     */
-    public double calculateAccuracy(Vector2[] fireLoc, double angle) {
-        Vector2 center = fireLoc[0];
-        Vector2 startingPoint = new Vector2(fireLoc[0].x, fireLoc[0].y + fireLoc[1].y);
-        Vector2 spawnPoint = new Vector2(fireLoc[0].x + fireLoc[1].x, fireLoc[0].y + fireLoc[1].y);
-        Vector2 mousePos = new Vector2( myGame.getMousePosition().x,  myGame.getMousePosition().y);
-        return equation(center, startingPoint, spawnPoint, mousePos, angle);
-    }
-    /**
      * Checks if the player is holding down the fire button. Also determines where the mouse is to show where to aim
      * the shot.
      */
@@ -629,15 +505,19 @@ public class Player extends Entity {
             //System.out.println("angle: " + Math.toDegrees(angle) + ", accuracy: " + calculateAccuracy(fireLoc, angle));
             ((RangedWeapon) weapon).attack(spawnPoint, startingPoint, new Vector2(myGame.getMousePosition().x, myGame.getMousePosition().y));
             // debug
-            pointsToRender.add(startingPoint);
-            pointsToRender.add(spawnPoint);
-            pointsToRender.add(fireLoc[0]);
+            //pointsToRender.add(startingPoint);
+            //pointsToRender.add(spawnPoint);
+            //pointsToRender.add(fireLoc[0]);
 
             combatTimer = myGame.timePassed;
         } else {
             shootingState = PlayerState.NotShooting;
         }
     }
+
+    /**
+     * Debug method to show the bullet spawn points and the arm joint.
+     */
     public void debug() {
         shapeRenderer.setProjectionMatrix(myGame.gsm.camera.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
@@ -838,14 +718,8 @@ public class Player extends Entity {
      */
     @Override
     public void death() {
-        //super.death();
-        myGame.listener.resetContacts();
-        //myGame.table.clear();
-        health = healthbar.maxHealth; //
+        health = healthbar.maxHealth;
         body.setTransform(PLAYER_INITIAL_X_POSITION, PLAYER_INITIAL_Y_POSITION, 0);
-        body.setLinearVelocity(0, 0);
-        //weapon.destroy();
-        //myGame.player = new Player(myGame, PLAYER_INITIAL_X_POSITION, PLAYER_INITIAL_Y_POSITION);
-        //myGame.player.initializeOnScreenPlayerStats();
+        body.setLinearVelocity(0, 0.1f); // Set linear velocity to ensure body is active and contactFeet gets reset.
     }
 }
