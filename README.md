@@ -24,11 +24,11 @@ Default controls:<br>
 # Development
 Robot Runner was coded in Java and developed with LibGDX (a game development framework that handles cross-platform game development and graphics calculations), and Box2D (a physics engine that handles collisions).<br>
 Code Outline:<br>
-In core/src/main/java/com.robotrunner, there will be 5 important folders with functions vital to the game.
-States: Holds the classes that manage any currently displaying screen. For example, GameStateManager renders the current screen and houses the necessary logic for switching screens.<br>
-World: Holds the classes that manage the game world. For example, Listener handles any collisions, and passes that information to Entity or Map to handle.<br>
-Entities: Holds the classes for any entity in the game. For example, Player handles user input which controls the player's movement, renders the player, and adjusts the player depending on collisions (on the ground, or touching a wall, etc).<br>
-Weapons: Holds the classes for the weapons entities will use. For example, RangedWeapon spawns bullets which have a speed, damage, fire rate, and more.<br>
-Items: Holds classes for managing items on the map. For example, Dash is an item that appears on the map, and when a player picks it up and equips it, it gives the player a dash ability.<br>
+In core/src/main/java/com.robotrunner, there will be 5 important folders with functions vital to the game.<br>
+States: Holds the classes that manage any currently displaying screen. For example, GameStateManager renders the current screen and houses the necessary logic for switching screens.<br><br>
+World: Holds the classes that manage the game world. For example, Listener handles any collisions, and passes that information to Entity or Map to handle.<br><br>
+Entities: Holds the classes for any entity in the game. For example, Player handles user input which controls the player's movement, renders the player, and adjusts the player depending on collisions (on the ground, or touching a wall, etc).<br><br>
+Weapons: Holds the classes for the weapons entities will use. For example, RangedWeapon spawns bullets which have a speed, damage, fire rate, and more.<br><br>
+Items: Holds classes for managing items on the map. For example, Dash is an item that appears on the map, and when a player picks it up and equips it, it gives the player a dash ability.<br><br>
 
 
