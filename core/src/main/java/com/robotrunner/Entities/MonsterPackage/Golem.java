@@ -53,7 +53,15 @@ public class Golem extends Monster{
 
         double t = quadratic(p/2, b-n, y, false);
         double m = x/t+a;
-        return new Vector2(new Vector2((float) Math.min(m, GOLEM_MAXIMUM_HORIZONTAL_JUMP_VELOCITY), (float) n));
+        if (m > 0) {
+            double maxVelocity = Math.min((range.xMax-projectilePosition.x)/t, GOLEM_MAXIMUM_HORIZONTAL_JUMP_VELOCITY);
+            m = Math.min(m, maxVelocity);
+        } else {
+            double minVelocity = Math.max((range.xMin-projectilePosition.x)/t, -GOLEM_MAXIMUM_HORIZONTAL_JUMP_VELOCITY);
+            m = Math.max(m, minVelocity);
+        }
+
+        return new Vector2(new Vector2((float) m, (float) n));
     }
     public void update() {
         super.update();
@@ -78,12 +86,9 @@ public class Golem extends Monster{
                     Vector2 playerPos = new Vector2(myGame.player.getBodyCenter().x, body.getPosition().y);
                     Vector2 monsterPos = new Vector2(body.getPosition().x + GOLEM_HITBOX_WIDTH / 2, body.getPosition().y);
                     Vector2 playerAcceleration = new Vector2(0, 0);
-                    if (playerPos.x < range.xMin) {
-                        playerPos.x = range.xMin;
-                    } else if (playerPos.x > range.xMax) {
-                        playerPos.x = range.xMax;
-                    }
-                    Vector2 velocityVector = calculateTrajectory(playerPos, myGame.player.body.getLinearVelocity(), playerAcceleration, monsterPos, GOLEM_JUMP_VELOCITY, new Vector2(0, GRAVITY));
+                    Vector2 playerVelocity = myGame.player.body.getLinearVelocity();
+
+                    Vector2 velocityVector = calculateTrajectory(playerPos, playerVelocity, playerAcceleration, monsterPos, GOLEM_JUMP_VELOCITY, new Vector2(0, GRAVITY));
                     body.setLinearVelocity(velocityVector);
                     lastJump = myGame.timePassed;
                 }
