@@ -48,6 +48,7 @@ public class Bat extends Monster {
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.restitution = 1f;
+        fixtureDef.density = 0.001f;
         body.setGravityScale(0);
 
         body.createFixture(fixtureDef).setUserData(this);

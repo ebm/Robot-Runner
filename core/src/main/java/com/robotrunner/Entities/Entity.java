@@ -2,6 +2,8 @@ package com.robotrunner.Entities;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.reflect.ClassReflection;
+import com.robotrunner.Entities.MonsterPackage.Bat;
 import com.robotrunner.Entities.MonsterPackage.Monster;
 import com.robotrunner.Entities.PlayerPackage.Player;
 import com.robotrunner.States.MyGame;
@@ -69,7 +71,13 @@ public abstract class Entity {
         fixtureDef.shape = shape;
         fixtureDef.isSensor = true;
 
-        body.createFixture(fixtureDef).setUserData(new ContactClass(this, BodyPart.Feet));
+        //body.createFixture(fixtureDef).setUserData(new ContactClass(this, BodyPart.Feet));
+        Fixture fixture = body.createFixture(fixtureDef);
+        fixture.setUserData(new ContactClass(this, BodyPart.Feet));
+        Filter filter = new Filter();
+        filter.categoryBits = CATEGORY_BITS_PLAYER;
+        filter.maskBits = CATEGORY_BITS_MAP;
+        fixture.setFilterData(filter);
 
         shape.dispose();
     }
@@ -81,7 +89,12 @@ public abstract class Entity {
         fixtureDef.shape = shape;
         fixtureDef.isSensor = true;
 
-        body.createFixture(fixtureDef).setUserData(new ContactClass(this, BodyPart.LeftArm));
+        Fixture fixture = body.createFixture(fixtureDef);
+        fixture.setUserData(new ContactClass(this, BodyPart.LeftArm));
+        Filter filter = new Filter();
+        filter.categoryBits = CATEGORY_BITS_PLAYER;
+        filter.maskBits = CATEGORY_BITS_MAP;
+        fixture.setFilterData(filter);
 
         shape.dispose();
     }
@@ -93,7 +106,12 @@ public abstract class Entity {
         fixtureDef.shape = shape;
         fixtureDef.isSensor = true;
 
-        body.createFixture(fixtureDef).setUserData(new ContactClass(this, BodyPart.RightArm));
+        Fixture fixture = body.createFixture(fixtureDef);
+        fixture.setUserData(new ContactClass(this, BodyPart.RightArm));
+        Filter filter = new Filter();
+        filter.categoryBits = CATEGORY_BITS_PLAYER;
+        filter.maskBits = CATEGORY_BITS_MAP;
+        fixture.setFilterData(filter);
 
         shape.dispose();
     }
