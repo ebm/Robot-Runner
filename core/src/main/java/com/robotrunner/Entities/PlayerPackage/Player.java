@@ -301,6 +301,7 @@ public class Player extends Entity {
             wallClimbFinished = false;
             wallClimbTime = 0;
             //canJump = true; // enable this to allow user to hold spacebar to continuously jump
+            lastTouchGround = getBodyCenter();
         }
     }
 

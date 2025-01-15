@@ -89,146 +89,21 @@ public class RangedWeapon extends Weapon {
             if (attackSound != null) attackSound.play(0.2f);
         }
     }
-    /*public Vector2 calculatePrediction(Entity e) {
-        System.out.println("====================================");
-        System.out.println("User: " + user.getBodyCenter() + ", Radius: " + bulletSpeed);
-        System.out.println("Entity fired at: " + e.getBodyCenter() + ", Entity velocity: " + e.body.getLinearVelocity());
 
-        float slope = ((e.body.getLinearVelocity().y + e.getBodyCenter().y) - e.getBodyCenter().y) / ((e.body.getLinearVelocity().x + e.getBodyCenter().x) - e.getBodyCenter().x);
-        float yIntercept = e.getBodyCenter().y - slope * e.getBodyCenter().x;
-        float intersectX = (float) (Math.sqrt(bulletSpeed * bulletSpeed * (slope * slope + 1) - user.getBodyCenter().x * user.getBodyCenter().x * slope * slope
-                + (2 * user.getBodyCenter().x * user.getBodyCenter().y - 2 * yIntercept * user.getBodyCenter().x) * slope - user.getBodyCenter().y * user.getBodyCenter().y
-                + 2 * yIntercept * user.getBodyCenter().y - yIntercept * yIntercept) + (user.getBodyCenter().y - yIntercept) * slope + user.getBodyCenter().x) / (slope * slope + 1);
-
-        float intersectY = slope * intersectX + yIntercept;
-
-        float intersectX2 = (float) -(Math.sqrt(bulletSpeed * bulletSpeed * (slope * slope + 1) - user.getBodyCenter().x * user.getBodyCenter().x * slope * slope
-                + (2 * user.getBodyCenter().x * user.getBodyCenter().y - 2 * yIntercept * user.getBodyCenter().x) * slope - user.getBodyCenter().y * user.getBodyCenter().y
-                + 2 * yIntercept * user.getBodyCenter().y - yIntercept * yIntercept) + (yIntercept - user.getBodyCenter().y) * slope - user.getBodyCenter().x) / (slope * slope + 1);
-        float intersectY2 = slope * intersectX2 + yIntercept;
-
-        System.out.println("Intersect: " + new Vector2(intersectX, intersectY) + " | Intersect2: " + new Vector2(intersectX2, intersectY2));
-
-        return new Vector2(intersectX2, intersectY2);
-    }*/
-    public double solveCubicEquation(double a, double b, double c, double d) {
-        System.out.println("Cubic solution");
-        return -1;
-    }
-    public double solveQuadraticEquation(double a, double b, double c) {
-        double res1 = (-b+Math.sqrt(b*b-4*a*c))/(2*a);
-        double res2 = (-b-Math.sqrt(b*b-4*a*c))/(2*a);
-
-        System.out.println("Quadratic solution: " + res1 + ", " + res2);
-        return res2;
-    }
-    public double solveLinearEquation(double a, double b) {
-        System.out.println("Linear solution: " + -b/a);
-        return -b/a;
-    }
-    public void solveQuarticEquation(double A, double B, double C, double D, double E) {
-        System.out.println("equation: " + A + "t^4 + " + B + "t^3 + "+ C + "t^2 + "+ D + "t^1 + " + E + " = 0");
-        double a = -(3*B*B)/(8*A*A)+C/A;
-        double b = (B*B*B)/(8*A*A*A)-(B*C)/(2*A*A)+D/A;
-        double c = -(3*B*B*B*B)/(256*A*A*A*A)+(C*B*B)/(16*A*A*A)-(B*D)/(4*A*A)+E/A;
-
-        double res;
-        double res1 = -1;
-        double res2 = -1;
-        double res3 = -1;
-        double res4 = -1;
-        if (A == 0 && B == 0 && C == 0) {
-            res = solveLinearEquation(D, E);
-        } else if (A == 0 && B == 0) {
-            res = solveQuadraticEquation(C, D, E);
-        } else if (A == 0) {
-            res = solveCubicEquation(B, C, D, E);
-        } else if (b == 0) {
-            System.out.println("b=0");
-            res1 = -B/(4*A)+Math.sqrt((-a+Math.sqrt(a*a-4*c))/2);
-            res2 = -B/(4*A)+Math.sqrt((-a-Math.sqrt(a*a-4*c))/2);
-            res3 = -B/(4*A)-Math.sqrt((-a+Math.sqrt(a*a-4*c))/2);
-            res4 = -B/(4*A)-Math.sqrt((-a-Math.sqrt(a*a-4*c))/2);
-
-            //System.out.println("Quartic solution: " + res1 + ", " + res2 + ", " + res3 + ", " + res4);
-        } else {
-            double P = -(a*a)/12-c;
-            double Q = -(a*a*a)/108+(a*c)/3-(b*b)/8;
-            double R = -Q/2+Math.sqrt((Q*Q)/4+(P*P*P)/27);
-            double U = Math.cbrt(R);
-            double y =  -5*a/6;
-            if (U == 0) {
-                y = y - Math.cbrt(Q);
-            } else {
-                y = y + U - P/(3*U);
-            }
-            System.out.println("P = " + P + ", Q = " + Q + ", R = " + R + ", U = " + U + ", y = " + y);
-            res1 = -B/(4*A)+(+Math.sqrt(a+2*y)+Math.sqrt(-(3*a+2*y+(2*b)/Math.sqrt(a+2*y))))/2;
-            res2 = -B/(4*A)+(+Math.sqrt(a+2*y)-Math.sqrt(-(3*a+2*y+(2*b)/Math.sqrt(a+2*y))))/2;
-            res3 = -B/(4*A)+(-Math.sqrt(a+2*y)+Math.sqrt(-(3*a+2*y-(2*b)/Math.sqrt(a+2*y))))/2;
-            res4 = -B/(4*A)+(-Math.sqrt(a+2*y)-Math.sqrt(-(3*a+2*y-(2*b)/Math.sqrt(a+2*y))))/2;
-
-            System.out.println("Quartic normal solution: " + res1 + ", " + res2 + ", " + res3 + ", " + res4);
-        }
-        //System.out.println("Quartic solution: " + res);
-    }
-    public double calcTime(Vector2 playerPosition, Vector2 playerVelocity, Vector2 playerAcceleration, Vector2 bulletPosition, Vector2 bulletAcceleration, double time) {
-        double v = bulletSpeed;
-        double p = playerAcceleration.y - bulletAcceleration.y;
-        double x = playerPosition.x - bulletPosition.x;
-        double y = playerPosition.y - bulletPosition.y;
-        double a = playerVelocity.x;
-        double b = playerVelocity.y;
-        System.out.println("v = " + v + ", p = " + p + ", x = " + x + ", y = " + y + ", a = " + a + ", b = " + b);
-        //double accuracy = equation(time, v, p, x, y, a, b);
-        //System.out.println("Default time accuracy: " + accuracy);
-        double A = p*p/4;
-        double B = -b*p;
-        double C = -p*y+b*b-v*v+a*a;
-        double D = 2*b*y+2*x*a;
-        double E = x*x+y*y;
-        solveQuarticEquation(A, B, C, D, E);
-
-        return time;
-        //return secantMethod(Math.max(0.001, time - 1), time + 3, v, p, x, y, a, b);
-    }
     public void attackWithAimbot(Entity e) {
         if (attacksPerSecond == 0 || (myGame.timePassed - lastUse) > 1 / attacksPerSecond) {
             BulletClass newBullet = new BulletClass(myGame, this);
 
-            float time = (float) (Math.sqrt((e.getBodyCenter().x * e.getBodyCenter().x - 2 * newBullet.body.getPosition().x
-                    * e.getBodyCenter().x + newBullet.body.getPosition().x * newBullet.body.getPosition().x + e.getBodyCenter().y
-                    * e.getBodyCenter().y - 2 * newBullet.body.getPosition().y * e.getBodyCenter().y + newBullet.body.getPosition().y
-                    * newBullet.body.getPosition().y) * bulletSpeed * bulletSpeed - e.body.getLinearVelocity().y
-                    * e.body.getLinearVelocity().y * e.getBodyCenter().x * e.getBodyCenter().x + (2 * e.body.getLinearVelocity().y
-                    * e.body.getLinearVelocity().y * newBullet.body.getPosition().x + 2 * e.body.getLinearVelocity().y
-                    * e.body.getLinearVelocity().x * e.getBodyCenter().y - 2 * e.body.getLinearVelocity().y * e.body.getLinearVelocity().x
-                    * newBullet.body.getPosition().y) * e.getBodyCenter().x - e.body.getLinearVelocity().y * e.body.getLinearVelocity().y
-                    * newBullet.body.getPosition().x * newBullet.body.getPosition().x + (2 * e.body.getLinearVelocity().y
-                    * e.body.getLinearVelocity().x * newBullet.body.getPosition().y - 2 * e.body.getLinearVelocity().y
-                    * e.body.getLinearVelocity().x * e.getBodyCenter().y) * newBullet.body.getPosition().x - e.body.getLinearVelocity().x
-                    * e.body.getLinearVelocity().x * e.getBodyCenter().y * e.getBodyCenter().y + 2 * e.body.getLinearVelocity().x
-                    * e.body.getLinearVelocity().x * newBullet.body.getPosition().y * e.getBodyCenter().y - e.body.getLinearVelocity().x
-                    * e.body.getLinearVelocity().x * newBullet.body.getPosition().y * newBullet.body.getPosition().y)
-                    + e.body.getLinearVelocity().x * e.getBodyCenter().x - e.body.getLinearVelocity().x* newBullet.body.getPosition().x
-                    + e.body.getLinearVelocity().y * e.getBodyCenter().y - e.body.getLinearVelocity().y * newBullet.body.getPosition().y)
-                    / (bulletSpeed * bulletSpeed - e.body.getLinearVelocity().x * e.body.getLinearVelocity().x
-                    - e.body.getLinearVelocity().y * e.body.getLinearVelocity().y);
-            //System.out.println("OG Time: " + time);
-            //Vector2 playerAcceleration = new Vector2(0, 0);
-            //if (e.getClass() == Player.class) {
-            //    if (((Player) e).contactFeet == 0) {
-            //        playerAcceleration = new Vector2(0, GRAVITY);
-            //    }
-            //}
-            //time = (float) calcTime(e.getBodyCenter(), e.body.getLinearVelocity(), playerAcceleration, newBullet.body.getPosition(), new Vector2(0, 0), time);
-            float horizontalBulletVelocity = e.body.getLinearVelocity().x - (newBullet.body.getPosition().x - e.getBodyCenter().x) / time;
-            float verticalBulletVelocity = e.body.getLinearVelocity().y - (newBullet.body.getPosition().y - e.getBodyCenter().y) / time;
+            Vector2 entityPosition = e.getBodyCenter();
+            Vector2 entityAcceleration = new Vector2(0, 0);
 
-            //float horizontalBulletVelocity = e.body.getLinearVelocity().x - (newBullet.body.getPosition().x - e.getBodyCenter().x) / time;
-            //float verticalBulletVelocity = e.body.getLinearVelocity().y + 0.5f * playerAcceleration.y * time - (newBullet.body.getPosition().y - e.getBodyCenter().y) / time;
+            if (e.contactFeet == 0 && e.body.getGravityScale() > 0) {
+                entityAcceleration = new Vector2(0, GRAVITY);
+            }
+            Vector2 velocityVector = calcVelocityVector(entityPosition, e.body.getLinearVelocity(), entityAcceleration, newBullet.body.getPosition(), bulletSpeed, new Vector2(0, 0));
 
-            newBullet.body.setLinearVelocity(horizontalBulletVelocity, verticalBulletVelocity);
+            newBullet.body.setLinearVelocity(velocityVector);
+
             totalBullets.add(newBullet);
             lastUse = myGame.timePassed;
         }

@@ -44,25 +44,17 @@ public class Golem extends Monster{
         directionTime = 0;
         weapon.attack(body.getPosition());
     }
-    public float calculateTrajectory(float initialYVelocity, Vector2 monsterPosition, Vector2 playerPosition) {
-        float initialYPosition = monsterPosition.y;
-        float finalYPosition = playerPosition.y;
+    public Vector2 calculateTrajectory(Vector2 objectPosition, Vector2 objectVelocity, Vector2 objectAcceleration, Vector2 projectilePosition, double verticalVelocity, Vector2 projectileAcceleration) {
+        double n = verticalVelocity;
+        double p = objectAcceleration.y - projectileAcceleration.y;
+        double x = objectPosition.x - projectilePosition.x;
+        double y = objectPosition.y - projectilePosition.y;
+        double a = objectVelocity.x;
+        double b = objectVelocity.y;
 
-        float maximumPlayerPosition = -(initialYVelocity * initialYVelocity - 2 * GRAVITY * monsterPosition.y) / (2 * GRAVITY);
-        //System.out.println("Maximum player pos: " + maximumPlayerPosition);
-
-        //System.out.println("Monster position: " + monsterPosition + ", Player position: " + playerPosition + ", Gravity: " + gravity);
-        if (maximumPlayerPosition < playerPosition.y) finalYPosition = maximumPlayerPosition;
-        float time = (float) (-initialYVelocity - Math.sqrt(initialYVelocity * initialYVelocity + 2 * GRAVITY * finalYPosition - 2 * GRAVITY * initialYPosition)) / (GRAVITY);
-        //System.out.println("Velocity: " + (playerPosition.x - monsterPosition.x) / time);
-
-        float finalX = playerPosition.x;
-        if (finalX < range.xMin) {
-            finalX = range.xMin;
-        } else if (finalX > range.xMax) {
-            finalX = range.xMax;
-        }
-        return Math.min((finalX - monsterPosition.x) / time, GOLEM_MAXIMUM_HORIZONTAL_JUMP_VELOCITY);
+        double t = quadratic(p/2, b-n, y, false);
+        double m = x/t+a;
+        return new Vector2(new Vector2((float) Math.min(m, GOLEM_MAXIMUM_HORIZONTAL_JUMP_VELOCITY), (float) n));
     }
     public void update() {
         if (activated || getDistance(body.getPosition(), myGame.player.body.getPosition()) < GOLEM_ACTIVATION_RANGE || health < GOLEM_HEALTH) {
@@ -83,9 +75,16 @@ public class Golem extends Monster{
                 }
                 if (myGame.timePassed - lastJump > GOLEM_JUMP_COOLDOWN) {
                     body.setTransform(body.getPosition().x, body.getPosition().y + UNIT_SCALE, 0);
-                    Vector2 playerPos = new Vector2(myGame.player.getBodyCenter());
+                    Vector2 playerPos = new Vector2(myGame.player.getBodyCenter().x, body.getPosition().y);
                     Vector2 monsterPos = new Vector2(body.getPosition().x + GOLEM_HITBOX_WIDTH / 2, body.getPosition().y);
-                    body.setLinearVelocity(calculateTrajectory(GOLEM_JUMP_VELOCITY, monsterPos, playerPos), GOLEM_JUMP_VELOCITY);
+                    Vector2 playerAcceleration = new Vector2(0, 0);
+                    if (playerPos.x < range.xMin) {
+                        playerPos.x = range.xMin;
+                    } else if (playerPos.x > range.xMax) {
+                        playerPos.x = range.xMax;
+                    }
+                    Vector2 velocityVector = calculateTrajectory(playerPos, myGame.player.body.getLinearVelocity(), playerAcceleration, monsterPos, GOLEM_JUMP_VELOCITY, new Vector2(0, GRAVITY));
+                    body.setLinearVelocity(velocityVector);
                     lastJump = myGame.timePassed;
                 }
             }

@@ -21,6 +21,7 @@ public abstract class Entity {
     public int contactLeftArm;
     public int contactRightArm;
     public short categoryBits;
+    public Vector2 lastTouchGround;
     public Entity(MyGame myGame, float health, Class<?> friendly, Class<?> enemy, short categoryBits) {
         this.myGame = myGame;
         this.friendly = friendly;

@@ -27,7 +27,7 @@ public class Constants {
     // Player Constants
     public static float PLAYER_INITIAL_X_POSITION = 4 * METERS_PER_PIXEL;
     public static float PLAYER_INITIAL_Y_POSITION = 8 * METERS_PER_PIXEL;
-    public static float PLAYER_HEALTH = 100;
+    public static float PLAYER_HEALTH = 10000;
     public static float PLAYER_HORIZONTAL_VELOCITY = 3.5f * METERS_PER_PIXEL;
     public static float PLAYER_HORIZONTAL_AIR_ACCELERATION = 0.08f * METERS_PER_PIXEL;
     public static float PLAYER_MAXIMUM_HORIZONTAL_AIR_VELOCITY = PLAYER_HORIZONTAL_VELOCITY * 1.5f;
@@ -88,7 +88,7 @@ public class Constants {
     public static float GOLEM_ATTACK_DAMAGE = 55;
     public static float GOLEM_ATTACK_COOLDOWN = 0.5f;
     public static float GOLEM_MAXIMUM_HORIZONTAL_JUMP_VELOCITY = 40 * METERS_PER_PIXEL;
-    public static float GOLEM_ACTIVATION_RANGE = 30 * METERS_PER_PIXEL;
+    public static float GOLEM_ACTIVATION_RANGE = 25 * METERS_PER_PIXEL;
     public static float GOLEM_JUMP_COOLDOWN = 3;
     public static float GOLEM_DIRECTION_DELAY = 0.5f;
     public static float GOLEM_HITBOX_WIDTH = 1.5f;//3 * METERS_PER_PIXEL;
@@ -116,4 +116,65 @@ public class Constants {
     public static float getDistance(Vector2 a, Vector2 b) {
         return (float) Math.sqrt((a.y - b.y) * (a.y - b.y) + (a.x - b.x) * (a.x - b.x));
     }
+    public static double equation(double guess, double A, double B, double C, double D, double E) {
+        return A * Math.pow(guess, 4) + B * Math.pow(guess, 3) + C * Math.pow(guess, 2) + D * Math.pow(guess, 1) + E;
+    }
+    public static double equationDerivative(double guess, double A, double B, double C, double D, double E) {
+        return 4 * A * Math.pow(guess, 3) + 3 * B * Math.pow(guess, 2) + 2 * C * Math.pow(guess, 1) + D;
+    }
+    public static double newtonsMethod(double guess, double A, double B, double C, double D, double E) {
+        double nextGuess;
+        double currGuess = guess;
+        int i;
+        double res = 0;
+        for (i = 0; i < 20; i++) {
+            res = equation(currGuess, A, B, C, D, E);
+            nextGuess = currGuess - res/equationDerivative(currGuess, A, B, C, D, E);
+            currGuess = nextGuess;
+            if (currGuess < 0 || Double.isNaN(currGuess)) {
+                //System.out.println("Guess: " + currGuess + ", Iterations: " + i + ", Accuracy: " + equation(currGuess, A, B, C, D, E));
+                return -1;
+            }
+            if (Math.abs(res) < Math.pow(10, -6)) break;
+        }
+        //System.out.println("Guess: " + currGuess + ", Iterations: " + i + ", Accuracy: " + equation(currGuess, A, B, C, D, E));
+        if (Math.abs(res) > Math.pow(10, -6)) return -1;
+        return currGuess;
+    }
+    public static double quadratic(double a, double b, double c, boolean fast) {
+        if (fast) {
+            return (-b-Math.sqrt(b*b-4*a*c))/(2*a);
+        } else {
+            return (-b+Math.sqrt(b*b-4*a*c))/(2*a);
+        }
+
+    }
+    public static Vector2 calcVelocityVector(Vector2 objectPosition, Vector2 objectVelocity, Vector2 objectAcceleration, Vector2 projectilePosition, double projectileSpeed, Vector2 projectileAcceleration) {
+        double v = projectileSpeed;
+        double p = 0;//objectAcceleration.y - projectileAcceleration.y;
+        double x = objectPosition.x - projectilePosition.x;
+        double y = objectPosition.y - projectilePosition.y;
+        double a = objectVelocity.x;
+        double b = objectVelocity.y;
+
+        double time = quadratic(b*b-v*v+a*a, 2*y*b+2*x*a, x*x+y*y, true);
+        if (p != 0) {
+            double A = p*p/4;
+            double B = b*p;
+            double C = p*y+b*b-v*v+a*a;
+            double D = 2*b*y+2*x*a;
+            double E = x*x+y*y;
+
+            double res = newtonsMethod(time, A, B, C, D, E);
+            if (res < 0) {
+                p = 0;
+            } else {
+                time = res;
+            }
+        }
+        double horizontalBulletVelocity = (objectPosition.x - projectilePosition.x) / time + objectVelocity.x;
+        double verticalBulletVelocity = (objectPosition.y - projectilePosition.y) / time + objectVelocity.y + 0.5 * p * time;
+        return new Vector2((float) horizontalBulletVelocity, (float) verticalBulletVelocity);
+    }
+
 }
