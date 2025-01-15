@@ -23,6 +23,7 @@ public class Constants {
     public static short CATEGORY_BITS_MONSTER = 0x0004;
     public static short CATEGORY_BITS_LASER_PROJECTILE = 0x0008;
     public static short CATEGORY_BITS_MAP = 0x0008;
+    public static float MONSTER_COMBAT_TIMER = 10;
 
     // Player Constants
     public static float PLAYER_INITIAL_X_POSITION = 4 * METERS_PER_PIXEL;

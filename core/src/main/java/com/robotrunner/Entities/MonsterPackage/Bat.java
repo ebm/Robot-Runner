@@ -16,7 +16,6 @@ import static com.robotrunner.World.Constants.*;
 
 public class Bat extends Monster {
     Weapon weapon;
-    Healthbar healthbar;
     float currentVerticalVelocityAdder;
     double lastVerticalChange;
     Animation<Texture> batAnimation;
@@ -71,6 +70,7 @@ public class Bat extends Monster {
 
     @Override
     public void update() {
+        super.update();
         weapon.render();
         if (getDistance(getBodyCenter(), myGame.player.getBodyCenter()) > BAT_ACTIVATION_RANGE) {
             body.setLinearVelocity(0, 0);

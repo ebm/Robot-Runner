@@ -19,7 +19,6 @@ public class Golem extends Monster{
     Weapon weapon;
     double lastJump;
     double directionTime;
-    Healthbar healthbar;
     boolean activated;
     public Golem(MyGame myGame, float initialX, float initialY, String range) {
         super(myGame, GOLEM_HEALTH);
@@ -57,6 +56,7 @@ public class Golem extends Monster{
         return new Vector2(new Vector2((float) Math.min(m, GOLEM_MAXIMUM_HORIZONTAL_JUMP_VELOCITY), (float) n));
     }
     public void update() {
+        super.update();
         if (activated || getDistance(body.getPosition(), myGame.player.body.getPosition()) < GOLEM_ACTIVATION_RANGE || health < GOLEM_HEALTH) {
             weapon.attack(body.getPosition());
             if (contactFeet >= 1) {

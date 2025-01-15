@@ -27,7 +27,6 @@ public class Spaceship extends Monster {
     double lastDodge;
     double dodgeDelay;
     int dodgeDirection;
-    Healthbar healthbar;
     TextureRegion spaceshipTextureRegion;
     public Spaceship(MyGame myGame, float initialX, float initialY) {
         super(myGame, SPACESHIP_HEALTH);
@@ -77,6 +76,7 @@ public class Spaceship extends Monster {
 
     @Override
     public void update() {
+        super.update();
         if (myGame.timePassed - lastSwitch > 1) {
             body.setLinearVelocity(body.getLinearVelocity().x, SPACESHIP_VERTICAL_VELOCITY * multiplier);
             multiplier *= -1;
