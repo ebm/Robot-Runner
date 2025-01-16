@@ -76,8 +76,10 @@ public class Bat extends Monster {
         if (getDistance(getBodyCenter(), myGame.player.getBodyCenter()) > BAT_ACTIVATION_RANGE) {
             body.setLinearVelocity(0, 0);
             asleep = true;
+            body.setActive(false);
             return;
         }
+        body.setActive(true);
         if ((myGame.timePassed - lastVerticalChange) >= BAT_VERTICAL_DELAY) {
             currentVerticalVelocityAdder *= -1;
             lastVerticalChange = myGame.timePassed;

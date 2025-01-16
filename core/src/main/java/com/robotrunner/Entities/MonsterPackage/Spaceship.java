@@ -135,6 +135,9 @@ public class Spaceship extends Monster {
             else ((RangedWeapon) weapon).attack(myGame.player.getBodyCenter());
         } else if (getDistance(getBodyCenter(), myGame.player.getBodyCenter()) < SPACESHIP_ACTIVATION_RANGE) {
             activated = true;
+            body.setActive(true);
+        } else {
+            body.setActive(false);
         }
 
     }

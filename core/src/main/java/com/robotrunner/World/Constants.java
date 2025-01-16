@@ -11,7 +11,7 @@ public class Constants {
     public static float TIME_STEP = 1/240f;
     public static float MIN_TIME_STEP = 1/15f;
     public static float GRAVITY = -20 * METERS_PER_PIXEL;
-    public static float CAMERA_Y_OFFSET = 0;//3 * METERS_PER_PIXEL;
+    public static float CAMERA_Y_OFFSET = 2 * METERS_PER_PIXEL;
     public static float HEALTHBAR_OFFSET = 0.25f * METERS_PER_PIXEL;
     public static float HEALTHBAR_HEIGHT = 0.25f * METERS_PER_PIXEL;
 
@@ -28,7 +28,7 @@ public class Constants {
     // Player Constants
     public static float PLAYER_INITIAL_X_POSITION = 4 * METERS_PER_PIXEL;
     public static float PLAYER_INITIAL_Y_POSITION = 8 * METERS_PER_PIXEL;
-    public static float PLAYER_HEALTH = 10000;
+    public static float PLAYER_HEALTH = 100;
     public static float PLAYER_HORIZONTAL_VELOCITY = 3.5f * METERS_PER_PIXEL;
     public static float PLAYER_HORIZONTAL_AIR_ACCELERATION = 0.08f * METERS_PER_PIXEL;
     public static float PLAYER_MAXIMUM_HORIZONTAL_AIR_VELOCITY = PLAYER_HORIZONTAL_VELOCITY * 1.5f;
@@ -89,7 +89,8 @@ public class Constants {
     public static float GOLEM_ATTACK_DAMAGE = 55;
     public static float GOLEM_ATTACK_COOLDOWN = 0.5f;
     public static float GOLEM_MAXIMUM_HORIZONTAL_JUMP_VELOCITY = 40 * METERS_PER_PIXEL;
-    public static float GOLEM_ACTIVATION_RANGE = 25 * METERS_PER_PIXEL;
+    public static float GOLEM_ACTIVATION_RANGE_X = 40 * METERS_PER_PIXEL;
+    public static float GOLEM_ACTIVATION_RANGE_Y = 10 * METERS_PER_PIXEL;
     public static float GOLEM_JUMP_COOLDOWN = 3;
     public static float GOLEM_DIRECTION_DELAY = 0.5f;
     public static float GOLEM_HITBOX_WIDTH = 1.5f;//3 * METERS_PER_PIXEL;

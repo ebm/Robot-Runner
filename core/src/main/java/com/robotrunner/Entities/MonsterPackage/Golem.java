@@ -20,6 +20,7 @@ public class Golem extends Monster{
     double lastJump;
     double directionTime;
     boolean activated;
+    double time = 2*GOLEM_JUMP_VELOCITY/(-GRAVITY);
     public Golem(MyGame myGame, float initialX, float initialY, String range) {
         super(myGame, GOLEM_HEALTH);
         healthbar = new Healthbar(myGame, this, GOLEM_HEALTH);
@@ -60,12 +61,32 @@ public class Golem extends Monster{
             double minVelocity = Math.max((range.xMin-projectilePosition.x)/t, -GOLEM_MAXIMUM_HORIZONTAL_JUMP_VELOCITY);
             m = Math.max(m, minVelocity);
         }
+        return new Vector2(new Vector2((float) m, (float) n));
+    }
+    public Vector2 calculateTrajectoryLite(Vector2 objectPosition, Vector2 objectVelocity, Vector2 objectAcceleration, Vector2 projectilePosition, double verticalVelocity, Vector2 projectileAcceleration) {
+        double n = verticalVelocity;
+        double x = objectPosition.x - projectilePosition.x;
+        double a = objectVelocity.x;
+
+        double t = time;
+        double m = x/t+a;
+        if (m > 0) {
+            double maxVelocity = Math.min((range.xMax-projectilePosition.x)/t, GOLEM_MAXIMUM_HORIZONTAL_JUMP_VELOCITY);
+            System.out.println(m + ", " + (range.xMax-projectilePosition.x)/t + ", " + GOLEM_MAXIMUM_HORIZONTAL_JUMP_VELOCITY);
+            m = Math.min(m, maxVelocity);
+        } else {
+            double minVelocity = Math.max((range.xMin-projectilePosition.x)/t, -GOLEM_MAXIMUM_HORIZONTAL_JUMP_VELOCITY);
+            m = Math.max(m, minVelocity);
+        }
+        System.out.println("VELOCITY: " + m + ", TIME: " + time);
 
         return new Vector2(new Vector2((float) m, (float) n));
     }
     public void update() {
         super.update();
-        if (activated || getDistance(body.getPosition(), myGame.player.body.getPosition()) < GOLEM_ACTIVATION_RANGE || health < GOLEM_HEALTH) {
+        if (activated || (Math.abs(body.getPosition().x - myGame.player.body.getPosition().x) < GOLEM_ACTIVATION_RANGE_X &&
+            Math.abs(body.getPosition().y - myGame.player.body.getPosition().y) < GOLEM_ACTIVATION_RANGE_Y) || health < GOLEM_HEALTH) {
+            body.setActive(true);
             weapon.attack(body.getPosition());
             if (contactFeet >= 1) {
                 if (getBodyCenter().x < myGame.player.getBodyCenter().x && body.getLinearVelocity().x <= 0 || getBodyCenter().x > myGame.player.getBodyCenter().x && body.getLinearVelocity().x >= 0) {
@@ -88,12 +109,14 @@ public class Golem extends Monster{
                     Vector2 playerAcceleration = new Vector2(0, 0);
                     Vector2 playerVelocity = myGame.player.body.getLinearVelocity();
 
-                    Vector2 velocityVector = calculateTrajectory(playerPos, playerVelocity, playerAcceleration, monsterPos, GOLEM_JUMP_VELOCITY, new Vector2(0, GRAVITY));
+                    Vector2 velocityVector = calculateTrajectoryLite(playerPos, playerVelocity, playerAcceleration, monsterPos, GOLEM_JUMP_VELOCITY, new Vector2(0, GRAVITY));
                     body.setLinearVelocity(velocityVector);
                     lastJump = myGame.timePassed;
                 }
             }
             //weapon.attack(myGame.player.getBodyCenter());
+        } else {
+            body.setActive(false);
         }
     }
 
